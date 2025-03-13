@@ -1,48 +1,81 @@
 ﻿@model List<Someren.Models.Student>
-
 @{
-    ViewData["Title"] = "Students";
+    ViewData["Title"] = "Student Management";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Students overview</h1>
-    <p>Number of students: <span class="text-danger">@Model.Count</span></p>
-</div>
+<div class="card mb-4">
+    <div class="card-header">
+        <h1 class="card-title">Student Management</h1>
+        <a href="/Student/Add" class="btn btn-primary shadow-button">
+            <i class="fas fa-plus me-2"></i> Add New Student
+        </a>
+    </div>
+    <div class="card-body p-0">
+        <div class="dashboard-stats px-4 py-3">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-user-graduate"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 class="stat-value">@Model.Count</h3>
+                    <p class="stat-label">Total Students</p>
+                </div>
+            </div>
 
-<div class="mb-4">
-    <a href="/Student/Add" class="btn btn-dark">Add student</a>
-</div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-building"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 class="stat-value">@Model.Select(s => s.RoomNum).Distinct().Count()</h3>
+                    <p class="stat-label">Occupied Rooms</p>
+                </div>
+            </div>
 
-<table class="user-table">
-    <thead>
-        <tr>
-            <th>Student number</th>
-            <th>Room number</th>
-            <th>First name</th>
-            <th>Last name</th>
-            <th>Telephone number</th>
-            <th>Class</th>
-            <th>Options</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var student in Model)
-        {
-            <tr>
-                <td>@student.StudentNum</td>
-                <td>@student.RoomNum</td>
-                <td class="username">@student.FirstName</td>
-                <td>@student.LastName</td>
-                <td>@student.TelNum</td>
-                <th>@student.StudentClass</th>
-                <td>
-                    <!-- Edit Link -->
-                    <a href="/Student/Edit/@student.StudentNum" class="action-link edit-link" name="StudentNum">Edit</a>
-                    <span class="action-separator">|</span>
-                    <!-- Delete Link -->
-                    <a href="/Student/Delete/@student.StudentNum" class="action-link delete-link" name="UserId">Delete</a>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 class="stat-value">@Model.Select(s => s.StudentClass).Distinct().Count()</h3>
+                    <p class="stat-label">Classes</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>Student #</th>
+                        <th>Name</th>
+                        <th>Room #</th>
+                        <th>Class</th>
+                        <th>Telephone</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var student in Model)
+                    {
+                        <tr>
+                            <td>@student.StudentNum</td>
+                            <td>@student.FirstName @student.LastName</td>
+                            <td>@student.RoomNum</td>
+                            <td>@student.StudentClass</td>
+                            <td>@student.TelNum</td>
+                            <td class="action-buttons">
+                                <a href="/Student/Edit/@student.StudentNum" class="btn btn-primary shadow-button">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a href="/Student/Delete/@student.StudentNum" class="btn btn-danger shadow-button">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
