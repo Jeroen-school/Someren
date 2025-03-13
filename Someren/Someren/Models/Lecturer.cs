@@ -17,7 +17,17 @@
             
         }
 
-        public Lecturer(int lecturerNum, string roomNUm, string firstName, string lastName, string telNum, string studentClass)
+        public Lecturer(int lecturerNum, string firstName, string lastName, string telNum, int age, bool deleted)
+        {
+            this.LecturerId = lecturerNum;
+            this.FirstName = firstName;
+            this.LastName = lastName;
+            this.TelNum = telNum;
+            this.age = age;
+            this.Deleted = deleted;
+        }
+
+        public Lecturer(int lecturerNum, string roomNUm, string firstName, string lastName, string telNum, int age, bool barDuty)
         {
             this.LecturerId = lecturerNum;
             this.RoomNum = roomNUm;

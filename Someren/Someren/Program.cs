@@ -1,3 +1,5 @@
+using Someren.Repositories;
+
 namespace Someren
 {
     public class Program
@@ -7,6 +9,7 @@ namespace Someren
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
+            builder.Services.AddSingleton<ILecturersRepository, DbLecturersRepository>();
             builder.Services.AddControllersWithViews();
 
             var app = builder.Build();

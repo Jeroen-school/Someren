@@ -1,0 +1,19 @@
+﻿@model Someren.Models.Lecturer
+
+@{
+    ViewData["Title"] = "Create lecturer";
+}
+
+<h4>New User</h4>
+
+<form action="/Lecturers/Create" method="Post">
+    <label for="lecturer_id">Lecturer ID:</label>
+    <input type="int" id="lecturer_id" name="lecturer_id" class="form-control" required value="@Model?.LecturerId" />
+
+
+
+    <button type="submit" class="btn btn-primary">Send</button>
+
+</form>
+
+<a href="/Users/Index"> Back to list</a>
