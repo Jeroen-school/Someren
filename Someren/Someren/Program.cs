@@ -8,6 +8,7 @@ namespace Someren
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+            builder.Services.AddSingleton<Repositories.IRoomRepository, Repositories.RoomRepository>();
 
             var app = builder.Build();
 
