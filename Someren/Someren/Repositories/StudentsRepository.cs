@@ -17,12 +17,12 @@ namespace Someren.Repositories
 
         private Student ReadStudent(SqlDataReader reader)
         {
-            int studentNum = (int)reader["StudentNum"];
-            string roomNum = (string)reader["RoomNum"];
-            string firstName = (string)reader["FirstName"];
-            string lastName = (string)reader["LastName"];
-            string telNum = (string)reader["TelNum"];
-            string studentClass = (string)reader["StudentClass"];
+            int studentNum = (int)reader["student_number"];
+            string roomNum = (string)reader["room_number"];
+            string firstName = (string)reader["first_name"];
+            string lastName = (string)reader["last_name"];
+            string telNum = (string)reader["telephone_number"];
+            string studentClass = (string)reader["class"];
 
             return new Student(studentNum, roomNum, firstName, lastName, telNum, studentClass);
         }
@@ -33,7 +33,7 @@ namespace Someren.Repositories
 
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
-                string query = "SELECT [student_number], [room_number], [first_name], [last_name], [telephone_number], [class] FROM student;";
+                string query = "SELECT [student_number], [room_number], [first_name], [last_name], [telephone_number], [class] FROM student ORDER BY student.last_name;";
                 SqlCommand cmd = new SqlCommand(query, connection);
 
                 cmd.Connection.Open();

@@ -1,0 +1,27 @@
+﻿@model Someren.Models.Student
+@{
+    ViewData["Title"] = "Delete a student";
+}
+
+<h2 class="form-title">Terminate Agent</h2>
+
+<form action="/Student/Delete" method="POST" class="student-form">
+    <fieldset>
+        <div class="form-group">
+            <label for="student_number" class="form-label">Student number:</label>
+            <input type="text" id="student_number" name="student_number" required value="@Model?.StudentNum"
+                   placeholder="Student Number" class="form-control shadow-input" disabled />
+        </div>
+
+        <div class="form-group">
+            <label for="Confirmation" class="form-label">Are you sure you want to delete this student?</label>
+            <div class="checkbox-container">
+                <input type="checkbox" id="Confirmation" name="Confirmation" required class="checkbox-input" />
+                <label for="Confirmation" class="checkbox-label">Check to confirm</label>
+            </div>
+        </div>
+
+        <button type="submit" class="btn shadow-button terminate-button">Delete student</button>
+        <a href="/Users/Index" class="btn shadow-button cancel-button">Cancel</a>
+    </fieldset>
+</form>
