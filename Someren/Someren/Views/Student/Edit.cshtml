@@ -2,36 +2,40 @@
 @{
     ViewData["Title"] = "Edit student information";
 }
-
+    
 <h2 class="form-title">Edit student information</h2>
 
-<form action="/Student/Edit" method="POST" class="student-form">
+<form action="/Student/Edit/@Model?.StudentNum" method="POST" class="student-form">
     <fieldset>
 
+        <di class="form-group">
+            <label for="StudentNum" class="form-label">Student number:</label>
+            <input type="text" name="StudentNum" value="@Model?.StudentNum" disabled />
+        </di>
+        
         <div class="form-group">
-            <label for="room_number" class="form-label">Room number:</label>
-            <input type="text" id="room_number" name="room_number" required value="@Model.RoomNum" />
-            <input type="hidden" name="student_number" value="@Model.StudentNum" />
+            <label for="RoomNum" class="form-label">Room number:</label>
+            <input type="text" id="RoomNum" name="RoomNum" required value="@Model?.RoomNum" />
         </div>
 
         <div class="form-group">
             <label for="first_name" class="form-label">First name:</label>
-            <input type="text" id="first_name" name="first_name" required value="@Model.FirstName" />
+            <input type="text" id="first_name" name="first_name" required value="@Model?.FirstName" />
         </div>
 
         <div class="form-group">
             <label for="last_name" class="form-label">Last name:</label>
-            <input type="text" id="last_name" name="last_name" required value="@Model.LastName" />
+            <input type="text" id="last_name" name="last_name" required value="@Model?.LastName" />
         </div>
 
         <div class="form-group">
             <label for="telephone_number" class="form-label">Telephone number:</label>
-            <input type="text" id="last_name" name="telephone_number" required value="@Model.TelNum" />
+            <input type="text" id="last_name" name="telephone_number" required value="@Model?.TelNum" />
         </div>
 
         <div class="form-group">
             <label for="class" class="form-label">Class:</label>
-            <input type="text" id="class" name="class" required value="@Model.StudentClass" />
+            <input type="text" id="class" name="class" required value="@Model?.StudentClass" />
         </div>
 
         <button type="submit" class="btn shadow-button">Edit</button>

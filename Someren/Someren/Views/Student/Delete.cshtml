@@ -5,11 +5,11 @@
 
 <h2 class="form-title">Terminate Agent</h2>
 
-<form action="/Student/Delete" method="POST" class="student-form">
+<form action="/Student/Delete/@Model?.StudentNum" method="POST" class="student-form">
     <fieldset>
         <div class="form-group">
             <label for="student_number" class="form-label">Student number:</label>
-            <input type="text" id="student_number" name="student_number" required value="@Model?.StudentNum"
+            <input type="text" id="student_number" name="student_number" required value="@Model.StudentNum"
                    placeholder="Student Number" class="form-control shadow-input" disabled />
         </div>
 
