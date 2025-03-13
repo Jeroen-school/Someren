@@ -1,3 +1,5 @@
+using Someren.Repositories;
+
 namespace Someren
 {
     public class Program
@@ -8,6 +10,8 @@ namespace Someren
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+
+            builder.Services.AddSingleton<IStudentsRepository, StudentsRepository>(); // Dependency injection for student repo
 
             var app = builder.Build();
 

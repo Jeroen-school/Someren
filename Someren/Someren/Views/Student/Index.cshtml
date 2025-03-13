@@ -1,0 +1,48 @@
+﻿@model List<Someren.Models.Student>
+
+@{
+    ViewData["Title"] = "Students";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Students overview</h1>
+    <p>Number of students: <span class="text-danger">@Model.Count</span></p>
+</div>
+
+<div class="mb-4">
+    <a href="/Student/Add" class="btn btn-dark">Add student</a>
+</div>
+
+<table class="user-table">
+    <thead>
+        <tr>
+            <th>Student number</th>
+            <th>Room number</th>
+            <th>First name</th>
+            <th>Last name</th>
+            <th>Telephone number</th>
+            <th>Class</th>
+            <th>Options</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var student in Model)
+        {
+            <tr>
+                <td>@student.StudentNum</td>
+                <td>@student.RoomNum</td>
+                <td class="username">@student.FirstName</td>
+                <td>@student.LastName</td>
+                <td>@student.TelNum</td>
+                <th>@student.StudentClass</th>
+                <td>
+                    <!-- Edit Link -->
+                    <a href="/Student/Edit/@student.StudentNum" class="action-link edit-link" name="StudentNum">Edit</a>
+                    <span class="action-separator">|</span>
+                    <!-- Delete Link -->
+                    <a href="/Student/Delete/@student.StudentNum" class="action-link delete-link" name="UserId">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
