@@ -1,0 +1,36 @@
+﻿@model List<Someren.Models.Activity>
+
+@{
+    ViewData["Title"] = "Activity";
+}
+
+<h2>List of Activities</h2>
+
+<table border="1" cellpadding="8" cellspacing="0" style="width:100%; text-align:left;">
+    <thead>
+        <tr style="background-color:#f2f2f2;">
+            <th>Activity Name</th>
+            <th>Date</th>
+            <th>Time</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model != null && Model.Count > 0)
+        {
+            @foreach (var activity in Model)
+            {
+                <tr>
+                    <td>@activity.Activitytype</td>
+                    <td>@activity.Date.ToShortDateString()</td>
+                    <td>@activity.Time</td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="3" style="text-align:center;">No activities found.</td>
+            </tr>
+        }
+    </tbody>
+</table>
