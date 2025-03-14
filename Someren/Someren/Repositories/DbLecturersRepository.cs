@@ -103,7 +103,8 @@ namespace Someren.Repositories
                 command.Parameters.AddWithValue("@LastName", lecturer.LastName);
                 command.Parameters.AddWithValue("@PhoneNumber", lecturer.PhoneNumber);
                 command.Parameters.AddWithValue("@Age", lecturer.Age);
-                command.Parameters.Add("@BarDuty", System.Data.SqlDbType.Bit).Value = lecturer.BarDuty;
+                command.Parameters.AddWithValue("@BarDuty", lecturer.BarDuty);
+                //command.Parameters.Add("@BarDuty", System.Data.SqlDbType.Bit).Value = lecturer.BarDuty;
 
                 command.Connection.Open();
                 command.ExecuteNonQuery();
@@ -112,8 +113,28 @@ namespace Someren.Repositories
 
         }
 
-            public void Update(Lecturer lecturer)
+        public void Update(Lecturer lecturer)
         {
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                string query = $"UPDATE lecturer SET [lecturer_id] = @Id, [room_number] = @RoomNumber, [first_name] = @Firstname, [last_name] = @LastName, [telephone_number] = @PhoneNumber, [age] = @Age, [bar_duty] = @BarDuty WHERE lecturer.[lecturer_id] = @Id;";
+
+                SqlCommand command = new SqlCommand(query, connection);
+
+                command.Parameters.AddWithValue("@Id", lecturer.LecturerId);
+                command.Parameters.AddWithValue("@RoomNumber", lecturer.RoomNumber);
+                command.Parameters.AddWithValue("@FirstName", lecturer.FirstName);
+                command.Parameters.AddWithValue("@LastName", lecturer.LastName);
+                command.Parameters.AddWithValue("@PhoneNumber", lecturer.PhoneNumber);
+                command.Parameters.AddWithValue("@Age", lecturer.Age);
+                command.Parameters.AddWithValue("@BarDuty", lecturer.BarDuty);
+
+
+                command.Connection.Open();
+                SqlDataReader reader = command.ExecuteReader();
+
+                reader.Close();
+            }
 
         }
 

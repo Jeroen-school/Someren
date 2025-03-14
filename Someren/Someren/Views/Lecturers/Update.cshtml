@@ -1,12 +1,12 @@
 ﻿@model Someren.Models.Lecturer
 
 @{
-    ViewData["Title"] = "Create lecturer";
+    ViewData["Title"] = "Edit lecturer";
 }
 
-<h4>New User</h4>
+<h4>Edit Lecturer</h4>
 
-<form action="/Lecturers/Create" method="Post">
+<form action="/Lecturers/Update" method="Post">
     <label for="LecturerId">Lecturer ID:</label>
     <input type="text" id="LecturerId" name="LecturerId" class="form-control" required value="@Model?.LecturerId" />
 
@@ -25,8 +25,11 @@
     <label for="Age">Age:</label>
     <input type="number" id="Age" name="Age" class="form-control" required value="@Model?.Age" />
 
+    <label for="BarDuty">Bar Duty:</label>
+    <input type="checkbox" id="BarDuty" name="BarDuty" value="@Model?.BarDuty" />
 
 
+    <br/>
     <button type="submit" class="btn btn-primary">Send</button>
 
 </form>

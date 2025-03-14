@@ -23,14 +23,14 @@ namespace Someren.Controllers
 
         //When opening up the create lecturer page
         [HttpGet]
-        public ActionResult Create()
+        public IActionResult Create()
         {
             return View();
         }
 
         //when you have filled in the page to create a lecturer
         [HttpPost]
-        public ActionResult Create(Lecturer lecturer)
+        public IActionResult Create(Lecturer lecturer)
         {
             try
             {
@@ -43,6 +43,34 @@ namespace Someren.Controllers
                 return View(lecturer);
             }
         }
+
+        [HttpGet]
+        public IActionResult Update(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+            
+            Lecturer? lecturer = _lecturersRepository.GetById((int)id);
+
+            return View(lecturer);
+        }
+
+        [HttpPost]
+        public IActionResult Update(Lecturer lecturer)
+        {
+            try
+            {
+                _lecturersRepository.Update(lecturer);
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                return View(lecturer);
+            }
+        }
+
 
 
 
