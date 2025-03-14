@@ -3,13 +3,13 @@
     public class Lecturer
     {
         //fields and properties
-        public int LecturerId { get; }
-        public string RoomNum { get; set; }
+        public int LecturerId { get; set; }
+        public string RoomNumber { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
-        public string TelNum { get; set; }
-        public int age { get; set; }
-        public bool barDuty { get; set; }
+        public string PhoneNumber { get; set; }
+        public int Age { get; set; }
+        public bool BarDuty { get; set; }
         public bool Deleted { get; set; }
 
         //constructors
@@ -17,26 +17,28 @@
             
         }
 
-        public Lecturer(int lecturerNum, string firstName, string lastName, string telNum, int age, bool deleted)
+        public Lecturer(int lecturerId, string roomNumber, string firstName, string lastName, string phoneNumber, int age)
         {
-            this.LecturerId = lecturerNum;
+            this.LecturerId = lecturerId;
+            this.RoomNumber = roomNumber;
             this.FirstName = firstName;
             this.LastName = lastName;
-            this.TelNum = telNum;
-            this.age = age;
-            this.Deleted = deleted;
+            this.PhoneNumber = phoneNumber;
+            this.Age = age;
+            this.BarDuty = false;
+            this.Deleted = false;
         }
 
-        public Lecturer(int lecturerNum, string roomNUm, string firstName, string lastName, string telNum, int age, bool barDuty)
+        public Lecturer(int lecturerId, string roomNumber, string firstName, string lastName, string phoneNumber, int age, bool barDuty, bool deleted)
         {
-            this.LecturerId = lecturerNum;
-            this.RoomNum = roomNUm;
+            this.LecturerId = lecturerId;
+            this.RoomNumber = roomNumber;
             this.FirstName = firstName;
             this.LastName = lastName;
-            this.TelNum = telNum;
-            this.age = age;
-            this.barDuty = barDuty;
-            this.Deleted = false;
+            this.PhoneNumber = phoneNumber;
+            this.Age = age;
+            this.BarDuty = barDuty;
+            this.Deleted = deleted;
         }
 
         //methods
