@@ -8,5 +8,8 @@ namespace Someren.Repositories
         void Add(Student student);
         void Update(Student student);
         void Delete(Student student);
+        List<Student> GetDeleted();
+        void PermaDel(int studentNum);
+        void Restore(int studentNum);
     }
 }

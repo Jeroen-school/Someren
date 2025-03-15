@@ -92,5 +92,56 @@ namespace Someren.Controllers
                 return View(student);
             }
         }
+
+        // GET: /DeletedStudents
+        public IActionResult Bin()
+        {
+            try
+            {
+                var deletedStudents = _studentsRepository.GetDeleted();
+                return View(deletedStudents);
+            }
+            catch (Exception ex)
+            {
+                // Log the exception
+                return RedirectToAction("Error", "Home", new { message = ex.Message });
+            }
+        }
+
+        // POST: /DeletedStudents/Restore/{id}
+        [HttpPost]
+        public IActionResult Restore(int id)
+        {
+            try
+            {
+                _studentsRepository.Restore(id);
+                TempData["SuccessMessage"] = $"Student #{id} has been restored successfully.";
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                // Log the exception
+                TempData["ErrorMessage"] = ex.Message;
+                return RedirectToAction("Bin");
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult PermaDel(int id)
+        {
+            try
+            {
+                _studentsRepository.PermaDel(id);
+                TempData["SuccessMessage"] = $"Student #{id} has been permanently deleted.";
+                return RedirectToAction("Bin");
+            }
+            catch (Exception ex)
+            {
+                // Log the exception
+                TempData["ErrorMessage"] = ex.Message;
+                return RedirectToAction("Bin");
+            }
+        }
     }
 }

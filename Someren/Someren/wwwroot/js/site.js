@@ -1,4 +1,17 @@
-﻿// Please see documentation at https://learn.microsoft.com/aspnet/core/client-side/bundling-and-minification
-// for details on configuring this project to bundle and minify static web assets.
+﻿// Fade out alerts after 5 seconds
+$(document).ready(function () {
+    setTimeout(function () {
+        $(".alert:not(.alert-warning)").fadeOut("slow");
+    }, 5000);
 
-// Write your JavaScript code.
+    // Add animation class to modals when shown
+    $('.modal').on('show.bs.modal', function () {
+        $(this).find('.modal-content').addClass('fade-in');
+    });
+
+    // Initialize tooltips
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+});

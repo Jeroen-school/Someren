@@ -547,3 +547,66 @@ main {
             height: auto;
         }
 }
+
+/* Deleted Students Modal Styling */
+.modal-content {
+    border: none;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+}
+
+.modal-header {
+    padding: 1rem 1.5rem;
+    border-bottom: none;
+}
+
+.modal-body {
+    padding: 1.5rem;
+}
+
+.modal-footer {
+    padding: 1rem 1.5rem;
+    border-top: 1px solid var(--gray-200);
+}
+
+.modal.fade .modal-dialog {
+    transform: scale(0.95);
+    transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.modal.show .modal-dialog {
+    transform: scale(1);
+}
+
+/* Delete confirmation warning styles */
+.modal-header.bg-danger,
+.modal-header.bg-success {
+    color: white;
+    border-radius: var(--border-radius) var(--border-radius) 0 0;
+}
+
+.modal-warning-icon {
+    color: var(--warning);
+    font-size: 1.5rem;
+    margin-right: 0.75rem;
+}
+
+.permanent-delete-warning {
+    font-weight: 600;
+    color: var(--danger);
+}
+
+.student-name-highlight {
+    font-weight: 700;
+    color: var(--dark);
+}
+
+.deleted-student-stat-card .stat-icon {
+    background: rgba(255, 72, 72, 0.1);
+    color: var(--danger);
+}
+
+.deleted-student-stat-card {
+    border-left-color: var(--danger);
+}
