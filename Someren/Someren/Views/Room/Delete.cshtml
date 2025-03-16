@@ -1,0 +1,34 @@
+﻿@model Someren.Models.Room
+
+@{
+    ViewData["Title"] = "Delete Room";
+}
+
+<div class="container py-5">
+    <h4 class="display-4 mb-4">Delete Room</h4>
+    <form action="/Room/Delete" method="POST">
+        <input type="hidden" name="RoomNumber" value="@Model?.RoomNumber" />
+        <div class="form-group w-50 mb-3">
+            <label for="RoomNumber">Room number:</label>
+            <input type="text" class="form-control" id="RoomNumber" name="RoomNumber" placeholder="A1-02" disabled value="@Model?.RoomNumber">
+        </div>
+        <div class="form-group w-50 mb-3">
+            <label for="Size">Room Size:</label>
+            <select class="form-control" id="Size" name="Size" disabled>
+                <option value="1" selected="@(Model?.Size == 1)">1</option>
+                <option value="8" selected="@(Model?.Size == 8)">8</option>
+            </select>
+        </div>
+
+        <div class="form-group w-50 mb-3">
+            <label for="Type">Room Type:</label>
+            <select class="form-control" id="Type" name="Type" disabled>
+                <option value="Lecturer" selected="@(Model?.Type == "Lecturer")">Lecturer</option>
+                <option value="Student" selected="@(Model?.Type == "Student")">Student</option>
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-danger mt-3" onclick="return confirm('Are you sure you want to delete @Model?.RoomNumber?');">Delete</button>
+        <a href="/Room" class="btn btn-secondary mt-3 ms-2">Cancel</a>
+    </form>
+</div>
