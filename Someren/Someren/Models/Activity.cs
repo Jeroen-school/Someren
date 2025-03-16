@@ -8,6 +8,11 @@
 
         public TimeSpan Time { get; set; }
 
+        public Activity()
+        {
+           
+        }
+
 
         public Activity(string activitytype, DateTime date, TimeSpan time)
         {

@@ -1,10 +1,13 @@
 ﻿@model List<Someren.Models.Activity>
-
 @{
     ViewData["Title"] = "Activity";
 }
 
 <h2>List of Activities</h2>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">Create New Activity</a>
+</p>
 
 <table border="1" cellpadding="8" cellspacing="0" style="width:100%; text-align:left;">
     <thead>
@@ -12,6 +15,7 @@
             <th>Activity Name</th>
             <th>Date</th>
             <th>Time</th>
+            <th>Actions</th>
         </tr>
     </thead>
     <tbody>
@@ -23,13 +27,17 @@
                     <td>@activity.Activitytype</td>
                     <td>@activity.Date.ToShortDateString()</td>
                     <td>@activity.Time</td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@activity.Activitytype" class="btn btn-sm btn-warning">Edit</a>
+                        <a asp-action="Delete" asp-route-id="@activity.Activitytype" class="btn btn-sm btn-danger">Delete</a>
+                    </td>
                 </tr>
             }
         }
         else
         {
             <tr>
-                <td colspan="3" style="text-align:center;">No activities found.</td>
+                <td colspan="4" style="text-align:center;">No activities found.</td>
             </tr>
         }
     </tbody>
