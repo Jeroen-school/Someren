@@ -2,7 +2,7 @@
 @{
     ViewData["Title"] = "Student Management";
 }
-<div class="card mb-4">
+<div class="card mb-4 fade-in">
     <div class="card-header">
         <h1 class="card-title">Student Management</h1>
         <div class="d-flex">
@@ -15,6 +15,20 @@
         </div>
     </div>
     <div class="card-body p-0">
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success mx-4 mt-3">
+                <i class="fas fa-check-circle me-2"></i> @TempData["SuccessMessage"]
+            </div>
+        }
+
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger mx-4 mt-3">
+                <i class="fas fa-exclamation-circle me-2"></i> @TempData["ErrorMessage"]
+            </div>
+        }
+
         <div class="dashboard-stats px-4 py-3">
             <div class="stat-card">
                 <div class="stat-icon">
@@ -80,3 +94,7 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script src="~/js/alerts-fade.js"></script>
+}

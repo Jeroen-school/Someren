@@ -15,3 +15,24 @@ $(document).ready(function () {
         return new bootstrap.Tooltip(tooltipTriggerEl);
     });
 });
+
+
+$(document).ready(function () {
+    // Add validation styling
+    $('form').on('submit', function () {
+        $(this).find('select, input').each(function () {
+            if (!$(this).val()) {
+                $(this).addClass('is-invalid');
+            } else {
+                $(this).removeClass('is-invalid');
+            }
+        });
+    });
+
+    // Remove validation styling on change
+    $('select, input').on('change', function () {
+        if ($(this).val()) {
+            $(this).removeClass('is-invalid');
+        }
+    });
+});

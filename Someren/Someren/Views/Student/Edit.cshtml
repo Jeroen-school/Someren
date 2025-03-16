@@ -1,65 +1,103 @@
 ﻿@model Someren.Models.Student
 @{
     ViewData["Title"] = "Edit Student";
+
+    // Define room number options
+    var roomOptions = new List<string> { "A1-01", "B1-01" };
+
+    // Define class options
+    var classOptions = new List<string> { "1A", "1B", "1C", "1D", "1E" };
 }
 
-<h2 class="form-title">Edit Student Information</h2>
+<div class="card mb-4 fade-in">
+    <div class="card-header">
+        <h1 class="card-title">Edit Student Information</h1>
+        <a href="/Student/Index" class="btn btn-primary shadow-button">
+            <i class="fas fa-arrow-left me-2"></i> Back to List
+        </a>
+    </div>
+    <div class="card-body">
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success mx-0 mb-4">
+                <i class="fas fa-check-circle me-2"></i> @TempData["SuccessMessage"]
+            </div>
+        }
 
-<div class="row justify-content-center form-container">
-    <div class="col-md-8">
-        <form action="/Student/Edit/@Model?.StudentNum" method="POST" class="student-form">
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger mx-0 mb-4">
+                <i class="fas fa-exclamation-circle me-2"></i> @TempData["ErrorMessage"]
+            </div>
+        }
 
-            @if (!string.IsNullOrEmpty(ViewBag.ErrorMessage))
-            {
-                <div class="alert alert-danger">
-                    @ViewBag.ErrorMessage
-                </div>
-            }
+        @if (!string.IsNullOrEmpty(ViewBag.ErrorMessage))
+        {
+            <div class="alert alert-danger mx-0 mb-4">
+                <i class="fas fa-exclamation-circle me-2"></i> @ViewBag.ErrorMessage
+            </div>
+        }
 
-            <div class="card mb-4">
-                <div class="card-header">
-                    <h3>Student ID: @Model?.StudentNum</h3>
-                </div>
-                <div class="card-body">
-                    <div class="mb-3">
-                        <label for="StudentNum" class="form-label">Student Number</label>
-                        <input type="hidden" name="StudentNum" value="@Model?.StudentNum" />
-                        <input type="text" class="form-control" value="@Model?.StudentNum" disabled />
-                    </div>
+        <form action="/Student/Edit/@Model?.StudentNum" method="POST">
+            <div class="mb-3">
+                <label for="StudentNum" class="form-label">Student Number</label>
+                <input type="hidden" name="StudentNum" value="@Model?.StudentNum" />
+                <input type="text" class="form-control" value="@Model?.StudentNum" disabled />
+            </div>
 
-                    <div class="mb-3">
-                        <label for="RoomNum" class="form-label">Room Number</label>
-                        <input type="text" class="form-control" id="RoomNum" name="RoomNum" required value="@Model?.RoomNum" />
-                    </div>
+            <div class="mb-3">
+                <label for="FirstName" class="form-label">First Name</label>
+                <input type="text" class="form-control" id="FirstName" name="FirstName" required value="@Model?.FirstName" />
+            </div>
 
-                    <div class="mb-3">
-                        <label for="FirstName" class="form-label">First Name</label>
-                        <input type="text" class="form-control" id="FirstName" name="FirstName" required value="@Model?.FirstName" />
-                    </div>
+            <div class="mb-3">
+                <label for="LastName" class="form-label">Last Name</label>
+                <input type="text" class="form-control" id="LastName" name="LastName" required value="@Model?.LastName" />
+            </div>
 
-                    <div class="mb-3">
-                        <label for="LastName" class="form-label">Last Name</label>
-                        <input type="text" class="form-control" id="LastName" name="LastName" required value="@Model?.LastName" />
-                    </div>
+            <div class="mb-3">
+                <label for="RoomNum" class="form-label">Room Number</label>
+                <select class="form-select" id="RoomNum" name="RoomNum" required>
+                    @foreach (var room in roomOptions)
+                    {
+                        if (Model?.RoomNum == room)
+                        {
+                            <option value="@room" selected>@room</option>
+                        }
+                        else
+                        {
+                            <option value="@room">@room</option>
+                        }
+                    }
+                </select>
+            </div>
 
-                    <div class="mb-3">
-                        <label for="TelNum" class="form-label">Telephone Number</label>
-                        <input type="text" class="form-control" id="TelNum" name="TelNum" required value="@Model?.TelNum" />
-                    </div>
+            <div class="mb-3">
+                <label for="StudentClass" class="form-label">Class</label>
+                <select class="form-select" id="StudentClass" name="StudentClass" required>
+                    @foreach (var classOption in classOptions)
+                    {
+                        if (Model?.StudentClass == classOption)
+                        {
+                            <option value="@classOption" selected>@classOption</option>
+                        }
+                        else
+                        {
+                            <option value="@classOption">@classOption</option>
+                        }
+                    }
+                </select>
+            </div>
 
-                    <div class="mb-3">
-                        <label for="StudentClass" class="form-label">Class</label>
-                        <input type="text" class="form-control" id="StudentClass" name="StudentClass" required value="@Model?.StudentClass" />
-                    </div>
-                </div>
-                <div class="card-footer text-center">
-                    <button type="submit" class="btn btn-primary shadow-button">
-                        <i class="fas fa-save me-2"></i> Save Changes
-                    </button>
-                    <a href="/Student/Index" class="btn btn-secondary ms-2">
-                        <i class="fas fa-arrow-left me-2"></i> Back to List
-                    </a>
-                </div>
+            <div class="mb-3">
+                <label for="TelNum" class="form-label">Telephone Number</label>
+                <input type="text" class="form-control" id="TelNum" name="TelNum" required value="@Model?.TelNum" />
+            </div>
+
+            <div class="d-flex justify-content-center mt-4">
+                <button type="submit" class="btn btn-primary shadow-button">
+                    <i class="fas fa-save me-2"></i> Save Changes
+                </button>
             </div>
         </form>
     </div>
