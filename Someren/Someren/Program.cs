@@ -6,7 +6,11 @@ namespace Someren
     {
         public static void Main(string[] args)
         {
+
             var builder = WebApplication.CreateBuilder(args);
+            builder.Services.AddControllersWithViews();
+            builder.Services.AddSingleton<IDbActivityRepository, DbActivityRepository>();
+
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
