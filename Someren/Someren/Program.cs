@@ -14,6 +14,7 @@ namespace Someren
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+            builder.Services.AddSingleton<Repositories.IRoomRepository, Repositories.RoomRepository>();
 
             builder.Services.AddSingleton<IStudentsRepository, StudentsRepository>(); // Dependency injection for student repo
 
