@@ -30,16 +30,32 @@ namespace Someren.Controllers
 
         //when you have filled in the page to create a lecturer
         [HttpPost]
-        public IActionResult Create(Lecturer lecturer)
+        public IActionResult Create(IFormCollection form)
         {
+            // Create a new lecturer from form data
+            var lecturer = new Lecturer();
+            lecturer.LecturerId = int.Parse(form["LecturerId"]);
+            lecturer.RoomNumber = form["RoomNumber"];
+            lecturer.FirstName = form["FirstName"];
+            lecturer.LastName = form["LastName"];
+            lecturer.PhoneNumber = form["PhoneNumber"];
+            lecturer.Age = int.Parse(form["Age"]);
+
+            // Explicitly convert the BarDuty value from string to bool
+            lecturer.BarDuty = form["BarDuty"].ToString().ToLower() == "true";
+
+            // Debug check
+            TempData["Debug"] = $"BarDuty in form: {form["BarDuty"]}, Converted to: {lecturer.BarDuty}";
+
             try
             {
                 _lecturersRepository.Add(lecturer);
-
+                TempData["SuccessMessage"] = "Lecturer added successfully!";
                 return RedirectToAction("Index");
             }
             catch (Exception ex)
             {
+                TempData["ErrorMessage"] = ex.Message;
                 return View(lecturer);
             }
         }
@@ -60,15 +76,29 @@ namespace Someren.Controllers
 
         //Once you have filled in the form to make changes
         [HttpPost]
-        public IActionResult Update(Lecturer lecturer)
+        public IActionResult Update(IFormCollection form)
         {
+            // Create a lecturer object from form data
+            var lecturer = new Lecturer();
+            lecturer.LecturerId = int.Parse(form["LecturerId"]);
+            lecturer.RoomNumber = form["RoomNumber"];
+            lecturer.FirstName = form["FirstName"];
+            lecturer.LastName = form["LastName"];
+            lecturer.PhoneNumber = form["PhoneNumber"];
+            lecturer.Age = int.Parse(form["Age"]);
+
+            // Explicitly convert the BarDuty value from string to bool
+            lecturer.BarDuty = form["BarDuty"].ToString().ToLower() == "true";
+
             try
             {
                 _lecturersRepository.Update(lecturer);
+                TempData["SuccessMessage"] = "Lecturer updated successfully!";
                 return RedirectToAction("Index");
             }
             catch (Exception ex)
             {
+                TempData["ErrorMessage"] = ex.Message;
                 return View(lecturer);
             }
         }

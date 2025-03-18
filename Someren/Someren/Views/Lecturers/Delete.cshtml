@@ -1,32 +1,126 @@
 ﻿@model Someren.Models.Lecturer
-
 @{
-    ViewData["Title"] = "Delete lecturer";
+    ViewData["Title"] = "Delete Lecturer";
 }
 
-<h4>Delete Lecturer</h4>
+<div class="card mb-4 fade-in">
+    <div class="card-header">
+        <h1 class="card-title">Delete Lecturer</h1>
+        <a href="/Lecturers/Index" class="btn btn-primary shadow-button">
+            <i class="fas fa-arrow-left me-2"></i> Back to List
+        </a>
+    </div>
+    <div class="card-body">
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger mx-0 mb-4">
+                <i class="fas fa-exclamation-circle me-2"></i> @TempData["ErrorMessage"]
+            </div>
+        }
 
-<form action="/Lecturers/Delete" method="Post">
-    <label for="LecturerId">Lecturer ID:</label>
-    <input type="text" id="LecturerId" name="LecturerId" class="form-control" readonly value="@Model?.LecturerId" />
+        <div class="alert alert-warning">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            <strong>Warning:</strong> Are you sure you want to delete this lecturer? This action cannot be undone.
+        </div>
 
-    <label for="RoomNumber">Room number:</label>
-    <input type="text" id="RoomNumber" name="RoomNumber" class="form-control" readonly value="@Model?.RoomNumber" />
+        <div class="card mb-4 border">
+            <div class="card-header bg-light">
+                <h5 class="mb-0">Lecturer Details</h5>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-md-4 fw-bold">
+                        <i class="fas fa-id-badge me-2"></i> Lecturer ID:
+                    </div>
+                    <div class="col-md-8">
+                        @Model?.LecturerId
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-4 fw-bold">
+                        <i class="fas fa-user me-2"></i> Full Name:
+                    </div>
+                    <div class="col-md-8">
+                        @Model?.FirstName @Model?.LastName
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-4 fw-bold">
+                        <i class="fas fa-door-open me-2"></i> Room Number:
+                    </div>
+                    <div class="col-md-8">
+                        @Model?.RoomNumber
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-4 fw-bold">
+                        <i class="fas fa-phone me-2"></i> Phone Number:
+                    </div>
+                    <div class="col-md-8">
+                        @Model?.PhoneNumber
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-4 fw-bold">
+                        <i class="fas fa-birthday-cake me-2"></i> Age:
+                    </div>
+                    <div class="col-md-8">
+                        @Model?.Age years
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-4 fw-bold">
+                        <i class="fas fa-beer me-2"></i> Bar Duty:
+                    </div>
+                    <div class="col-md-8">
+                        @if (Model?.BarDuty == true)
+                        {
+                            <span class="badge bg-success">Assigned</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-secondary">Not Assigned</span>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
 
-    <label for="FirstName">First name:</label>
-    <input type="text" id="FirstName" name="FirstName" class="form-control" readonly value="@Model?.FirstName" />
+        <div class="d-flex justify-content-center">
+            <button type="button" class="btn btn-danger shadow-button" data-bs-toggle="modal" data-bs-target="#deleteConfirmModal">
+                <i class="fas fa-trash me-2"></i> Delete Lecturer
+            </button>
+        </div>
+    </div>
+</div>
 
-    <label for="LastName">Last name:</label>
-    <input type="text" id="LastName" name="LastName" class="form-control" readonly value="@Model?.LastName" />
-
-    <label for="PhoneNumber">Telephone number:</label>
-    <input type="tel" id="PhoneNumber" name="PhoneNumber" class="form-control" readonly value="@Model?.PhoneNumber" />
-
-    <label for="Age">Age:</label>
-    <input type="number" id="Age" name="Age" class="form-control" readonly value="@Model?.Age" />
-
-    <button type="submit" class="btn btn-primary">Send</button>
-
-</form>
-
-<a href="/Lecturers/Index"> Back to list</a>
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">
+                    <i class="fas fa-exclamation-triangle me-2"></i>Confirm Deletion
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-circle modal-warning-icon"></i>
+                    <strong>Warning:</strong> This action cannot be undone.
+                </div>
+                <p>Are you absolutely sure you want to delete lecturer <span class="fw-bold">@Model?.FirstName @Model?.LastName</span>?</p>
+                <p>This will permanently remove this lecturer from the system.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form action="/Lecturers/Delete" method="POST">
+                    <input type="hidden" name="LecturerId" value="@Model?.LecturerId" />
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash me-2"></i>Delete Permanently
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

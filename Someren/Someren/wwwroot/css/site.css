@@ -610,3 +610,58 @@ main {
 .deleted-student-stat-card {
     border-left-color: var(--danger);
 }
+
+/* Bar duty card styles */
+.bar-duty-card {
+    border-left-color: var(--warning);
+}
+
+    .bar-duty-card .stat-icon {
+        background: rgba(255, 171, 0, 0.1);
+        color: var(--warning);
+    }
+
+.bar-duty-list {
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.bar-duty-badge {
+    margin-bottom: 0.25rem;
+    display: inline-block;
+    white-space: normal;
+    text-align: left;
+}
+
+.view-all-button {
+    background: none;
+    border: none;
+    color: var(--primary);
+    padding: 0;
+    font-size: 0.8rem;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+    .view-all-button:hover {
+        color: var(--primary-dark);
+    }
+
+/* Modal styles */
+.bar-duty-modal .modal-header {
+    background-color: var(--warning);
+    color: var(--dark);
+}
+
+.bar-duty-modal .modal-body {
+    padding: 1.5rem;
+}
+
+.bar-duty-modal .lecturer-item {
+    padding: 0.75rem;
+    border-bottom: 1px solid var(--gray-200);
+}
+
+    .bar-duty-modal .lecturer-item:last-child {
+        border-bottom: none;
+    }

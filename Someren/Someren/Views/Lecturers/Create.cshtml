@@ -1,32 +1,86 @@
 ﻿@model Someren.Models.Lecturer
-
 @{
-    ViewData["Title"] = "Create lecturer";
+    ViewData["Title"] = "Add Lecturer";
 }
 
-<h4>New User</h4>
+<div class="card mb-4 fade-in">
+    <div class="card-header">
+        <h1 class="card-title">Add New Lecturer</h1>
+        <a href="/Lecturers/Index" class="btn btn-primary shadow-button">
+            <i class="fas fa-arrow-left me-2"></i> Back to List
+        </a>
+    </div>
+    <div class="card-body">
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success mx-0 mb-4">
+                <i class="fas fa-check-circle me-2"></i> @TempData["SuccessMessage"]
+            </div>
+        }
 
-<form action="/Lecturers/Create" method="Post">
-    <label for="LecturerId">Lecturer ID:</label>
-    <input type="text" id="LecturerId" name="LecturerId" class="form-control" required value="@Model?.LecturerId" />
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger mx-0 mb-4">
+                <i class="fas fa-exclamation-circle me-2"></i> @TempData["ErrorMessage"]
+            </div>
+        }
 
-    <label for="RoomNumber">Room number:</label>
-    <input type="text" id="RoomNumber" name="RoomNumber" class="form-control" required value="@Model?.RoomNumber" />
+        @if (!string.IsNullOrEmpty(ViewBag.ErrorMessage))
+        {
+            <div class="alert alert-danger mx-0 mb-4">
+                <i class="fas fa-exclamation-circle me-2"></i> @ViewBag.ErrorMessage
+            </div>
+        }
 
-    <label for="FirstName">First name:</label>
-    <input type="text" id="FirstName" name="FirstName" class="form-control" required value="@Model?.FirstName" />
+        <form action="/Lecturers/Create" method="Post">
+            <div class="mb-3">
+                <label for="LecturerId" class="form-label">Lecturer ID</label>
+                <input type="text" id="LecturerId" name="LecturerId" class="form-control" required value="@Model?.LecturerId" />
+            </div>
 
-    <label for="LastName">Last name:</label>
-    <input type="text" id="LastName" name="LastName" class="form-control" required value="@Model?.LastName" />
+            <div class="mb-3">
+                <label for="FirstName" class="form-label">First Name</label>
+                <input type="text" id="FirstName" name="FirstName" class="form-control" required value="@Model?.FirstName" />
+            </div>
 
-    <label for="PhoneNumber">Telephone number:</label>
-    <input type="tel" id="PhoneNumber" name="PhoneNumber" class="form-control" required value="@Model?.PhoneNumber" />
+            <div class="mb-3">
+                <label for="LastName" class="form-label">Last Name</label>
+                <input type="text" id="LastName" name="LastName" class="form-control" required value="@Model?.LastName" />
+            </div>
 
-    <label for="Age">Age:</label>
-    <input type="number" id="Age" name="Age" class="form-control" required value="@Model?.Age" />
+            <div class="mb-3">
+                <label for="RoomNumber" class="form-label">Room Number</label>
+                <input type="text" id="RoomNumber" name="RoomNumber" class="form-control" required value="@Model?.RoomNumber" />
+            </div>
 
-    <button type="submit" class="btn btn-primary">Send</button>
+            <div class="mb-3">
+                <label for="PhoneNumber" class="form-label">Telephone Number</label>
+                <input type="tel" id="PhoneNumber" name="PhoneNumber" class="form-control" required value="@Model?.PhoneNumber" />
+            </div>
 
-</form>
+            <div class="mb-3">
+                <label for="Age" class="form-label">Age</label>
+                <input type="number" min="18" max="100" id="Age" name="Age" class="form-control" required value="@Model?.Age" />
+            </div>
 
-<a href="/Lecturers/Index"> Back to list</a>
+            <div class="mb-3 form-check">
+                <input type="checkbox" class="form-check-input" id="BarDutyCheckbox"
+                @(Model?.BarDuty == true ? "checked" : "") />
+                <label class="form-check-label" for="BarDutyCheckbox">Assigned to Bar Duty</label>
+                <input type="hidden" id="BarDuty" name="BarDuty" value="@(Model?.BarDuty == true ? "true" : "false")" />
+            </div>
+
+            <script>
+                document.getElementById('BarDutyCheckbox').addEventListener('change', function() {
+                    document.getElementById('BarDuty').value = this.checked ? "true" : "false";
+                });
+            </script>
+
+            <div class="d-flex justify-content-center mt-4">
+                <button type="submit" class="btn btn-primary shadow-button">
+                    <i class="fas fa-plus-circle me-2"></i> Add Lecturer
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

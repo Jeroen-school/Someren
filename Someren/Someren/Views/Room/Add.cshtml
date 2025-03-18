@@ -1,32 +1,99 @@
-﻿<div class="container py-5">
-    <h4 class="display-4 mb-4">New User</h4>
-    <form action="/Room/Add" method="POST">
-        <div class="form-group w-50 mb-3">
-            <label for="RoomNumber">Room number:</label>
-            <input type="text" class="form-control" id="RoomNumber" name="RoomNumber" placeholder="A1-02" required value="@Model?.RoomNumber">
-            @if (!string.IsNullOrEmpty(ViewBag.ErrorMessage))
-            {
-                <div class="alert alert-danger mt-3">@ViewBag.ErrorMessage</div>
-            }
-        </div>
-        <div class="form-group w-50 mb-3">
-            <label for="Size">Room Size:</label>
-            <select class="form-control" id="Size" name="Size" required>
-                <option value="1" selected="@(Model?.Size == 1)">1</option>
-                <option value="8" selected="@(Model?.Size == 8)">8</option>
-            </select>
-        </div>
+﻿@model Someren.Models.Room
+@{
+    ViewData["Title"] = "Add Room";
+}
 
-        <div class="form-group w-50 mb-3">
-            <label for="Type">Room Type:</label>
-            <select class="form-control" id="Type" name="Type" required>
-                <option value="Lecturer" selected="@(Model?.Type == "Lecturer")">Lecturer</option>
-                <option value="Student" selected="@(Model?.Type == "Student")">Student</option>
-            </select>
-        </div>
+<div class="card mb-4 fade-in">
+    <div class="card-header">
+        <h1 class="card-title">Add New Room</h1>
+        <a href="/Room" class="btn btn-primary shadow-button">
+            <i class="fas fa-arrow-left me-2"></i> Back to List
+        </a>
+    </div>
+    <div class="card-body">
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success mx-0 mb-4">
+                <i class="fas fa-check-circle me-2"></i> @TempData["SuccessMessage"]
+            </div>
+        }
 
-        <button type="submit" class="btn btn-primary mt-3">Add</button>
-        <a href="/Room" class="btn btn-secondary mt-3 ms-2">Cancel</a>
-    </form>
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger mx-0 mb-4">
+                <i class="fas fa-exclamation-circle me-2"></i> @TempData["ErrorMessage"]
+            </div>
+        }
+
+        @if (!string.IsNullOrEmpty(ViewBag.ErrorMessage))
+        {
+            <div class="alert alert-danger mx-0 mb-4">
+                <i class="fas fa-exclamation-circle me-2"></i> @ViewBag.ErrorMessage
+            </div>
+        }
+
+        <form action="/Room/Add" method="POST">
+            <div class="mb-3">
+                <label for="RoomNumber" class="form-label">Room Number</label>
+                <input type="text" class="form-control" id="RoomNumber" name="RoomNumber" placeholder="A1-01" required value="@Model?.RoomNumber" />
+                <div class="form-text">
+                    <i class="fas fa-info-circle me-1"></i> Use format 'Building-Floor-Number' (Example: A1-01 for Building A, Floor 1, Room 01)
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="Type" class="form-label">Room Type</label>
+                <select class="form-select" id="Type" name="Type" required>
+                    <option value="" disabled selected>Select a room type</option>
+                    @if (Model?.Type == "Lecturer")
+                    {
+                        <option value="Lecturer" selected>Lecturer Room</option>
+                    }
+                    else
+                    {
+                        <option value="Lecturer">Lecturer Room</option>
+                    }
+
+                    @if (Model?.Type == "Student")
+                    {
+                        <option value="Student" selected>Student Room</option>
+                    }
+                    else
+                    {
+                        <option value="Student">Student Room</option>
+                    }
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label for="Size" class="form-label">Room Size</label>
+                <select class="form-select" id="Size" name="Size" required>
+                    <option value="" disabled selected>Select a room size</option>
+                    @if (Model?.Size == 1)
+                    {
+                        <option value="1" selected>1 Person</option>
+                    }
+                    else
+                    {
+                        <option value="1">1 Person</option>
+                    }
+
+                    @if (Model?.Size == 8)
+                    {
+                        <option value="8" selected>8 People</option>
+                    }
+                    else
+                    {
+                        <option value="8">8 People</option>
+                    }
+                </select>
+            </div>
+
+            <div class="d-flex justify-content-center mt-4">
+                <button type="submit" class="btn btn-primary shadow-button">
+                    <i class="fas fa-plus-circle me-2"></i> Add Room
+                </button>
+            </div>
+        </form>
+    </div>
 </div>
-

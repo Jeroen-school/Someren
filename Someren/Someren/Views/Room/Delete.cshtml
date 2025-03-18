@@ -1,34 +1,103 @@
 ﻿@model Someren.Models.Room
-
 @{
     ViewData["Title"] = "Delete Room";
 }
 
-<div class="container py-5">
-    <h4 class="display-4 mb-4">Delete Room</h4>
-    <form action="/Room/Delete" method="POST">
-        <input type="hidden" name="RoomNumber" value="@Model?.RoomNumber" />
-        <div class="form-group w-50 mb-3">
-            <label for="RoomNumber">Room number:</label>
-            <input type="text" class="form-control" id="RoomNumber" name="RoomNumber" placeholder="A1-02" disabled value="@Model?.RoomNumber">
-        </div>
-        <div class="form-group w-50 mb-3">
-            <label for="Size">Room Size:</label>
-            <select class="form-control" id="Size" name="Size" disabled>
-                <option value="1" selected="@(Model?.Size == 1)">1</option>
-                <option value="8" selected="@(Model?.Size == 8)">8</option>
-            </select>
+<div class="card mb-4 fade-in">
+    <div class="card-header">
+        <h1 class="card-title">Delete Room</h1>
+        <a href="/Room" class="btn btn-primary shadow-button">
+            <i class="fas fa-arrow-left me-2"></i> Back to List
+        </a>
+    </div>
+    <div class="card-body">
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger mx-0 mb-4">
+                <i class="fas fa-exclamation-circle me-2"></i> @TempData["ErrorMessage"]
+            </div>
+        }
+
+        <div class="alert alert-warning">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            <strong>Warning:</strong> Are you sure you want to delete this room? This action cannot be undone.
         </div>
 
-        <div class="form-group w-50 mb-3">
-            <label for="Type">Room Type:</label>
-            <select class="form-control" id="Type" name="Type" disabled>
-                <option value="Lecturer" selected="@(Model?.Type == "Lecturer")">Lecturer</option>
-                <option value="Student" selected="@(Model?.Type == "Student")">Student</option>
-            </select>
+        <div class="card mb-4 border">
+            <div class="card-header bg-light">
+                <h5 class="mb-0">Room Details</h5>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-md-4 fw-bold">
+                        <i class="fas fa-door-open me-2"></i> Room Number:
+                    </div>
+                    <div class="col-md-8">
+                        @Model?.RoomNumber
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-4 fw-bold">
+                        @if (Model?.Type == "Lecturer")
+                        {
+                            <i class="fas fa-user-tie me-2"></i>
+                        }
+                        else
+                        {
+                            <i class="fas fa-user-graduate me-2"></i>
+                        }
+                        Room Type:
+                    </div>
+                    <div class="col-md-8">
+                        @(Model?.Type == "Lecturer" ? "Lecturer Room" : "Student Room")
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-4 fw-bold">
+                        <i class="fas fa-users me-2"></i> Room Size:
+                    </div>
+                    <div class="col-md-8">
+                        @Model?.Size @(Model?.Size == 1 ? "Person" : "People")
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <button type="submit" class="btn btn-danger mt-3" onclick="return confirm('Are you sure you want to delete @Model?.RoomNumber?');">Delete</button>
-        <a href="/Room" class="btn btn-secondary mt-3 ms-2">Cancel</a>
-    </form>
+        <div class="d-flex justify-content-center">
+            <button type="button" class="btn btn-danger shadow-button" data-bs-toggle="modal" data-bs-target="#deleteConfirmModal">
+                <i class="fas fa-trash me-2"></i> Delete Room
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">
+                    <i class="fas fa-exclamation-triangle me-2"></i>Confirm Deletion
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-circle modal-warning-icon"></i>
+                    <strong>Warning:</strong> This action cannot be undone.
+                </div>
+                <p>Are you absolutely sure you want to delete room <span class="fw-bold">@Model?.RoomNumber</span>?</p>
+                <p>This will permanently remove this room from the system.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form action="/Room/Delete" method="POST">
+                    <input type="hidden" name="RoomNumber" value="@Model?.RoomNumber" />
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash me-2"></i>Delete Permanently
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
