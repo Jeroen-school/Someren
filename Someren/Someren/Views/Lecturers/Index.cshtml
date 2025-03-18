@@ -1,0 +1,42 @@
+﻿@model List<Someren.Models.Lecturer>
+
+@{
+    ViewData["Title"] = "Lecturers";
+}
+
+
+<div class="text-center">
+    <h1 class="display-4"> Lecturer overview</h1>
+    <p>There are @Model.Count lecturers</p>
+
+    <a href="/Lecturers/Create">Create new</a>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th></th>
+                <th>First name:</th>
+                <th>Last name:</th>
+                <th>Telephone number</th>
+                <th>Age</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @{
+                foreach (Lecturer lecturer in Model)
+                {
+                    <tr>
+                        <td>@lecturer.LecturerId</td>
+                        <td>@lecturer.FirstName</td>
+                        <td>@lecturer.LastName</td>
+                        <td>@lecturer.PhoneNumber</td>
+                        <td>@lecturer.Age</td>
+                        <td><a href="/Lecturers/Update/@lecturer.LecturerId">Edit</a> <a href="/Lecturers/Delete/@lecturer.LecturerId">Delete</a></td>
+                    </tr>
+                }
+
+            }
+        </tbody>
+    </table>
+</div>
