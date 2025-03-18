@@ -29,6 +29,18 @@
             this.Deleted = false;
         }
 
+        public Lecturer(int lecturerId, string roomNumber, string firstName, string lastName, string phoneNumber, int age, bool barDuty)
+        {
+            this.LecturerId = lecturerId;
+            this.RoomNumber = roomNumber;
+            this.FirstName = firstName;
+            this.LastName = lastName;
+            this.PhoneNumber = phoneNumber;
+            this.Age = age;
+            this.BarDuty = barDuty;
+            this.Deleted = false;
+        }
+
         public Lecturer(int lecturerId, string roomNumber, string firstName, string lastName, string phoneNumber, int age, bool barDuty, bool deleted)
         {
             this.LecturerId = lecturerId;

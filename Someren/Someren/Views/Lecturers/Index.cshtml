@@ -14,6 +14,7 @@
     <table class="table">
         <thead>
             <tr>
+                <th></th>
                 <th>First name:</th>
                 <th>Last name:</th>
                 <th>Telephone number</th>
@@ -26,6 +27,7 @@
                 foreach (Lecturer lecturer in Model)
                 {
                     <tr>
+                        <td>@lecturer.LecturerId</td>
                         <td>@lecturer.FirstName</td>
                         <td>@lecturer.LastName</td>
                         <td>@lecturer.PhoneNumber</td>

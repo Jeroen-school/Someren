@@ -90,6 +90,29 @@ namespace Someren.Repositories
         //Add a lecturer to the database
         public void Add(Lecturer lecturer)
         {
+
+            //Check if the lecturer has been soft deleted in the past, if they have been, undelete them
+            Lecturer? checkIfDeleted = GetById(lecturer.LecturerId);
+            
+            if(checkIfDeleted.LecturerId == lecturer.LecturerId && checkIfDeleted.FirstName == lecturer.FirstName && checkIfDeleted.LastName == lecturer.LastName && checkIfDeleted.Deleted){
+                using (SqlConnection connection = new SqlConnection(_connectionString))
+                {
+                    string query = $"UPDATE lecturer SET [telephone_number] = @PhoneNumber, [age] = @Age, [Deleted] = 0 WHERE lecturer.lecturer_id = @Id;";
+
+                    SqlCommand command = new SqlCommand(query, connection);
+
+                    command.Parameters.AddWithValue("@Id", lecturer.LecturerId);
+                    command.Parameters.AddWithValue("@PhoneNumber", lecturer.PhoneNumber);
+                    command.Parameters.AddWithValue("@Age", lecturer.Age);
+
+                    command.Connection.Open();
+                    command.ExecuteNonQuery();
+                }
+
+                return;
+            }
+
+            //If the lecturer is new, create a new lecturer in the database
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
                 string query = $"INSERT INTO lecturer ([lecturer_id], [room_number], [first_name], [last_name], [telephone_number], [age], [bar_duty])" +
@@ -104,7 +127,6 @@ namespace Someren.Repositories
                 command.Parameters.AddWithValue("@PhoneNumber", lecturer.PhoneNumber);
                 command.Parameters.AddWithValue("@Age", lecturer.Age);
                 command.Parameters.AddWithValue("@BarDuty", lecturer.BarDuty);
-                //command.Parameters.Add("@BarDuty", System.Data.SqlDbType.Bit).Value = lecturer.BarDuty;
 
                 command.Connection.Open();
                 command.ExecuteNonQuery();
@@ -140,7 +162,19 @@ namespace Someren.Repositories
 
         public void Delete(Lecturer lecturer)
         {
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                string query = $"UPDATE lecturer SET Deleted = 1 WHERE lecturer.lecturer_id = @Id;";
 
+                SqlCommand command = new SqlCommand(query, connection);
+
+                command.Parameters.AddWithValue("@Id", lecturer.LecturerId);
+
+                command.Connection.Open();
+                SqlDataReader reader = command.ExecuteReader();
+
+                reader.Close();
+            }
         }
 
     }
