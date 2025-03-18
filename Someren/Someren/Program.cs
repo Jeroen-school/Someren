@@ -10,13 +10,9 @@ namespace Someren
             var builder = WebApplication.CreateBuilder(args);
             builder.Services.AddControllersWithViews();
             builder.Services.AddSingleton<IDbActivityRepository, DbActivityRepository>();
-
-
-            // Add services to the container.
-            builder.Services.AddControllersWithViews();
-            builder.Services.AddSingleton<Repositories.IRoomRepository, Repositories.RoomRepository>();
-
             builder.Services.AddSingleton<IStudentsRepository, StudentsRepository>(); // Dependency injection for student repo
+            builder.Services.AddSingleton<IRoomRepository, RoomRepository>();
+
 
             var app = builder.Build();
 
