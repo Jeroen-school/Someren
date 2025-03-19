@@ -14,11 +14,27 @@ namespace Someren.Controllers
             _lecturersRepository = lecturersRepository;
         }
 
+        [HttpGet]
         public IActionResult Index()
         {
             List<Lecturer> lecturers = _lecturersRepository.GetAll();
 
             return View(lecturers);
+        }
+
+        [HttpPost]
+        public IActionResult Index(string lastName)
+        {
+            try
+            {
+                List<Lecturer> lecturers = _lecturersRepository.GetFiltered(lastName);
+                
+                return View(lecturers);
+            }
+            catch (Exception ex)
+            {
+                return View(ex);
+            }
         }
 
         //When opening up the create lecturer page
@@ -32,6 +48,7 @@ namespace Someren.Controllers
         [HttpPost]
         public IActionResult Create(Lecturer lecturer)
         {
+            
             try
             {
                 _lecturersRepository.Add(lecturer);
