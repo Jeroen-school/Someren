@@ -63,18 +63,12 @@
                 <input type="number" min="18" max="100" id="Age" name="Age" class="form-control" required value="@Model?.Age" />
             </div>
 
-            <div class="mb-3 form-check">
-                <input type="checkbox" class="form-check-input" id="BarDutyCheckbox"
-                @(Model?.BarDuty == true ? "checked" : "") />
-                <label class="form-check-label" for="BarDutyCheckbox">Assigned to Bar Duty</label>
-                <input type="hidden" id="BarDuty" name="BarDuty" value="@(Model?.BarDuty == true ? "true" : "false")" />
-            </div>
+            <p>Does this lecturer have bar duty?</p>
+            <input type="radio" id="BarDuty" name="BarDuty" required value="True" />
+            <label for="BarDuty">True</label>
 
-            <script>
-                document.getElementById('BarDutyCheckbox').addEventListener('change', function() {
-                    document.getElementById('BarDuty').value = this.checked ? "true" : "false";
-                });
-            </script>
+            <input type="radio" id="BarDuty" name="BarDuty" required value="False" />
+            <label for="BarDuty">False</label> <br />
 
             <div class="d-flex justify-content-center mt-4">
                 <button type="submit" class="btn btn-primary shadow-button">

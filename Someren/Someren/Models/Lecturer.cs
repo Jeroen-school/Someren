@@ -13,8 +13,9 @@
         public bool Deleted { get; set; }
 
         //constructors
-        public Lecturer() {
-            
+        public Lecturer()
+        {
+
         }
 
         public Lecturer(int lecturerId, string roomNumber, string firstName, string lastName, string phoneNumber, int age)
@@ -26,7 +27,6 @@
             this.PhoneNumber = phoneNumber;
             this.Age = age;
             this.BarDuty = false;
-            this.Deleted = false;
         }
 
         public Lecturer(int lecturerId, string roomNumber, string firstName, string lastName, string phoneNumber, int age, bool barDuty)
@@ -38,7 +38,6 @@
             this.PhoneNumber = phoneNumber;
             this.Age = age;
             this.BarDuty = barDuty;
-            this.Deleted = false;
         }
 
         public Lecturer(int lecturerId, string roomNumber, string firstName, string lastName, string phoneNumber, int age, bool barDuty, bool deleted)

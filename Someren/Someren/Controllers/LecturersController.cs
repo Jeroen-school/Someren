@@ -6,7 +6,7 @@ namespace Someren.Controllers
 {
     public class LecturersController : Controller
     {
-        
+
         private readonly ILecturersRepository _lecturersRepository;
 
         public LecturersController(ILecturersRepository lecturersRepository)
@@ -14,11 +14,27 @@ namespace Someren.Controllers
             _lecturersRepository = lecturersRepository;
         }
 
+        [HttpGet]
         public IActionResult Index()
         {
             List<Lecturer> lecturers = _lecturersRepository.GetAll();
 
             return View(lecturers);
+        }
+
+        [HttpPost]
+        public IActionResult Index(string lastName)
+        {
+            try
+            {
+                List<Lecturer> lecturers = _lecturersRepository.GetFiltered(lastName);
+
+                return View(lecturers);
+            }
+            catch (Exception ex)
+            {
+                return View(ex);
+            }
         }
 
         //When opening up the create lecturer page
@@ -30,32 +46,19 @@ namespace Someren.Controllers
 
         //when you have filled in the page to create a lecturer
         [HttpPost]
-        public IActionResult Create(IFormCollection form)
+        public IActionResult Create(Lecturer lecturer)
         {
-            // Create a new lecturer from form data
-            var lecturer = new Lecturer();
-            lecturer.LecturerId = int.Parse(form["LecturerId"]);
-            lecturer.RoomNumber = form["RoomNumber"];
-            lecturer.FirstName = form["FirstName"];
-            lecturer.LastName = form["LastName"];
-            lecturer.PhoneNumber = form["PhoneNumber"];
-            lecturer.Age = int.Parse(form["Age"]);
-
-            // Explicitly convert the BarDuty value from string to bool
-            lecturer.BarDuty = form["BarDuty"].ToString().ToLower() == "true";
-
-            // Debug check
-            TempData["Debug"] = $"BarDuty in form: {form["BarDuty"]}, Converted to: {lecturer.BarDuty}";
 
             try
             {
                 _lecturersRepository.Add(lecturer);
-                TempData["SuccessMessage"] = "Lecturer added successfully!";
+
+                TempData["SuccessMessage"] = "Lecturer added!";
                 return RedirectToAction("Index");
             }
             catch (Exception ex)
             {
-                TempData["ErrorMessage"] = ex.Message;
+                TempData["ErrorMessage"] = $"Error adding lecturer: {ex.Message}";
                 return View(lecturer);
             }
         }
@@ -67,8 +70,9 @@ namespace Someren.Controllers
             if (id == null)
             {
                 return NotFound();
+
             }
-            
+
             Lecturer? lecturer = _lecturersRepository.GetById((int)id);
 
             return View(lecturer);
@@ -76,29 +80,18 @@ namespace Someren.Controllers
 
         //Once you have filled in the form to make changes
         [HttpPost]
-        public IActionResult Update(IFormCollection form)
+        public IActionResult Update(Lecturer lecturer)
         {
-            // Create a lecturer object from form data
-            var lecturer = new Lecturer();
-            lecturer.LecturerId = int.Parse(form["LecturerId"]);
-            lecturer.RoomNumber = form["RoomNumber"];
-            lecturer.FirstName = form["FirstName"];
-            lecturer.LastName = form["LastName"];
-            lecturer.PhoneNumber = form["PhoneNumber"];
-            lecturer.Age = int.Parse(form["Age"]);
-
-            // Explicitly convert the BarDuty value from string to bool
-            lecturer.BarDuty = form["BarDuty"].ToString().ToLower() == "true";
-
             try
             {
                 _lecturersRepository.Update(lecturer);
-                TempData["SuccessMessage"] = "Lecturer updated successfully!";
+
+                TempData["SuccessMessage"] = "Lecturer edited!";
                 return RedirectToAction("Index");
             }
             catch (Exception ex)
             {
-                TempData["ErrorMessage"] = ex.Message;
+                TempData["ErrorMessage"] = $"Error editing lecturer: {ex.Message}";
                 return View(lecturer);
             }
         }
@@ -124,10 +117,13 @@ namespace Someren.Controllers
             try
             {
                 _lecturersRepository.Delete(lecturer);
+
+                TempData["SuccessMessage"] = "Lecturer deleted!";
                 return RedirectToAction("Index");
             }
             catch (Exception ex)
             {
+                TempData["ErrorMessage"] = $"Error deleting lecturer: {ex.Message}";
                 return View(lecturer);
             }
         }

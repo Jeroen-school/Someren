@@ -32,7 +32,7 @@ namespace Someren.Controllers
             catch (Exception ex)
             {
                 TempData["ErrorMessage"] = $"Error adding student: {ex.Message}";
-                return View(student);
+                return RedirectToAction("Index");
             }
         }
         [HttpGet]

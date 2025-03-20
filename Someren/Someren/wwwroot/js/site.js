@@ -2,7 +2,7 @@
 $(document).ready(function () {
     setTimeout(function () {
         $(".alert:not(.alert-warning)").fadeOut("slow");
-    }, 5000);
+    }, 60000);
 
     // Add animation class to modals when shown
     $('.modal').on('show.bs.modal', function () {
