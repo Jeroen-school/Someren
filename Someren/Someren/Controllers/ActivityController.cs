@@ -27,11 +27,18 @@ namespace Someren.Controllers
         [HttpPost]
         public IActionResult Create(Activity activity)
         {
+
+            if (_activityRepository.ActivityExists(activity.Activitytype))
+            {
+
+                ModelState.AddModelError("Activitytype", "An activity with this name already exists.");
+                return View(activity);
+            }
             _activityRepository.AddActivity(activity);
             return RedirectToAction(nameof(Index));
         }
         [HttpGet]
-        public IActionResult Edit(string id)
+        public IActionResult Update(string id)
         {
             Activity activity = _activityRepository.GetActivityByType(id);
             if (activity == null)
@@ -39,14 +46,21 @@ namespace Someren.Controllers
                 return NotFound();
             }
 
-            // Store the original activity type in ViewBag for later use
             ViewBag.OriginalType = id;
             return View(activity);
         }
 
         [HttpPost]
-        public IActionResult Edit(Activity activity, string originalType)
+        public IActionResult Update(Activity activity, string originalType)
         {
+
+            if (activity.Activitytype != originalType &&
+                _activityRepository.ActivityExists(activity.Activitytype))
+            {
+                ModelState.AddModelError("Activitytype", "An activity with this name already exists.");
+                ViewBag.OriginalType = originalType;
+                return View(activity);
+            }
             _activityRepository.UpdateActivity(activity, originalType);
             return RedirectToAction(nameof(Index));
         }
