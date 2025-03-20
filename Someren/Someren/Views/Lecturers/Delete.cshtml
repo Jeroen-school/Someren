@@ -6,6 +6,13 @@
 
 <h4>Delete Lecturer</h4>
 
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger mx-4 mt-3">
+        <i class="fas fa-exclamation-circle me-2"></i> @TempData["ErrorMessage"]
+    </div>
+}
+
 <form action="/Lecturers/Delete" method="Post">
     <label for="LecturerId">Lecturer ID:</label>
     <input type="text" id="LecturerId" name="LecturerId" class="form-control" readonly value="@Model?.LecturerId" />

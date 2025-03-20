@@ -53,10 +53,12 @@ namespace Someren.Controllers
             {
                 _lecturersRepository.Add(lecturer);
 
+                TempData["SuccessMessage"] = "Lecturer added!";
                 return RedirectToAction("Index");
             }
             catch (Exception ex)
             {
+                TempData["ErrorMessage"] = $"Error adding lecturer: {ex.Message}";
                 return View(lecturer);
             }
         }
@@ -68,6 +70,7 @@ namespace Someren.Controllers
             if (id == null)
             {
                 return NotFound();
+
             }
             
             Lecturer? lecturer = _lecturersRepository.GetById((int)id);
@@ -82,10 +85,13 @@ namespace Someren.Controllers
             try
             {
                 _lecturersRepository.Update(lecturer);
+
+                TempData["SuccessMessage"] = "Lecturer edited!";
                 return RedirectToAction("Index");
             }
             catch (Exception ex)
             {
+                TempData["ErrorMessage"] = $"Error editing lecturer: {ex.Message}";
                 return View(lecturer);
             }
         }
@@ -111,10 +117,13 @@ namespace Someren.Controllers
             try
             {
                 _lecturersRepository.Delete(lecturer);
+
+                TempData["SuccessMessage"] = "Lecturer deleted!";
                 return RedirectToAction("Index");
             }
             catch (Exception ex)
             {
+                TempData["ErrorMessage"] = $"Error deleting lecturer: {ex.Message}";
                 return View(lecturer);
             }
         }
