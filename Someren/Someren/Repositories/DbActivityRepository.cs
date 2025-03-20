@@ -79,7 +79,7 @@ public class DbActivityRepository : IDbActivityRepository
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
-                string query = "INSERT INTO Activity (activity_type, date, time) VALUES (@activityType, @date, @time)";
+                string query = "INSERT INTO Activity (activity_type, date, time, Deleted) VALUES (@activityType, @date, @time, 0)";
                 SqlCommand command = new SqlCommand(query, connection);
                 command.Parameters.AddWithValue("@activityType", activity.Activitytype);
                 command.Parameters.AddWithValue("@date", activity.Date);
@@ -143,7 +143,7 @@ public class DbActivityRepository : IDbActivityRepository
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
-                string query = "SELECT COUNT(1) FROM Activity WHERE activity_type = @activityType";
+                string query = "SELECT COUNT(1) FROM Activity WHERE activity_type = @activityType And Deleted = 0";
                 SqlCommand command = new SqlCommand(query, connection);
                 command.Parameters.AddWithValue("@activityType", activityType);
                 command.Connection.Open();
@@ -156,5 +156,32 @@ public class DbActivityRepository : IDbActivityRepository
             Debug.WriteLine("Database Error: " + e.Message);
             throw;
         }
+    }
+    public List<Someren.Models.Activity> FilterActivitiesByName(string searchString)
+    {
+        var activities = new List<Someren.Models.Activity>();
+        try
+        {
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                string query = "SELECT activity_type, date, time FROM Activity WHERE activity_type LIKE @searchString And Deleted = 0 ORDER BY date, time";
+                SqlCommand command = new SqlCommand(query, connection);
+                command.Parameters.AddWithValue("@searchString", "%" + searchString + "%");
+                command.Connection.Open();
+                SqlDataReader reader = command.ExecuteReader();
+                while (reader.Read())
+                {
+                    Someren.Models.Activity activity = ReadActivity(reader);
+                    activities.Add(activity);
+                }
+                reader.Close();
+            }
+        }
+        catch (Exception e)
+        {
+            Debug.WriteLine("Database Error: " + e.Message);
+            throw;
+        }
+        return activities;
     }
 }

@@ -13,9 +13,21 @@ namespace Someren.Controllers
             _activityRepository = activityRepository;
         }
 
-        public IActionResult Index()
+        public IActionResult Index(string searchString)
         {
-            List<Activity> activities = _activityRepository.ViewAllActivities();
+            ViewData["CurrentFilter"] = searchString;
+
+            List<Activity> activities;
+
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                activities = _activityRepository.FilterActivitiesByName(searchString);
+            }
+            else
+            {
+                activities = _activityRepository.ViewAllActivities();
+            }
+
             return View(activities);
         }
         [HttpGet]
@@ -81,5 +93,6 @@ namespace Someren.Controllers
             _activityRepository.DeleteActivity(id);
             return RedirectToAction(nameof(Index));
         }
+        
     }
 }

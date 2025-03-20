@@ -2,16 +2,28 @@
 @{
     ViewData["Title"] = "Activity";
 }
-
 <h2>List of Activities</h2>
+
+<div class="row mb-3">
+    <div class="col-md-6">
+        <form asp-action="Index" method="get">
+            <div class="input-group">
+                <input type="text" class="form-control" name="searchString"
+                       placeholder="Search by activity name" value="@ViewData["CurrentFilter"]">
+                <button type="submit" class="btn btn-primary">Search</button>
+                <a asp-action="Index" class="btn btn-secondary">Clear</a>
+            </div>
+        </form>
+    </div>
+</div>
 
 <p>
     <a asp-action="Create" class="btn btn-primary">Create New Activity</a>
 </p>
 
-<table border="1" cellpadding="8" cellspacing="0" style="width:100%; text-align:left;">
+<table class="table table-striped table-hover" style="width:100%; text-align:left;">
     <thead>
-        <tr style="background-color:#f2f2f2;">
+        <tr>
             <th>Activity Name</th>
             <th>Date</th>
             <th>Time</th>
