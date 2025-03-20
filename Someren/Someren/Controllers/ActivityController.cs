@@ -39,13 +39,21 @@ namespace Someren.Controllers
         [HttpPost]
         public IActionResult Create(Activity activity)
         {
+            if (activity.Date < new DateTime(2018, 1, 1) || activity.Date > new DateTime(9999, 12, 31))
+            {
+                ModelState.AddModelError("Date", "The date must be between January 1, 2018 and December 31, 9999.");
+            }
 
             if (_activityRepository.ActivityExists(activity.Activitytype))
             {
-
                 ModelState.AddModelError("Activitytype", "An activity with this name already exists.");
+            }
+
+            if (!ModelState.IsValid)
+            {
                 return View(activity);
             }
+
             _activityRepository.AddActivity(activity);
             return RedirectToAction(nameof(Index));
         }

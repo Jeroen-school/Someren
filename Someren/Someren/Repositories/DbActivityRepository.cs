@@ -84,6 +84,7 @@ public class DbActivityRepository : IDbActivityRepository
                 command.Parameters.AddWithValue("@activityType", activity.Activitytype);
                 command.Parameters.AddWithValue("@date", activity.Date);
                 command.Parameters.AddWithValue("@time", activity.Time);
+
                 command.Connection.Open();
                 command.ExecuteNonQuery();
             }

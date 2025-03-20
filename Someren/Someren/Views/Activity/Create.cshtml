@@ -2,30 +2,24 @@
 @{
     ViewData["Title"] = "Create Activity";
 }
-
 <h2>Create New Activity</h2>
-
 <form asp-action="Create">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
     <div class="form-group">
         <label for="Activitytype">Activity Name</label>
         <input asp-for="Activitytype" class="form-control" />
         <span asp-validation-for="Activitytype" class="text-danger"></span>
     </div>
-
     <div class="form-group">
-        <label for="Date">Date</label>
-        <input asp-for="Date" class="form-control" type="date" />
+        <label asp-for="Date" class="control-label"></label>
+        <input asp-for="Date" class="form-control" type="date" min="2018-01-01" max="9999-12-31" />
         <span asp-validation-for="Date" class="text-danger"></span>
     </div>
-
     <div class="form-group">
         <label for="Time">Time</label>
         <input asp-for="Time" class="form-control" type="time" />
         <span asp-validation-for="Time" class="text-danger"></span>
     </div>
-
     <div class="form-group" style="margin-top: 20px;">
         <input type="submit" value="Create" class="btn btn-primary" />
         <a asp-action="Index" class="btn btn-secondary">Back to List</a>
