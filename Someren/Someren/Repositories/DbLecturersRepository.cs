@@ -153,6 +153,22 @@ namespace Someren.Repositories
             ExecuteQuery(lecturer , query);
         }
 
+        //Restore a deleted lecturer from the database
+        public void Restore(Lecturer lecturer)
+        {
+            string query = $"UPDATE lecturer SET Deleted = 0 WHERE lecturer.lecturer_id = @Id;";
+
+            ExecuteQuery(lecturer, query);
+        }
+
+        //HARD DELETE a lecturer from the database
+        public void Erase(Lecturer lecturer)
+        {
+            string query = $"DELETE FROM lecturer WHERE lecturer.lecturer_id = @Id;";
+
+            ExecuteQuery(lecturer, query);
+        }
+
 
         //This is where I keep the methods that PREVENT REPETITION
 

@@ -27,5 +27,9 @@ namespace Someren.Repositories
         void Update(Lecturer lecturer);
 
         void Delete(Lecturer lecturer);
+
+        void Restore(Lecturer lecturer);
+
+        void Erase(Lecturer lecturer);
     }
 }

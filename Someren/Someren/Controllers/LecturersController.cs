@@ -152,7 +152,69 @@ namespace Someren.Controllers
             }
         }
 
+        //When you want to undelete (restore) a deleted lecturer
+        [HttpGet]
+        public IActionResult Restore(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
 
+            Lecturer? lecturer = _lecturersRepository.GetById((int)id);
+
+            return View(lecturer);
+        }
+
+        //Once you have confirmed your action to restore a lecturer
+        [HttpPost]
+        public IActionResult Restore(Lecturer lecturer)
+        {
+            try
+            {
+                _lecturersRepository.Restore(lecturer);
+
+                TempData["SuccessMessage"] = "Lecturer deleted!";
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = $"Error deleting lecturer: {ex.Message}";
+                return View(lecturer);
+            }
+        }
+
+        //When you want to permanently delete a lecturer, this shows you an overview of the lecturer's data
+        [HttpGet]
+        public IActionResult Erase(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            Lecturer? lecturer = _lecturersRepository.GetById((int)id);
+
+            return View(lecturer);
+        }
+
+        //Once you have confirmed your action to send the lecturer to the shadow realm
+        [HttpPost]
+        public IActionResult Erase(Lecturer lecturer)
+        {
+            try
+            {
+                _lecturersRepository.Erase(lecturer);
+
+                TempData["SuccessMessage"] = "Lecturer permanently deleted!";
+                return RedirectToAction("ListDeleted");
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = $"Error permanently deleting lecturer: {ex.Message}";
+                return View(lecturer);
+            }
+        }
 
 
     }
