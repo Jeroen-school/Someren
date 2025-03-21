@@ -11,7 +11,11 @@ namespace Someren.Repositories
         //methods
         List<Lecturer> GetAll();
 
+        List<Lecturer> GetAllDeleted();
+
         List<Lecturer> GetFiltered(string lastName);
+
+        List<Lecturer> GetFilteredDeleted(string lastName);
 
         Lecturer? GetById(int userId);
 

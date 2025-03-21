@@ -32,12 +32,36 @@ namespace Someren.Repositories
             return lecturers;
         }
 
+        //This is the literal same as the thing above, but it only gets deleted records! Wooooo
+        public List<Lecturer> GetAllDeleted()
+        {
+            List<Lecturer> lecturers = new List<Lecturer>();
+
+            string query = "SELECT [lecturer_id], [room_number], [first_name], [last_name], [telephone_number], [age], [bar_duty], [Deleted] FROM lecturer WHERE [Deleted] = 1 ORDER BY [last_name]";         //the sql query to execute
+
+            ExecuteQuery(lecturers, query, null, null);
+
+            return lecturers;
+        }
+
         //returns a list of all lecturers where the LAST NAME CONTAINS THE SEARCHED STRING
         public List<Lecturer> GetFiltered(string lastName)
         {
             List<Lecturer> lecturers = new List<Lecturer>();
 
             string query = "SELECT [lecturer_id], [room_number], [first_name], [last_name], [telephone_number], [age], [bar_duty], [Deleted] FROM lecturer WHERE [last_name] LIKE @LastName AND [Deleted] = 0 ORDER BY [last_name];";
+
+            ExecuteQuery(lecturers, query, "@LastName", $"%{lastName}%");
+
+            return lecturers;
+        }
+
+        //Does the exact same thing as the get filtered method above, BUT ONLY FOR DELETED RECORDS
+        public List<Lecturer> GetFilteredDeleted(string lastName)
+        {
+            List<Lecturer> lecturers = new List<Lecturer>();
+
+            string query = "SELECT [lecturer_id], [room_number], [first_name], [last_name], [telephone_number], [age], [bar_duty], [Deleted] FROM lecturer WHERE [last_name] LIKE @LastName AND [Deleted] = 1 ORDER BY [last_name];";
 
             ExecuteQuery(lecturers, query, "@LastName", $"%{lastName}%");
 
@@ -72,6 +96,7 @@ namespace Someren.Repositories
 
             ExecuteQuery(lecturers, query, "@LastName", lastName);
 
+            //the lecturers list always returns the first list item, this should not be an issue as you are not allowed to add lecturers with a duplicate last name. TECHNICALLY you are still able to add a lecturer, then change their last name to one that already exists in the database.
             if(!lecturers.IsNullOrEmpty())
             {
                 return lecturers[0];
@@ -96,6 +121,7 @@ namespace Someren.Repositories
                 {
                     query = $"UPDATE lecturer SET [telephone_number] = @PhoneNumber, [age] = @Age, [Deleted] = 0 WHERE lecturer.lecturer_id = @Id;";
                 }
+                //If lecturer name is not null AND the id and first name is not the same AND the lecturer is deleted, then show that the lecturer already exists in the database, as checkLecturer can only have a value if the last names match
                 else
                 {
                     throw new Exception("Lecturer's last name already exists in the database");

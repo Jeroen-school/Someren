@@ -7,35 +7,19 @@
 
 <div class="text-center">
     <h1 class="display-4"> Lecturer overview</h1>
-    <p>There are @Model.Count lecturers</p>
+    <p>There are @Model.Count deleted lecturers</p>
 
-    @if (TempData["SuccessMessage"] != null)
-    {
-        <div class="alert alert-success mx-4 mt-3">
-            <i class="fas fa-check-circle me-2"></i> @TempData["SuccessMessage"]
-        </div>
-    }
-
-    @if (TempData["ErrorMessage"] != null)
-    {
-        <div class="alert alert-danger mx-4 mt-3">
-            <i class="fas fa-exclamation-circle me-2"></i> @TempData["ErrorMessage"]
-        </div>
-    }
-
-    <a href="/Lecturers/ListDeleted">List of deleted lecturers</a>
-
-    <a href="/Lecturers/Create">Create new</a>
+    <a href="/Lecturers/Index">Go back to lecturers</a>
 
 
-<form action="/Lecturers/Index" method="Post">
-    <label for="LastName">Search for last name:</label>
-    <input type="text" id="LastName" name="LastName" class="form-control" />
+    <form action="/Lecturers/ListDeleted" method="Post">
+        <label for="LastName">Search for last name:</label>
+        <input type="text" id="LastName" name="LastName" class="form-control" />
 
-    <button type="submit" class="btn">Search</button>
+        <button type="submit" class="btn">Search</button>
 
-</form>
-    <a href="/Lecturers/Index">Back to overview</a>
+    </form>
+    <a href="/Lecturers/ListDeleted">Back to overview</a>
 
 
     <table class="table">
@@ -61,7 +45,7 @@
                         <td>@lecturer.RoomNumber</td>
                         <td>@lecturer.PhoneNumber</td>
                         <td>@lecturer.Age</td>
-                        <td><a href="/Lecturers/Update/@lecturer.LecturerId">Edit</a> <a href="/Lecturers/Delete/@lecturer.LecturerId">Delete</a></td>
+                        <td><a href="/Lecturers/Update/@lecturer.LecturerId">Restore</a> <a href="/Lecturers/Delete/@lecturer.LecturerId">Delete</a></td>
                     </tr>
                 }
 

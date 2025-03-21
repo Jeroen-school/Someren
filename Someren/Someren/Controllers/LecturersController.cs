@@ -129,6 +129,30 @@ namespace Someren.Controllers
         }
 
 
+        [HttpGet]
+        public IActionResult ListDeleted()
+        {
+            List<Lecturer> lecturers = _lecturersRepository.GetAllDeleted();
+
+            return View(lecturers);
+        }
+
+        [HttpPost]
+        public IActionResult ListDeleted(string lastName)
+        {
+            try
+            {
+                List<Lecturer> lecturers = _lecturersRepository.GetFilteredDeleted(lastName);
+
+                return View(lecturers);
+            }
+            catch (Exception ex)
+            {
+                return View(ex);
+            }
+        }
+
+
 
 
     }
