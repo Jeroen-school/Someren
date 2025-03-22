@@ -29,6 +29,16 @@
             this.BarDuty = false;
         }
 
+        public Lecturer(string roomNumber, string firstName, string lastName, string phoneNumber, int age, bool balls)
+        {
+            this.RoomNumber = roomNumber;
+            this.FirstName = firstName;
+            this.LastName = lastName;
+            this.PhoneNumber = phoneNumber;
+            this.Age = age;
+            this.BarDuty = false;
+        }
+
         public Lecturer(int lecturerId, string roomNumber, string firstName, string lastName, string phoneNumber, int age, bool barDuty)
         {
             this.LecturerId = lecturerId;

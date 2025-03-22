@@ -19,7 +19,7 @@ namespace Someren.Controllers
         [HttpGet]
         public IActionResult Index()
         {
-            List<Lecturer> lecturers = _lecturersRepository.GetAll();
+            List<Lecturer> lecturers = _lecturersRepository.GetAll(false);
 
             return View(lecturers);
         }
@@ -27,7 +27,7 @@ namespace Someren.Controllers
         [HttpPost]
         public IActionResult Index(string lastName)
         {
-                List<Lecturer> lecturers = _lecturersRepository.GetFiltered(lastName);
+                List<Lecturer> lecturers = _lecturersRepository.GetFiltered(lastName, false);
                 
                 return View(lecturers);
         }
@@ -65,7 +65,6 @@ namespace Someren.Controllers
             {
                 TempData["ErrorMessage"] = $"Lecturer not found, please try again.";
                 return RedirectToAction("Index");
-
             }
             
             Lecturer? lecturer = _lecturersRepository.GetById((int)id);
@@ -128,7 +127,7 @@ namespace Someren.Controllers
         [HttpGet]
         public IActionResult ListDeleted()
         {
-            List<Lecturer> lecturers = _lecturersRepository.GetAllDeleted();
+            List<Lecturer> lecturers = _lecturersRepository.GetAll(true);
 
             return View(lecturers);
         }
@@ -136,7 +135,7 @@ namespace Someren.Controllers
         [HttpPost]
         public IActionResult ListDeleted(string lastName)
         {
-                List<Lecturer> lecturers = _lecturersRepository.GetFilteredDeleted(lastName);
+                List<Lecturer> lecturers = _lecturersRepository.GetFiltered(lastName, true);
 
             return View(lecturers);
         }
