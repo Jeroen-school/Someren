@@ -37,62 +37,63 @@
 
             <div class="mb-3">
                 <label for="RoomNumber" class="form-label">Room Number</label>
-                <input type="text" class="form-control" id="RoomNumber" name="RoomNumber" disabled value="@Model?.RoomNumber" />
+                <input type="text" class="form-control" id="RoomNumber" name="RoomNumber" required value="@Model?.RoomNumber" />
+                @if (!string.IsNullOrEmpty(ViewBag.ErrorMessage))
+                {
+                    <div class="alert alert-danger mt-3">@ViewBag.ErrorMessage</div>
+                }
             </div>
 
             <div class="mb-3">
                 <label for="Type" class="form-label">Room Type</label>
-                <select class="form-select" id="Type" name="Type" required>
+                <select class="form-select" id="Type" name="Type" required onchange="updateRoomSize()">
                     <option value="">Select a room type</option>
-                    @if (Model?.Type == "Lecturer")
-                    {
-                        <option value="Lecturer" selected>Lecturer Room</option>
-                    }
-                    else
-                    {
-                        <option value="Lecturer">Lecturer Room</option>
-                    }
-
-                    @if (Model?.Type == "Student")
-                    {
-                        <option value="Student" selected>Student Room</option>
-                    }
-                    else
-                    {
-                        <option value="Student">Student Room</option>
-                    }
+                    <option value="Lecturer" selected="@(Model?.Type == "Lecturer")">Lecturer Room</option>
+                    <option value="Student" selected="@(Model?.Type == "Student")">Student Room</option>
                 </select>
             </div>
 
             <div class="mb-3">
                 <label for="Size" class="form-label">Room Size</label>
-                <select class="form-select" id="Size" name="Size" required>
+                <select class="form-select" id="Size" name="Size" required onchange="updateRoomType()">
                     <option value="">Select a room size</option>
-                    @if (Model?.Size == 1)
-                    {
-                        <option value="1" selected>1 Person</option>
-                    }
-                    else
-                    {
-                        <option value="1">1 Person</option>
-                    }
-
-                    @if (Model?.Size == 8)
-                    {
-                        <option value="8" selected>8 People</option>
-                    }
-                    else
-                    {
-                        <option value="8">8 People</option>
-                    }
+                    <option value="1" selected="@(Model?.Size == 1)">1 Person</option>
+                    <option value="8" selected="@(Model?.Size == 8)">8 People</option>
                 </select>
             </div>
 
-            <div class="d-flex justify-content-center mt-4">
-                <button type="submit" class="btn btn-primary shadow-button">
-                    <i class="fas fa-save me-2"></i> Save Changes
-                </button>
-            </div>
-        </form>
-    </div>
+        <div class="d-flex justify-content-center mt-4">
+            <button type="submit" class="btn btn-primary shadow-button">
+                <i class="fas fa-save me-2"></i> Save Changes
+            </button>
+        </div>
+    </form>
 </div>
+
+<script>
+    // Function to update the room size based on room type selection
+    function updateRoomSize() {
+        var roomType = document.getElementById("Type").value;
+        var sizeDropdown = document.getElementById("Size");
+
+        if (roomType === "Lecturer") {
+            sizeDropdown.value = "1"; // Set to size 1 for Lecturer
+        } else if (roomType === "Student") {
+            sizeDropdown.value = "8"; // Set to size 8 for Student
+        }
+    }
+
+    function updateRoomType() {
+        var roomSize = document.getElementById("Size").value;
+        var typeDropdown = document.getElementById("Type");
+
+        if (roomSize === "1") {
+            typeDropdown.value = "Lecturer";
+        } else if (roomSize === "8") {
+            typeDropdown.value = "Student";
+        }
+    }
+
+    // Call the function to set the default size when the page loads
+    window.onload = updateRoomSize;
+</script>

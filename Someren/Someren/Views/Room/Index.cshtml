@@ -5,10 +5,27 @@
 <div class="card mb-4 fade-in">
     <div class="card-header">
         <h1 class="card-title">Room Management</h1>
-        <div class="d-flex">
+        <div class="d-flex justify-content-between align-items-center">
             <a href="/Room/Add" class="btn btn-primary shadow-button">
                 <i class="fas fa-plus me-2"></i> Add Room
             </a>
+            <form method="get" action="/Room/Index" class="d-flex w-50">
+                <label for="Size">Filter by Size:</label>
+                <select id="Size" name="Size" class="form-select me-2"
+                        onchange="this.form.submit()"
+                @(ViewBag.SelectedSize != null ? "disabled" : "")>
+                    <option value="">All</option>
+                    @foreach (var size in ViewBag.Sizes)
+                    {
+                        <option value="@size" selected="@(ViewBag.SelectedSize == size ? "selected" : null)">@size</option>
+                    }
+                </select>
+
+                @if (ViewBag.SelectedSize != null)
+                {
+                    <a href="/Room/Index" class="btn btn-secondary">Clear Filter</a>
+                }
+            </form>
         </div>
     </div>
     <div class="card-body p-0">

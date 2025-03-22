@@ -17,6 +17,8 @@ namespace Someren.Controllers
         {
             List<Room> rooms = _roomRepository.GetAll(size);
 
+
+
             // Pass available sizes to the dropdown
             ViewBag.Sizes = _roomRepository.GetAll(size).Select(r => r.Size).Distinct().ToList();
             ViewBag.SelectedSize = size;
