@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Someren.Repositories;
 using Someren.Models;
+using System.Linq.Expressions;
+using System.Data.SqlTypes;
 
 namespace Someren.Controllers
 {
@@ -25,16 +27,9 @@ namespace Someren.Controllers
         [HttpPost]
         public IActionResult Index(string lastName)
         {
-            try
-            {
                 List<Lecturer> lecturers = _lecturersRepository.GetFiltered(lastName);
                 
                 return View(lecturers);
-            }
-            catch (Exception ex)
-            {
-                return View(ex);
-            }
         }
 
         //When opening up the create lecturer page
@@ -48,7 +43,6 @@ namespace Someren.Controllers
         [HttpPost]
         public IActionResult Create(Lecturer lecturer)
         {
-            
             try
             {
                 _lecturersRepository.Add(lecturer);
@@ -69,7 +63,8 @@ namespace Someren.Controllers
         {
             if (id == null)
             {
-                return NotFound();
+                TempData["ErrorMessage"] = $"Lecturer not found, please try again.";
+                return RedirectToAction("Index");
 
             }
             
@@ -102,7 +97,8 @@ namespace Someren.Controllers
         {
             if (id == null)
             {
-                return NotFound();
+                TempData["ErrorMessage"] = $"Lecturer not found, please try again.";
+                return RedirectToAction("Index");
             }
 
             Lecturer? lecturer = _lecturersRepository.GetById((int)id);
@@ -140,16 +136,9 @@ namespace Someren.Controllers
         [HttpPost]
         public IActionResult ListDeleted(string lastName)
         {
-            try
-            {
                 List<Lecturer> lecturers = _lecturersRepository.GetFilteredDeleted(lastName);
 
-                return View(lecturers);
-            }
-            catch (Exception ex)
-            {
-                return View(ex);
-            }
+            return View(lecturers);
         }
 
         //When you want to undelete (restore) a deleted lecturer
@@ -158,7 +147,8 @@ namespace Someren.Controllers
         {
             if (id == null)
             {
-                return NotFound();
+                TempData["ErrorMessage"] = $"Lecturer not found, please try again.";
+                return RedirectToAction("ListDeleted");
             }
 
             Lecturer? lecturer = _lecturersRepository.GetById((int)id);
@@ -188,14 +178,23 @@ namespace Someren.Controllers
         [HttpGet]
         public IActionResult Erase(int? id)
         {
-            if (id == null)
+            try
             {
-                return NotFound();
+                if (id == null)
+                {
+                    throw new Exception("No lecturer found, please try again.");
+                }
+
+                Lecturer? lecturer = _lecturersRepository.GetById((int)id);
+
+                return View(lecturer);
             }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = $"Error: {ex.Message}";
 
-            Lecturer? lecturer = _lecturersRepository.GetById((int)id);
-
-            return View(lecturer);
+                return RedirectToAction("ListDeleted");
+            }
         }
 
         //Once you have confirmed your action to send the lecturer to the shadow realm

@@ -1,4 +1,5 @@
-﻿using Microsoft.Data.SqlClient;
+﻿using Microsoft.AspNetCore.Components;
+using Microsoft.Data.SqlClient;
 using Microsoft.IdentityModel.Tokens;
 using Someren.Models;
 using System.Data;
@@ -23,11 +24,9 @@ namespace Someren.Repositories
         //returns a list of all NOT DELETED lecturers
         public List<Lecturer> GetAll()
         {
-            List<Lecturer> lecturers = new List<Lecturer>();
-            
             string query = "SELECT [lecturer_id], [room_number], [first_name], [last_name], [telephone_number], [age], [bar_duty], [Deleted] FROM lecturer WHERE [Deleted] = 0 ORDER BY [last_name]";         //the sql query to execute
-            
-            ExecuteQuery(lecturers, query, null, null);
+
+            List<Lecturer> lecturers  = ExecuteReadQuery(query, null, null);
             
             return lecturers;
         }
@@ -35,11 +34,10 @@ namespace Someren.Repositories
         //This is the literal same as the thing above, but it only gets deleted records! Wooooo
         public List<Lecturer> GetAllDeleted()
         {
-            List<Lecturer> lecturers = new List<Lecturer>();
 
             string query = "SELECT [lecturer_id], [room_number], [first_name], [last_name], [telephone_number], [age], [bar_duty], [Deleted] FROM lecturer WHERE [Deleted] = 1 ORDER BY [last_name]";         //the sql query to execute
 
-            ExecuteQuery(lecturers, query, null, null);
+            List<Lecturer> lecturers = ExecuteReadQuery(query, null, null);
 
             return lecturers;
         }
@@ -47,11 +45,9 @@ namespace Someren.Repositories
         //returns a list of all lecturers where the LAST NAME CONTAINS THE SEARCHED STRING
         public List<Lecturer> GetFiltered(string lastName)
         {
-            List<Lecturer> lecturers = new List<Lecturer>();
-
             string query = "SELECT [lecturer_id], [room_number], [first_name], [last_name], [telephone_number], [age], [bar_duty], [Deleted] FROM lecturer WHERE [last_name] LIKE @LastName AND [Deleted] = 0 ORDER BY [last_name];";
 
-            ExecuteQuery(lecturers, query, "@LastName", $"%{lastName}%");
+            List<Lecturer> lecturers = ExecuteReadQuery(query, "@LastName", $"%{lastName}%");
 
             return lecturers;
         }
@@ -59,11 +55,9 @@ namespace Someren.Repositories
         //Does the exact same thing as the get filtered method above, BUT ONLY FOR DELETED RECORDS
         public List<Lecturer> GetFilteredDeleted(string lastName)
         {
-            List<Lecturer> lecturers = new List<Lecturer>();
-
             string query = "SELECT [lecturer_id], [room_number], [first_name], [last_name], [telephone_number], [age], [bar_duty], [Deleted] FROM lecturer WHERE [last_name] LIKE @LastName AND [Deleted] = 1 ORDER BY [last_name];";
 
-            ExecuteQuery(lecturers, query, "@LastName", $"%{lastName}%");
+            List<Lecturer> lecturers = ExecuteReadQuery(query, "@LastName", $"%{lastName}%");
 
             return lecturers;
         }
@@ -72,11 +66,9 @@ namespace Someren.Repositories
         //Search a lecturer by ID, then return a class with the information of that lecturer, starts with a list so I can use the method I made specifically for Reading records from the database
         public Lecturer? GetById(int lecturerId)
         {
-            List<Lecturer> lecturers = new List<Lecturer>();
-
             string query = "SELECT [lecturer_id], [room_number], [first_name], [last_name], [telephone_number], [age], [bar_duty], [Deleted] FROM lecturer WHERE [lecturer_id] = @Id;";
 
-            ExecuteQuery(lecturers, query, "@Id", lecturerId.ToString());
+            List<Lecturer> lecturers = ExecuteReadQuery(query, "@Id", lecturerId.ToString());
 
             if(lecturers.Count != 0)
             {
@@ -88,53 +80,86 @@ namespace Someren.Repositories
             }
         }
 
-        private Lecturer? GetByLastName(string? lastName)
+        private string? CheckIfAlreadyExists(Lecturer lecturer)
         {
-            List<Lecturer> lecturers = new List<Lecturer>();
+            string query = "SELECT [lecturer_id], [room_number], [first_name], [last_name], [telephone_number], [age], [bar_duty], [Deleted] FROM lecturer WHERE [lecturer_id] = @Id OR [last_name] = @LastName;";
 
-            string query = "SELECT [lecturer_id], [room_number], [first_name], [last_name], [telephone_number], [age], [bar_duty], [Deleted] FROM lecturer WHERE [last_name] LIKE @LastName;";
+            List<Lecturer> lecturers = ExecuteValidationQuery(lecturer, query);
 
-            ExecuteQuery(lecturers, query, "@LastName", lastName);
+            string? idExists = null;
+            string? lastNameExists = null;
 
-            //the lecturers list always returns the first list item, this should not be an issue as you are not allowed to add lecturers with a duplicate last name. TECHNICALLY you are still able to add a lecturer, then change their last name to one that already exists in the database.
-            if(!lecturers.IsNullOrEmpty())
+            foreach (Lecturer l in lecturers)
             {
-                return lecturers[0];
+                if(l.LecturerId == lecturer.LecturerId) 
+                { 
+                    idExists = "ID already exists, please pick a different ID. ";
+                }
+                if(l.LastName == lecturer.LastName) 
+                { 
+                    lastNameExists = "Last name already exists, please pick a different last name.";
+                }
             }
-            else
+
+            if (idExists != null && lastNameExists != null)
+            {
+                return $"{idExists}" + $"{lastNameExists}";
+            } else
             {
                 return null;
             }
         }
 
 
+        private bool CheckIfRoomAvailable(Lecturer lecturer, out string? availableRooms)
+        {
+            //This gets a list of all available rooms
+            string query = "SELECT [room_number] FROM room WHERE [room_type] = 'Lecturer' AND [room_number] LIKE 'A1-%' AND [Deleted] = 0 AND [room_number] NOT IN (SELECT [room_number] FROM [lecturer])";
+
+            List<string> roomsToPickFrom = ExecuteRoomValidationQuery(lecturer, query);
+
+            availableRooms = null;
+            bool roomAvailable = false;
+
+            foreach (string room in roomsToPickFrom)
+            {
+                if (room == lecturer.RoomNumber)
+                {
+                    roomAvailable = true;
+                } else
+                {
+                    availableRooms = availableRooms + $"{room}; ";
+                }
+            }
+
+            return roomAvailable;
+        }
+
         //ADD a lecturer to the database
         public void Add(Lecturer lecturer)
         {
-            string query;
-            //Check if the lecturer has been soft deleted in the past, if they have been, undelete them. Then check if the last name already exists in the database
-            Lecturer? checkLecturer = GetByLastName(lecturer.LastName);
+            string query = $"INSERT INTO lecturer ([lecturer_id], [room_number], [first_name], [last_name], [telephone_number], [age], [bar_duty])" +
+                                        $"VALUES (@Id, @RoomNumber, @Firstname, @LastName, @PhoneNumber, @Age, @BarDuty);"; ;
+
+            string availableRooms;
+
+            //Check if the last name already exists in the database
+            string? checkLecturer = CheckIfAlreadyExists(lecturer);
+            bool roomFree = CheckIfRoomAvailable(lecturer, out availableRooms);
 
             if (checkLecturer != null)
             {
-                if (checkLecturer.LecturerId == lecturer.LecturerId && checkLecturer.FirstName == lecturer.FirstName && checkLecturer.LastName == lecturer.LastName && checkLecturer.Deleted)
-                {
-                    query = $"UPDATE lecturer SET [telephone_number] = @PhoneNumber, [age] = @Age, [Deleted] = 0 WHERE lecturer.lecturer_id = @Id;";
-                }
-                //If lecturer name is not null AND the id and first name is not the same AND the lecturer is deleted, then show that the lecturer already exists in the database, as checkLecturer can only have a value if the last names match
-                else
-                {
-                    throw new Exception("Lecturer's last name already exists in the database");
-                }
-            }
-            else
+                throw new Exception(checkLecturer);
+            } 
+            //If the lecturer is new and the room is available, create a new lecturer in the database
+            else if (roomFree == true)
             {
-                //If the lecturer is new, create a new lecturer in the database
-                query = $"INSERT INTO lecturer ([lecturer_id], [room_number], [first_name], [last_name], [telephone_number], [age], [bar_duty])" +
-                                        $"VALUES (@Id, @RoomNumber, @Firstname, @LastName, @PhoneNumber, @Age, @BarDuty);";
+                ExecuteModificationQuery(lecturer, query);
             }
-
-            ExecuteQuery(lecturer, query);
+            else 
+            {
+                throw new Exception($"Available rooms: {availableRooms}");    
+            }
         }
 
         //EDIT a lecturer in the database
@@ -142,7 +167,7 @@ namespace Someren.Repositories
         {
             string query = $"UPDATE lecturer SET [lecturer_id] = @Id, [room_number] = @RoomNumber, [first_name] = @Firstname, [last_name] = @LastName, [telephone_number] = @PhoneNumber, [age] = @Age, [bar_duty] = @BarDuty WHERE lecturer.[lecturer_id] = @Id;";
 
-            ExecuteQuery(lecturer, query);
+            ExecuteModificationQuery(lecturer, query);
         }
 
         //SOFT DELETE a lecturer from the database
@@ -150,7 +175,7 @@ namespace Someren.Repositories
         {
             string query = $"UPDATE lecturer SET Deleted = 1 WHERE lecturer.lecturer_id = @Id;";
 
-            ExecuteQuery(lecturer , query);
+            ExecuteModificationQuery(lecturer , query);
         }
 
         //Restore a deleted lecturer from the database
@@ -158,7 +183,7 @@ namespace Someren.Repositories
         {
             string query = $"UPDATE lecturer SET Deleted = 0 WHERE lecturer.lecturer_id = @Id;";
 
-            ExecuteQuery(lecturer, query);
+            ExecuteModificationQuery(lecturer, query);
         }
 
         //HARD DELETE a lecturer from the database
@@ -166,7 +191,7 @@ namespace Someren.Repositories
         {
             string query = $"DELETE FROM lecturer WHERE lecturer.lecturer_id = @Id;";
 
-            ExecuteQuery(lecturer, query);
+            ExecuteModificationQuery(lecturer, query);
         }
 
 
@@ -200,11 +225,14 @@ namespace Someren.Repositories
             return new Lecturer(lecturerId, roomNumber, firstName, lastName, phoneNumber, age, barDuty, deleted);
         }
 
-        //To execute the read methods
-        private void ExecuteQuery(List<Lecturer> lecturers, string query, string? parameterName, string? parameterValue)
+        //This is used for ALL methods that READ from the database (GetAll, GetAllDeleted, GetFiltered, GetFilteredDeleted, GetById, GetByLastName
+        private List<Lecturer> ExecuteReadQuery(string query, string? parameterName, string? parameterValue)
         {
+            List<Lecturer> lecturers = new List<Lecturer>();
+
             using (SqlConnection connection = new SqlConnection(_connectionString))         //this sets up the ground rules for the connection
             {
+
                 SqlCommand command = new SqlCommand(query, connection);
 
                 if (parameterName != null && parameterValue != null)
@@ -221,12 +249,14 @@ namespace Someren.Repositories
                 }
 
                 reader.Close();
+
+                return lecturers;
             }
 
         }
 
         //To execute the Create, Update, and Delete methods, uses a Data Reader because I want to add the error codes **later**
-        private void ExecuteQuery(Lecturer lecturer, string query)
+        private void ExecuteModificationQuery(Lecturer lecturer, string query)
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
@@ -240,7 +270,56 @@ namespace Someren.Repositories
 
                 reader.Close();
             }
-
         }
+
+        private List<Lecturer> ExecuteValidationQuery(Lecturer lecturer, string query)
+        {
+            List<Lecturer> lecturers = new List<Lecturer>();
+
+            using (SqlConnection connection = new SqlConnection(_connectionString))         //this sets up the ground rules for the connection
+            {
+
+                SqlCommand command = new SqlCommand(query, connection);
+
+                AddParametersWithValues(command, lecturer);
+
+                command.Connection.Open();                                                  //connects to the database
+                SqlDataReader reader = command.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    lecturers.Add(ReadLecturer(reader));
+                }
+                reader.Close();
+
+                return lecturers;
+            }
+        }
+
+        private List<string> ExecuteRoomValidationQuery(Lecturer lecturer, string query)
+        {
+            List<string> lecturers = new List<string>();
+
+            using (SqlConnection connection = new SqlConnection(_connectionString))         //this sets up the ground rules for the connection
+            {
+
+                SqlCommand command = new SqlCommand(query, connection);
+
+                command.Connection.Open();                                                  //connects to the database
+                SqlDataReader reader = command.ExecuteReader();
+
+                string roomNumber;
+
+                while (reader.Read())
+                {
+                    lecturers.Add(roomNumber = (string)reader["room_number"]);
+                }
+                reader.Close();
+
+                return lecturers;
+            }
+        }
+
+
     }
 }
