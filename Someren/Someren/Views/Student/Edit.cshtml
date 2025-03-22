@@ -2,8 +2,8 @@
 @{
     ViewData["Title"] = "Edit Student";
 
-    // Define room number options
-    var roomOptions = new List<string> { "A1-01", "B1-01" };
+    // Get rooms from ViewBag
+    var rooms = ViewBag.Rooms as List<Someren.Models.Room>;
 
     // Define class options
     var classOptions = new List<string> { "1A", "1B", "1C", "1D", "1E" };
@@ -58,15 +58,32 @@
             <div class="mb-3">
                 <label for="RoomNum" class="form-label">Room Number</label>
                 <select class="form-select" id="RoomNum" name="RoomNum" required>
-                    @foreach (var room in roomOptions)
+                    @if (rooms != null)
                     {
-                        if (Model?.RoomNum == room)
+                        @foreach (var room in rooms)
                         {
-                            <option value="@room" selected>@room</option>
+                            if (Model?.RoomNum == room.RoomNumber)
+                            {
+                                <option value="@room.RoomNumber" selected>@room.RoomNumber</option>
+                            }
+                            else
+                            {
+                                <option value="@room.RoomNumber">@room.RoomNumber</option>
+                            }
                         }
-                        else
+                    }
+                    else
+                    {
+                        @foreach (var room in new List<string> { "A1-01", "B1-01" })
                         {
-                            <option value="@room">@room</option>
+                            if (Model?.RoomNum == room)
+                            {
+                                <option value="@room" selected>@room</option>
+                            }
+                            else
+                            {
+                                <option value="@room">@room</option>
+                            }
                         }
                     }
                 </select>

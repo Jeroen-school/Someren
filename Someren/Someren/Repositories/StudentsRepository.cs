@@ -18,8 +18,6 @@ Optimization techniques added:
 - String interpolation with cached parameters: Maintains readability with parameterized security
 - ID inclusion in errors: Creates more actionable logs for troubleshooting
 - Parameter size specification: Prevents parameter sniffing issues for consistent performance
-
--- TLDR: optimized a LOT, theoretically this should provide a faster more stable base
 */
 namespace Someren.Repositories
 {
@@ -29,9 +27,9 @@ namespace Someren.Repositories
         // Static readonly fields for SQL fragments to reduce string allocations
         // These are computed once at class load time, not per-instance
         private static readonly string s_baseColumns = "[student_number], [room_number], [first_name], [last_name], [telephone_number], [class]";
-        private static readonly string s_notDeletedClause = "(deleted = 0 OR deleted IS NULL)";
+        private static readonly string s_notDeletedClause = "(Deleted = 0 OR Deleted IS NULL)";
         private static readonly string s_baseSelectQuery = $"SELECT {s_baseColumns} FROM student WHERE";
-        private static readonly string s_deletedClause = "deleted = 1";
+        private static readonly string s_deletedClause = "Deleted = 1";
 
         // Cache parameter names to avoid string allocations in methods
         // 's_' prefix indicates static field 
@@ -68,36 +66,45 @@ namespace Someren.Repositories
         // GetAll method optimized
         public List<Student> GetAll()
         {
-            var students = new List<Student>();
+            var students = new List<Student>(50); // Preallocate for typical result set
             using var connection = new SqlConnection(_connectionString);
             using var cmd = connection.CreateCommand();
 
-            cmd.CommandText = $"{s_baseSelectQuery} {s_notDeletedClause} ORDER BY last_name"; // xplicitly specifies that this is a direct SQL statement
+            cmd.CommandText = $"{s_baseSelectQuery} {s_notDeletedClause} ORDER BY last_name";
             cmd.CommandType = CommandType.Text;
 
             connection.Open();
             // SequentialAccess improves performance for forward-only reading
             using var reader = cmd.ExecuteReader(CommandBehavior.SequentialAccess);
 
-            // Pre-compute column ordinals for better performance
-            var ordStudentNum = 0;
-            var ordRoomNum = 1;
-            var ordFirstName = 2;
-            var ordLastName = 3;
-            var ordTelNum = 4;
-            var ordClass = 5;
-
-            // Inline object creation instead of method call for better performance
             while (reader.Read())
             {
-                students.Add(new Student(
-                    reader.GetInt32(ordStudentNum),
-                    reader.GetString(ordRoomNum),
-                    reader.GetString(ordFirstName),
-                    reader.GetString(ordLastName),
-                    reader.GetString(ordTelNum),
-                    reader.GetString(ordClass)
-                ));
+                students.Add(ReadStudent(reader));
+            }
+
+            return students;
+        }
+
+        // Returns a list of all students where the LAST NAME CONTAINS THE SEARCHED STRING
+        public List<Student> GetFiltered(string lastName)
+        {
+            var students = new List<Student>(50);
+            using var connection = new SqlConnection(_connectionString);
+            using var cmd = connection.CreateCommand();
+
+            cmd.CommandText = $"{s_baseSelectQuery} [last_name] LIKE {s_paramLastName} AND {s_notDeletedClause} ORDER BY [last_name]";
+            cmd.CommandType = CommandType.Text;
+
+            // Sanitize input by removing any SQL wildcards before adding our own
+            string sanitizedName = lastName?.Replace("%", "").Replace("_", "") ?? "";
+            cmd.Parameters.Add(new SqlParameter(s_paramLastName, SqlDbType.NVarChar, 50) { Value = $"%{sanitizedName}%" });
+
+            connection.Open();
+            using var reader = cmd.ExecuteReader(CommandBehavior.SequentialAccess);
+
+            while (reader.Read())
+            {
+                students.Add(ReadStudent(reader));
             }
 
             return students;
@@ -106,34 +113,44 @@ namespace Someren.Repositories
         // Get all soft-deleted students
         public List<Student> GetDeleted()
         {
-            var students = new List<Student>();
+            var students = new List<Student>(50);
             using var connection = new SqlConnection(_connectionString);
             using var cmd = connection.CreateCommand();
 
-            cmd.CommandText = $"SELECT {s_baseColumns} FROM student WHERE {s_deletedClause} ORDER BY last_name";
+            cmd.CommandText = $"{s_baseSelectQuery} {s_deletedClause} ORDER BY last_name";
             cmd.CommandType = CommandType.Text;
 
             connection.Open();
             using var reader = cmd.ExecuteReader(CommandBehavior.SequentialAccess);
 
-            // Preallocate column ordinals for faster field access
-            var ordStudentNum = 0;
-            var ordRoomNum = 1;
-            var ordFirstName = 2;
-            var ordLastName = 3;
-            var ordTelNum = 4;
-            var ordClass = 5;
+            while (reader.Read())
+            {
+                students.Add(ReadStudent(reader));
+            }
+
+            return students;
+        }
+
+        // Returns deleted students filtered by last name
+        public List<Student> GetFilteredDeleted(string lastName)
+        {
+            var students = new List<Student>(50);
+            using var connection = new SqlConnection(_connectionString);
+            using var cmd = connection.CreateCommand();
+
+            cmd.CommandText = $"{s_baseSelectQuery} last_name LIKE {s_paramLastName} AND {s_deletedClause} ORDER BY last_name";
+            cmd.CommandType = CommandType.Text;
+
+            // Sanitize input by removing any SQL wildcards before adding our own
+            string sanitizedName = lastName?.Replace("%", "").Replace("_", "") ?? "";
+            cmd.Parameters.Add(new SqlParameter(s_paramLastName, SqlDbType.NVarChar, 50) { Value = $"%{sanitizedName}%" });
+
+            connection.Open();
+            using var reader = cmd.ExecuteReader(CommandBehavior.SequentialAccess);
 
             while (reader.Read())
             {
-                students.Add(new Student(
-                    reader.GetInt32(ordStudentNum),
-                    reader.GetString(ordRoomNum),
-                    reader.GetString(ordFirstName),
-                    reader.GetString(ordLastName),
-                    reader.GetString(ordTelNum),
-                    reader.GetString(ordClass)
-                ));
+                students.Add(ReadStudent(reader));
             }
 
             return students;
@@ -165,7 +182,7 @@ namespace Someren.Repositories
             using var connection = new SqlConnection(_connectionString);
             using var cmd = connection.CreateCommand();
 
-            cmd.CommandText = $"{s_baseSelectQuery} student_number = {s_paramStudentNum} AND deleted = 1";
+            cmd.CommandText = $"{s_baseSelectQuery} student_number = {s_paramStudentNum} AND {s_deletedClause}";
             cmd.CommandType = CommandType.Text;
 
             var param = new SqlParameter(s_paramStudentNum, SqlDbType.Int) { Value = studentNum };
@@ -177,12 +194,15 @@ namespace Someren.Repositories
             return reader.Read() ? ReadStudent(reader) : null;
         }
 
-        // Add method with null checking and performance optimizations
         public void Add(Student student)
         {
             // Early null check to prevent NullReferenceException
             if (student == null)
                 throw new ArgumentNullException(nameof(student));
+
+            // Check if the student number already exists
+            if (StudentNumExists(student.StudentNum))
+                throw new InvalidOperationException($"Student with number {student.StudentNum} already exists in the system.");
 
             using var connection = new SqlConnection(_connectionString);
             using var cmd = connection.CreateCommand();
@@ -205,6 +225,21 @@ namespace Someren.Repositories
                 // Include student ID in error message for better diagnostics
                 throw new Exception($"Database error adding student {student.StudentNum}: {ex.Message}", ex);
             }
+        }
+
+        public bool StudentNumExists(int studentNum)
+        {
+            using var connection = new SqlConnection(_connectionString);
+            using var cmd = connection.CreateCommand();
+
+            // Check both active and deleted students for the student number
+            cmd.CommandText = $"SELECT COUNT(1) FROM student WHERE student_number = {s_paramStudentNum}";
+            cmd.CommandType = CommandType.Text;
+
+            cmd.Parameters.Add(new SqlParameter(s_paramStudentNum, SqlDbType.Int) { Value = studentNum });
+
+            connection.Open();
+            return (int)cmd.ExecuteScalar() > 0;
         }
 
         // Update method with checks and optimized parameter handling
@@ -244,16 +279,34 @@ namespace Someren.Repositories
             }
         }
 
-        // Delete method with similar optimizations
+        // Delete method
         public void Delete(Student student)
         {
             if (student == null)
                 throw new ArgumentNullException(nameof(student));
 
+            // First check if the student exists and is not already deleted
+            using (var checkConnection = new SqlConnection(_connectionString))
+            {
+                using var checkCmd = checkConnection.CreateCommand();
+                checkCmd.CommandText = $"SELECT COUNT(1) FROM student WHERE student_number = {s_paramStudentNum} AND {s_notDeletedClause}";
+                checkCmd.CommandType = CommandType.Text;
+                checkCmd.Parameters.Add(new SqlParameter(s_paramStudentNum, SqlDbType.Int) { Value = student.StudentNum });
+
+                checkConnection.Open();
+                int exists = (int)checkCmd.ExecuteScalar();
+
+                if (exists == 0)
+                {
+                    throw new Exception($"Student {student.StudentNum} not found or is already deleted");
+                }
+            }
+
+            // Proceed with deletion (soft delete by setting Deleted flag)
             using var connection = new SqlConnection(_connectionString);
             using var cmd = connection.CreateCommand();
 
-            cmd.CommandText = $"UPDATE student SET Deleted = 1 WHERE student_number = {s_paramStudentNum}";
+            cmd.CommandText = $"UPDATE student SET Deleted = 1 WHERE student_number = {s_paramStudentNum} AND {s_notDeletedClause}";
             cmd.CommandType = CommandType.Text;
 
             // Only need one parameter for deletion
@@ -265,7 +318,7 @@ namespace Someren.Repositories
                 int rowsAffected = cmd.ExecuteNonQuery();
                 if (rowsAffected == 0)
                 {
-                    throw new Exception($"Student {student.StudentNum} not found for deletion");
+                    throw new Exception($"Student {student.StudentNum} not found for deletion or is already deleted");
                 }
             }
             catch (SqlException ex)
@@ -277,13 +330,13 @@ namespace Someren.Repositories
         // Permanently delete a student record
         public void PermaDel(int studentNum)
         {
-            if (studentNum < 0)
-                throw new ArgumentException("Student number cannot be negative", nameof(studentNum));
+            if (studentNum <= 0)
+                throw new ArgumentException("Student number must be positive", nameof(studentNum));
 
             using var connection = new SqlConnection(_connectionString);
             using var cmd = connection.CreateCommand();
 
-            cmd.CommandText = $"DELETE FROM student WHERE student_number = {s_paramStudentNum} AND deleted = 1";
+            cmd.CommandText = $"DELETE FROM student WHERE student_number = {s_paramStudentNum} AND {s_deletedClause}";
             cmd.CommandType = CommandType.Text;
 
             cmd.Parameters.Add(new SqlParameter(s_paramStudentNum, SqlDbType.Int) { Value = studentNum });

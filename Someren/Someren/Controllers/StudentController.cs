@@ -1,33 +1,65 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Someren.Models;
 using Someren.Repositories;
+using System;
+using System.Collections.Generic;
+
 namespace Someren.Controllers
 {
     public class StudentController : Controller
     {
         private readonly IStudentsRepository _studentsRepository;
-        public StudentController(IStudentsRepository studentsRepository) // Injects into class
+        private readonly IRoomRepository _roomRepository;
+
+        public StudentController(IStudentsRepository studentsRepository, IRoomRepository roomRepository)
         {
             _studentsRepository = studentsRepository;
+            _roomRepository = roomRepository;
         }
-        public IActionResult Index()
+
+        // GET: Student/Index
+        public IActionResult Index(string lastName)
         {
-            List<Student> students = _studentsRepository.GetAll();
+            var students = string.IsNullOrEmpty(lastName)
+                ? _studentsRepository.GetAll()
+                : _studentsRepository.GetFiltered(lastName);
+
+            ViewBag.LastNameFilter = lastName;
+
             return View(students);
         }
-        [HttpGet]
+
+        // GET: Student/Add
         public IActionResult Add()
         {
+            // Get all available rooms
+            ViewBag.Rooms = _roomRepository.GetAll();
+
             return View();
         }
+
+        // POST: Student/Add
         [HttpPost]
         public IActionResult Add(Student student)
         {
             try
             {
+                // This will check for duplicate student numbers
                 _studentsRepository.Add(student);
-                TempData["SuccessMessage"] = "Student added successfully!";
+
+                TempData["SuccessMessage"] = $"Student {student.FirstName} {student.LastName} was successfully added.";
                 return RedirectToAction("Index");
+            }
+            catch (InvalidOperationException ex) when (ex.Message.Contains("already exists"))
+            {
+                // Add the error to ModelState for the specific field
+                ModelState.AddModelError("StudentNum", ex.Message);
+                 
+                // Get rooms again for the view
+                ViewBag.Rooms = _roomRepository.GetAll();
+
+                // Return to the form with the student data
+                return View(student);
             }
             catch (Exception ex)
             {
@@ -35,119 +67,133 @@ namespace Someren.Controllers
                 return RedirectToAction("Index");
             }
         }
-        [HttpGet]
-        public IActionResult Edit(int? id)
+
+        // GET: Student/Edit/{id}
+        public IActionResult Edit(int id)
         {
-            if (id == null)
-            {
-                TempData["ErrorMessage"] = "No student ID provided.";
-                return RedirectToAction("Index");
-            }
-
-            Student? student = _studentsRepository.GetByNum((int)id);
-
+            var student = _studentsRepository.GetByNum(id);
             if (student == null)
             {
-                TempData["ErrorMessage"] = $"Student with ID {id} not found.";
+                TempData["ErrorMessage"] = $"Student with number {id} not found.";
                 return RedirectToAction("Index");
             }
+
+            // Get all available rooms
+            ViewBag.Rooms = _roomRepository.GetAll();
 
             return View(student);
         }
+
+        // POST: Student/Edit
         [HttpPost]
         public IActionResult Edit(Student student)
         {
             try
             {
                 _studentsRepository.Update(student);
-                TempData["SuccessMessage"] = $"Student {student.FirstName} {student.LastName} updated successfully!";
+                TempData["SuccessMessage"] = $"Student {student.FirstName} {student.LastName} was successfully updated.";
                 return RedirectToAction("Index");
             }
             catch (Exception ex)
             {
                 TempData["ErrorMessage"] = $"Error updating student: {ex.Message}";
+
+                // Get rooms again for the view
+                ViewBag.Rooms = _roomRepository.GetAll();
+
                 return View(student);
             }
         }
-        [HttpGet]
-        public IActionResult Delete(int? id)
+
+        // GET: Student/Delete/{id}
+        public IActionResult Delete(int id)
         {
-            if (id == null)
-            {
-                TempData["ErrorMessage"] = "No student ID provided.";
-                return RedirectToAction("Index");
-            }
-
-            Student? student = _studentsRepository.GetByNum((int)id);
-
+            var student = _studentsRepository.GetByNum(id);
             if (student == null)
             {
-                TempData["ErrorMessage"] = $"Student with ID {id} not found.";
+                TempData["ErrorMessage"] = $"Student with number {id} not found.";
                 return RedirectToAction("Index");
             }
 
+            // Pass the student to the confirmation view
             return View(student);
         }
+
+        // POST: Student/Delete
         [HttpPost]
-        public IActionResult Delete(Student student)
+        public IActionResult Delete(int id, bool confirmed)
         {
-            try
+            // Only proceed if the user confirmed the deletion
+            if (!confirmed)
             {
-                _studentsRepository.Delete(student);
-                TempData["SuccessMessage"] = $"Student {student.FirstName} {student.LastName} moved to bin.";
-                return RedirectToAction("Index");
+                try
+                {
+                    var student = _studentsRepository.GetByNum(id);
+                    if (student == null)
+                    {
+                        TempData["ErrorMessage"] = $"Student with number {id} not found.";
+                        return RedirectToAction("Index");
+                    }
+
+                    _studentsRepository.Delete(student);
+
+                    TempData["SuccessMessage"] = $"Student {student.FirstName} {student.LastName} was successfully deleted.";
+                    return RedirectToAction("Index");
+                }
+                catch (Exception ex)
+                {
+                    TempData["ErrorMessage"] = $"Error deleting student: {ex.Message}";
+                    return RedirectToAction("Index");
+                }
             }
-            catch (Exception ex)
+            else
             {
-                TempData["ErrorMessage"] = $"Error deleting student: {ex.Message}";
-                return View(student);
+                return View();
             }
         }
-        // GET: /DeletedStudents
-        public IActionResult Bin()
+
+        // GET: Student/Bin
+        public IActionResult Bin(string lastName)
         {
-            try
-            {
-                var deletedStudents = _studentsRepository.GetDeleted();
-                return View(deletedStudents);
-            }
-            catch (Exception ex)
-            {
-                TempData["ErrorMessage"] = $"Error retrieving deleted students: {ex.Message}";
-                return RedirectToAction("Index");
-            }
+            var deletedStudents = string.IsNullOrEmpty(lastName)
+                ? _studentsRepository.GetDeleted()
+                : _studentsRepository.GetFilteredDeleted(lastName);
+
+            ViewBag.LastNameFilter = lastName;
+
+            return View(deletedStudents);
         }
-        // POST: /DeletedStudents/Restore/{id}
+
+        // POST: Student/Restore
         [HttpPost]
         public IActionResult Restore(int id)
         {
             try
             {
                 _studentsRepository.Restore(id);
-                TempData["SuccessMessage"] = $"Student #{id} has been restored successfully.";
-                return RedirectToAction("Index");
+                TempData["SuccessMessage"] = "Student was successfully restored.";
+                return RedirectToAction("Bin");
             }
             catch (Exception ex)
             {
-                // Log the exception
-                TempData["ErrorMessage"] = ex.Message;
+                TempData["ErrorMessage"] = $"Error restoring student: {ex.Message}";
                 return RedirectToAction("Bin");
             }
         }
+
+        // POST: Student/PermaDel
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public IActionResult PermaDel(int id)
         {
             try
             {
                 _studentsRepository.PermaDel(id);
-                TempData["SuccessMessage"] = $"Student #{id} has been permanently deleted.";
+                TempData["SuccessMessage"] = "Student was permanently deleted.";
                 return RedirectToAction("Bin");
             }
             catch (Exception ex)
             {
-                // Log the exception
-                TempData["ErrorMessage"] = ex.Message;
+                TempData["ErrorMessage"] = $"Error permanently deleting student: {ex.Message}";
                 return RedirectToAction("Bin");
             }
         }

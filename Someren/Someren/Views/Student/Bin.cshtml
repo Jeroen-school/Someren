@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Someren.Models.Student>
+﻿@model List<Someren.Models.Student>
 @{
     ViewData["Title"] = "Deleted Students";
 }
@@ -44,6 +44,23 @@
                     </div>
                 </div>
             </div>
+
+            <form action="/Student/Bin" method="post" class="search-form">
+                <label for="LastName" class="search-form-label">
+                    <i class="fas fa-search"></i> Search deleted:
+                </label>
+                <div class="search-form-group">
+                    <i class="fas fa-user-slash search-icon"></i>
+                    <input type="text" id="LastName" name="LastName" class="form-control search-form-control"
+                           placeholder="Enter last name..." value="@ViewBag.LastNameFilter" />
+                    <button type="submit" class="search-btn">
+                        <i class="fas fa-search"></i> Search
+                    </button>
+                </div>
+                <a href="/Student/Bin" class="reset-search">
+                    <i class="fas fa-undo"></i> Reset
+                </a>
+            </form>
 
             <div class="table-responsive">
                 <table class="table table-hover mb-0">
