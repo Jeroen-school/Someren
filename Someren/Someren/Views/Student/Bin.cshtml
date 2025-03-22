@@ -1,0 +1,153 @@
+﻿@model IEnumerable<Someren.Models.Student>
+@{
+    ViewData["Title"] = "Deleted Students";
+}
+
+<div class="card mb-4 fade-in">
+    <div class="card-header">
+        <h1 class="card-title">Deleted Students</h1>
+        <a asp-controller="Student" asp-action="Index" class="btn btn-primary shadow-button">
+            <i class="fas fa-arrow-left me-2"></i> Back to Students
+        </a>
+    </div>
+    <div class="card-body p-0">
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success mx-4 mt-3">
+                <i class="fas fa-check-circle me-2"></i> @TempData["SuccessMessage"]
+            </div>
+        }
+
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger mx-4 mt-3">
+                <i class="fas fa-exclamation-circle me-2"></i> @TempData["ErrorMessage"]
+            </div>
+        }
+
+        @if (!Model.Any())
+        {
+            <div class="alert alert-info mx-4 my-3">
+                <i class="fas fa-info-circle me-2"></i> No deleted students found.
+            </div>
+        }
+        else
+        {
+            <div class="dashboard-stats px-4 py-3">
+                <div class="stat-card deleted-student-stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-trash-alt"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 class="stat-value">@Model.Count()</h3>
+                        <p class="stat-label">Deleted Students</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>Student #</th>
+                            <th>Name</th>
+                            <th>Room #</th>
+                            <th>Class</th>
+                            <th>Telephone</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var student in Model)
+                        {
+                            <tr>
+                                <td>@student.StudentNum</td>
+                                <td>@student.FirstName @student.LastName</td>
+                                <td>@student.RoomNum</td>
+                                <td>@student.StudentClass</td>
+                                <td>@student.TelNum</td>
+                                <td class="action-buttons">
+                                    <button type="button" class="btn btn-success shadow-button"
+                                            data-bs-toggle="modal" data-bs-target="#restoreModal@(student.StudentNum)"
+                                            data-bs-toggle="tooltip" title="Restore Student">
+                                        <i class="fas fa-undo"></i>
+                                    </button>
+
+                                    <button type="button" class="btn btn-danger shadow-button"
+                                            data-bs-toggle="modal" data-bs-target="#deleteModal@(student.StudentNum)"
+                                            data-bs-toggle="tooltip" title="Permanently Delete">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>
+
+@if (Model.Any())
+{
+    @foreach (var student in Model)
+    {
+        <!-- Restore Confirmation Modal -->
+        <div class="modal fade" id="restoreModal@(student.StudentNum)" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header bg-success text-white">
+                        <h5 class="modal-title">
+                            <i class="fas fa-undo me-2"></i>Restore Student
+                        </h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Are you sure you want to restore student <span class="student-name-highlight">@student.FirstName @student.LastName</span>?</p>
+                        <p>This will make the student record active again in the system.</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <form asp-action="Restore" asp-route-id="@student.StudentNum" method="post">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-undo me-2"></i>Restore Student
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Permanent Delete Confirmation Modal -->
+        <div class="modal fade" id="deleteModal@(student.StudentNum)" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header bg-danger text-white">
+                        <h5 class="modal-title">
+                            <i class="fas fa-exclamation-triangle me-2"></i>Permanent Deletion
+                        </h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-circle modal-warning-icon"></i>
+                            <strong>Warning:</strong> This action cannot be undone.
+                        </div>
+                        <p>Are you absolutely sure you want to <span class="permanent-delete-warning">permanently delete</span> student <span class="student-name-highlight">@student.FirstName @student.LastName</span>?</p>
+                        <p>This will remove all record of this student from the database permanently.</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <form asp-action="PermaDel" asp-route-id="@student.StudentNum" method="post">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fas fa-trash me-2"></i>Permanently Delete
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+}

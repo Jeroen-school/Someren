@@ -1,0 +1,84 @@
+﻿@model Someren.Models.Student
+@{
+    ViewData["Title"] = "Delete Student";
+}
+
+<h2 class="form-title text-danger">Delete Student</h2>
+
+<div class="row justify-content-center form-container">
+    <div class="col-md-8">
+        <form action="/Student/Delete/@Model?.StudentNum" method="POST" class="student-form">
+
+            @if (!string.IsNullOrEmpty(ViewBag.ErrorMessage))
+            {
+                <div class="alert alert-danger">
+                    @ViewBag.ErrorMessage
+                </div>
+            }
+
+            <div class="card mb-4 border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h3 class="m-0"><i class="fas fa-exclamation-triangle me-2"></i> Confirm Deletion</h3>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-warning">
+                        <p class="mb-0"><strong>Warning:</strong> This action cannot be undone. The student will be marked as deleted.</p>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Student Number</label>
+                                <input type="text" class="form-control" value="@Model?.StudentNum" disabled />
+                                <input type="hidden" name="StudentNum" value="@Model?.StudentNum" />
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Room Number</label>
+                                <input type="text" class="form-control" value="@Model?.RoomNum" disabled />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">First Name</label>
+                                <input type="text" class="form-control" value="@Model?.FirstName" disabled />
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Last Name</label>
+                                <input type="text" class="form-control" value="@Model?.LastName" disabled />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <div class="custom-confirmation-check p-3 border border-warning rounded-3 bg-light">
+                            <div class="d-flex align-items-center">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" role="switch" id="Confirmation" name="Confirmation" required style="width: 3rem; height: 1.5rem;" />
+                                </div>
+                                <label class="ms-3 form-check-label fw-bold" for="Confirmation">
+                                    I confirm that I want to delete this student record
+                                </label>
+                            </div>
+                            <small class="text-muted d-block mt-2">Please confirm by checking the switch. This action will mark the student as deleted in the system.</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer d-flex justify-content-between">
+                    <a href="/Student/Index" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left me-2"></i> Back to List
+                    </a>
+                    <button type="submit" class="btn btn-danger shadow-button">
+                        <i class="fas fa-trash-alt me-2"></i> Delete Student
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

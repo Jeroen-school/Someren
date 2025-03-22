@@ -1,14 +1,19 @@
+using Someren.Repositories;
+
 namespace Someren
 {
     public class Program
     {
         public static void Main(string[] args)
         {
-            var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
+            var builder = WebApplication.CreateBuilder(args);
             builder.Services.AddControllersWithViews();
-            builder.Services.AddSingleton<Repositories.IRoomRepository, Repositories.RoomRepository>();
+            builder.Services.AddSingleton<IDbActivityRepository, DbActivityRepository>();
+            builder.Services.AddSingleton<IStudentsRepository, StudentsRepository>(); // Dependency injection for student repo
+            builder.Services.AddSingleton<IRoomRepository, RoomRepository>();
+            builder.Services.AddSingleton<ILecturersRepository, DbLecturersRepository>();
+
 
             var app = builder.Build();
 
