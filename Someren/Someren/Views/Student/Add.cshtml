@@ -2,8 +2,8 @@
 @{
     ViewData["Title"] = "Add a New Student";
 
-    // Define room number options
-    var roomOptions = new List<string> { "A1-01", "B1-01" };
+    // Get rooms from ViewBag
+    var rooms = ViewBag.Rooms as List<Someren.Models.Room>;
 
     // Define class options
     var classOptions = new List<string> { "1A", "1B", "1C", "1D", "1E" };
@@ -26,7 +26,14 @@
                 <div class="card-body">
                     <div class="mb-3">
                         <label for="StudentNum" class="form-label">Student Number</label>
-                        <input type="text" class="form-control" id="StudentNum" name="StudentNum" required value="@Model?.StudentNum" />
+                        <input type="text" class="form-control @(ViewData.ModelState["StudentNum"]?.Errors.Count > 0 ? "is-invalid" : "")"
+                               id="StudentNum" name="StudentNum" required value="@Model?.StudentNum" />
+                        @if (ViewData.ModelState["StudentNum"]?.Errors.Count > 0)
+                        {
+                            <div class="invalid-feedback">
+                                @ViewData.ModelState["StudentNum"].Errors.First().ErrorMessage
+                            </div>
+                        }
                     </div>
                     <div class="mb-3">
                         <label for="RoomNum" class="form-label">Room Number</label>
@@ -39,16 +46,24 @@
                             {
                                 <option value="" disabled>Select a room</option>
                             }
-                            @foreach (var room in roomOptions)
+                            @if (rooms != null)
                             {
-                                if (Model?.RoomNum == room)
+                                @foreach (var room in rooms)
                                 {
-                                    <option value="@room" selected>@room</option>
+                                    if (Model?.RoomNum == room.RoomNumber)
+                                    {
+                                        <option value="@room.RoomNumber" selected>@room.RoomNumber</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@room.RoomNumber">@room.RoomNumber</option>
+                                    }
                                 }
-                                else
-                                {
-                                    <option value="@room">@room</option>
-                                }
+                            }
+                            else
+                            {
+                                <option value="A1-01">A1-01</option>
+                                <option value="B1-01">B1-01</option>
                             }
                         </select>
                     </div>

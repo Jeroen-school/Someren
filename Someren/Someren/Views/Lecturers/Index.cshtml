@@ -1,71 +1,200 @@
 ﻿@model List<Someren.Models.Lecturer>
-
 @{
-    ViewData["Title"] = "Lecturers";
+    ViewData["Title"] = "Lecturer Management";
 }
-
-
-<div class="text-center">
-    <h1 class="display-4"> Lecturer overview</h1>
-    <p>There are @Model.Count lecturers</p>
-
-    @if (TempData["SuccessMessage"] != null)
-    {
-        <div class="alert alert-success mx-4 mt-3">
-            <i class="fas fa-check-circle me-2"></i> @TempData["SuccessMessage"]
+<div class="card mb-4 fade-in">
+    <div class="card-header">
+        <h1 class="card-title">Lecturer Management</h1>
+        <div class="d-flex">
+            <a href="/Lecturers/Create" class="btn btn-primary shadow-button">
+                <i class="fas fa-plus me-2"></i> Add New Lecturer
+            </a>
         </div>
-    }
+    </div>
+    <div class="card-body p-0">
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success mx-4 mt-3">
+                <i class="fas fa-check-circle me-2"></i> @TempData["SuccessMessage"]
+            </div>
+        }
 
-    @if (TempData["ErrorMessage"] != null)
-    {
-        <div class="alert alert-danger mx-4 mt-3">
-            <i class="fas fa-exclamation-circle me-2"></i> @TempData["ErrorMessage"]
-        </div>
-    }
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger mx-4 mt-3">
+                <i class="fas fa-exclamation-circle me-2"></i> @TempData["ErrorMessage"]
+            </div>
+        }
 
-    <a href="/Lecturers/ListDeleted">List of deleted lecturers</a>
+        <div class="dashboard-stats px-4 py-3">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-chalkboard-teacher"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 class="stat-value">@Model.Count</h3>
+                    <p class="stat-label">Total Lecturers</p>
+                </div>
+            </div>
 
-    <a href="/Lecturers/Create">Create new</a>
+            <!-- Updated Bar Duty Card without inline styles -->
+            <div class="stat-card bar-duty-card">
+                <div class="stat-icon">
+                    <i class="fas fa-beer"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 class="stat-value">Bar Duty</h3>
+                    @{
+                        var barDutyLecturers = Model.Where(l => l.BarDuty == true).ToList();
+                        var barDutyCount = barDutyLecturers.Count;
+                    }
 
+                    @if (barDutyCount > 0)
+                    {
+                        <div class="bar-duty-list">
+                            @foreach (var lecturer in barDutyLecturers.Take(2))
+                            {
+                                <span class="badge bg-warning text-dark bar-duty-badge">
+                                    <i class="fas fa-user-tie me-1"></i> @lecturer.FirstName @lecturer.LastName
+                                </span>
+                                <br />
+                            }
+                            @if (barDutyCount > 2)
+                            {
+                                <button type="button" class="view-all-button" data-bs-toggle="modal" data-bs-target="#barDutyModal">
+                                    View all @barDutyCount staff
+                                </button>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="stat-label mb-0">No staff assigned</p>
+                    }
+                </div>
+            </div>
 
-<form action="/Lecturers/Index" method="Post">
-    <label for="LastName">Search for last name:</label>
-    <input type="text" id="LastName" name="LastName" class="form-control" />
-
-    <button type="submit" class="btn">Search</button>
-
-</form>
-    <a href="/Lecturers/Index">Back to overview</a>
-
-
-    <table class="table">
-        <thead>
-            <tr>
-                <th></th>
-                <th>First name:</th>
-                <th>Last name:</th>
-                <th>Room Number:</th>
-                <th>Telephone number</th>
-                <th>Age</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            @{
-                foreach (Lecturer lecturer in Model)
-                {
-                    <tr>
-                        <td>@lecturer.LecturerId</td>
-                        <td>@lecturer.FirstName</td>
-                        <td>@lecturer.LastName</td>
-                        <td>@lecturer.RoomNumber</td>
-                        <td>@lecturer.PhoneNumber</td>
-                        <td>@lecturer.Age</td>
-                        <td><a href="/Lecturers/Update/@lecturer.LecturerId">Edit</a> <a href="/Lecturers/Delete/@lecturer.LecturerId">Delete</a></td>
-                    </tr>
-                }
-
+            <!-- Bar Duty Modal -->
+            @if (barDutyCount > 0)
+            {
+                <div class="modal fade bar-duty-modal" id="barDutyModal" tabindex="-1" aria-labelledby="barDutyModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="barDutyModalLabel">
+                                    <i class="fas fa-beer me-2"></i> Bar Duty Staff
+                                </h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                @foreach (var lecturer in barDutyLecturers)
+                                {
+                                    <div class="lecturer-item">
+                                        <div><strong>@lecturer.FirstName @lecturer.LastName</strong></div>
+                                        <div class="text-muted">
+                                            <small>
+                                                <i class="fas fa-phone me-1"></i> @lecturer.PhoneNumber
+                                                <i class="fas fa-door-open ms-3 me-1"></i> Room @lecturer.RoomNumber
+                                            </small>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             }
-        </tbody>
-    </table>
+
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-door-open"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 class="stat-value">@(Model.Count > 0 ? Model.Select(l => l.RoomNumber).Distinct().Count() : 0)</h3>
+                    <p class="stat-label">Occupied Rooms</p>
+                </div>
+            </div>
+        </div>
+
+        <form action="/Lecturers/Index" method="post" class="search-form">
+            <label for="LastName" class="search-form-label">
+                <i class="fas fa-search"></i> Search lecturers:
+            </label>
+            <div class="search-form-group">
+                <i class="fas fa-user-tie search-icon"></i>
+                <input type="text" id="LastName" name="LastName" class="form-control search-form-control"
+                       placeholder="Enter last name..." value="@ViewBag.LastNameFilter" />
+                <button type="submit" class="search-btn">
+                    <i class="fas fa-search"></i> Search
+                </button>
+            </div>
+            <a href="/Lecturers/Index" class="reset-search">
+                <i class="fas fa-undo"></i> Reset
+            </a>
+        </form>
+
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>First Name</th>
+                        <th>Last Name</th>
+                        <th>Room</th>
+                        <th>Phone Number</th>
+                        <th>Age</th>
+                        <th>Bar Duty</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.Count > 0)
+                    {
+                        foreach (var lecturer in Model)
+                        {
+                            <tr>
+                                <td>@lecturer.LecturerId</td>
+                                <td>@lecturer.FirstName</td>
+                                <td>@lecturer.LastName</td>
+                                <td>@lecturer.RoomNumber</td>
+                                <td>@lecturer.PhoneNumber</td>
+                                <td>@lecturer.Age</td>
+                                <td>
+                                    @if (lecturer.BarDuty == true)
+                                    {
+                                        <span class="badge bg-success">Assigned</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">Not Assigned</span>
+                                    }
+                                </td>
+                                <td class="action-buttons">
+                                    <a href="/Lecturers/Update/@lecturer.LecturerId" class="btn btn-primary shadow-button">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <a href="/Lecturers/Delete/@lecturer.LecturerId" class="btn btn-danger shadow-button">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="8" class="text-center py-4">
+                                <div class="alert alert-info mb-0">
+                                    <i class="fas fa-info-circle me-2"></i> No lecturers found.
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>

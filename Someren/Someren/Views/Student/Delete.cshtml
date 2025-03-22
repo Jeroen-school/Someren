@@ -18,11 +18,11 @@
 
             <div class="card mb-4 border-danger">
                 <div class="card-header bg-danger text-white">
-                    <h3 class="m-0"><i class="fas fa-exclamation-triangle me-2"></i> Confirm Deletion</h3>
+                    <h3 class="m-0"><i class="fas fa-trash-alt me-2"></i> Remove Student</h3>
                 </div>
                 <div class="card-body">
-                    <div class="alert alert-warning">
-                        <p class="mb-0"><strong>Warning:</strong> This action cannot be undone. The student will be marked as deleted.</p>
+                    <div class="alert alert-info">
+                        <p class="mb-0"><i class="fas fa-info-circle me-2"></i> This will move the student to the deleted items. You can restore the student later if needed.</p>
                     </div>
 
                     <div class="row mb-4">
@@ -57,16 +57,16 @@
                     </div>
 
                     <div class="mb-4">
-                        <div class="custom-confirmation-check p-3 border border-warning rounded-3 bg-light">
+                        <div class="custom-confirmation-check p-3 border border-info rounded-3 bg-light">
                             <div class="d-flex align-items-center">
                                 <div class="form-check form-switch">
                                     <input class="form-check-input" type="checkbox" role="switch" id="Confirmation" name="Confirmation" required style="width: 3rem; height: 1.5rem;" />
                                 </div>
                                 <label class="ms-3 form-check-label fw-bold" for="Confirmation">
-                                    I confirm that I want to delete this student record
+                                    I'd like to remove this student
                                 </label>
                             </div>
-                            <small class="text-muted d-block mt-2">Please confirm by checking the switch. This action will mark the student as deleted in the system.</small>
+                            <small class="text-muted d-block mt-2">Please confirm by toggling the switch. The student will be moved to the deleted items.</small>
                         </div>
                     </div>
                 </div>
@@ -74,8 +74,8 @@
                     <a href="/Student/Index" class="btn btn-secondary">
                         <i class="fas fa-arrow-left me-2"></i> Back to List
                     </a>
-                    <button type="submit" class="btn btn-danger shadow-button">
-                        <i class="fas fa-trash-alt me-2"></i> Delete Student
+                    <button type="submit" class="btn btn-primary shadow-button">
+                        <i class="fas fa-check me-2"></i> Confirm
                     </button>
                 </div>
             </div>

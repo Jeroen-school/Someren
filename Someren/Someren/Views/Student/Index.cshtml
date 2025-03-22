@@ -58,12 +58,30 @@
                 </div>
             </div>
         </div>
+
+        <form action="/Student/Index" method="post" class="search-form">
+            <label for="LastName" class="search-form-label">
+                <i class="fas fa-search"></i> Search students:
+            </label>
+            <div class="search-form-group">
+                <i class="fas fa-user search-icon"></i>
+                <input type="text" id="LastName" name="LastName" class="form-control search-form-control"
+                       placeholder="Enter last name..." value="@ViewBag.LastNameFilter" />
+                <button type="submit" class="search-btn">
+                    <i class="fas fa-search"></i> Search
+                </button>
+            </div>
+            <a href="/Student/Index" class="reset-search">
+                <i class="fas fa-undo"></i> Reset
+            </a>
+        </form>
+
         <div class="table-responsive">
             <table class="table table-hover mb-0">
                 <thead>
                     <tr>
                         <th>Student #</th>
-                        <th>Name</th>
+                        <th>Full Name</th>
                         <th>Room #</th>
                         <th>Class</th>
                         <th>Telephone</th>

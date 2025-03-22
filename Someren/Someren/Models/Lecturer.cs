@@ -13,8 +13,9 @@
         public bool Deleted { get; set; }
 
         //constructors
-        public Lecturer() {
-            
+        public Lecturer()
+        {
+
         }
 
         public Lecturer(int lecturerId, string roomNumber, string firstName, string lastName, string phoneNumber, int age)
