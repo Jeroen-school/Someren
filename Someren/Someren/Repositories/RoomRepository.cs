@@ -15,7 +15,7 @@ namespace Someren.Repositories
         //validation for room number
         public bool IsValidRoomNumber(string roomNumber)
         {
-            string pattern = @"^[AB]\d-\d{2}$"; // Regex pattern
+            string pattern = @"(?i)^[AB]\d-\d{2}$"; // Regex pattern
             return Regex.IsMatch(roomNumber, pattern);
         }
         public bool RoomExists(string roomNumber)
@@ -49,23 +49,39 @@ namespace Someren.Repositories
         }
         private Room ReadRoom(SqlDataReader reader)
         {
+            int roomId = (int)reader["room_id"];
             string roomNumber = (string)reader["room_number"];
             string type = (string)reader["room_type"];
             int size = (int)reader["room_size"];
             bool deleted = (bool)reader["Deleted"];
 
-            return new Room(roomNumber, type, size, deleted);
+            return new Room(roomId, roomNumber, type, size, deleted);
         }
 
-        public List<Room> GetAll()
+        public List<Room> GetAll(int? size)
         {
             List<Room> rooms = new List<Room>();
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
-                string query = "SELECT * FROM room WHERE Deleted = @deleted ORDER BY room_number";
+                string query = "SELECT * FROM room WHERE Deleted = @deleted";
+
+                // If a size is provided, filter by it
+                if (size.HasValue)
+                {
+                    query += " AND room_size = @roomSize";
+                }
+
+                query += " ORDER BY room_number";
+
                 SqlCommand command = new SqlCommand(query, connection);
 
                 command.Parameters.AddWithValue("@deleted", false);
+
+                if (size.HasValue)
+                {
+                    command.Parameters.AddWithValue("@roomSize", size.Value);
+                }
+
                 command.Connection.Open();
                 SqlDataReader reader = command.ExecuteReader();
                 while (reader.Read())
@@ -78,14 +94,15 @@ namespace Someren.Repositories
             return rooms;
         }
 
-        public Room? GetById(string roomNumber)
+
+        public Room? GetById(int roomId)
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
-                string query = "SELECT * FROM room WHERE room_number = @roomNumber AND Deleted = @deleted";
+                string query = "SELECT * FROM room WHERE room_id = @roomId AND Deleted = @deleted";
                 SqlCommand command = new SqlCommand(query, connection);
 
-                command.Parameters.AddWithValue("@roomNumber", roomNumber);
+                command.Parameters.AddWithValue("@roomId", roomId);
                 command.Parameters.AddWithValue("@deleted", false);
                 command.Connection.Open();
                 SqlDataReader reader = command.ExecuteReader();
@@ -131,7 +148,7 @@ namespace Someren.Repositories
                 }
                 SqlCommand command = new SqlCommand(query, connection);
 
-                command.Parameters.AddWithValue("@roomNumber", room.RoomNumber);
+                command.Parameters.AddWithValue("@roomNumber", room.RoomNumber.ToUpper());
                 command.Parameters.AddWithValue("@roomSize", room.Size);
                 command.Parameters.AddWithValue("@roomType", room.Type);
                 command.Parameters.AddWithValue("@deleted", false);
@@ -152,20 +169,24 @@ namespace Someren.Repositories
                 return false;
             }
 
+            Room? savedRoom = GetById(room.RoomId);
+
             // Check if Room Already Exists
-            /*if (RoomExists(room.RoomNumber))
+            if (savedRoom != null && savedRoom.RoomNumber != room.RoomNumber && RoomExists(room.RoomNumber))
             {
                 errorMessage = "Room already exists.";
                 return false;
-            }*/
+            }
 
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
-                /*string query = "UPDATE room SET room_number = @roomNumber, room_size = @roomSize, room_type = @roomType WHERE room_number = @roomNumber AND Deleted = @deleted";*/
-                string query = "UPDATE room SET room_size = @roomSize, room_type = @roomType WHERE room_number = @roomNumber AND Deleted = @deleted";
+
+
+                string query = "UPDATE room SET room_number = @roomNumber, room_size = @roomSize, room_type = @roomType WHERE room_id = @roomId AND Deleted = @deleted";
                 SqlCommand command = new SqlCommand(query, connection);
 
                 command.Parameters.AddWithValue("@roomNumber", room.RoomNumber);
+                command.Parameters.AddWithValue("@roomId", room.RoomId);
                 command.Parameters.AddWithValue("@roomSize", room.Size);
                 command.Parameters.AddWithValue("@roomType", room.Type);
                 command.Parameters.AddWithValue("@deleted", false);
@@ -175,14 +196,14 @@ namespace Someren.Repositories
             return true;
         }
 
-        public void Delete(string  roomNumber)
+        public void Delete(int roomId)
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
-                string query = "UPDATE room SET Deleted = @deleted WHERE room_number = @roomNumber";
+                string query = "UPDATE room SET Deleted = @deleted WHERE room_id = @roomId";
                 SqlCommand command = new SqlCommand(query, connection);
 
-                command.Parameters.AddWithValue("@roomNumber", roomNumber);
+                command.Parameters.AddWithValue("@roomId", roomId);
                 command.Parameters.AddWithValue("@deleted", true);
                 command.Connection.Open();
                 command.ExecuteNonQuery();
