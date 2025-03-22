@@ -111,28 +111,21 @@ namespace Someren.Repositories
         }
 
 
-        private bool CheckIfRoomAvailable(Lecturer lecturer, out string? availableRooms)
+        private void CheckIfRoomAvailable(Lecturer lecturer)
         {
             //This gets a list of all available rooms
-            string query = "SELECT [room_number] FROM room WHERE [room_type] = 'Lecturer' AND [room_number] LIKE 'A1-%' AND [Deleted] = 0 AND [room_number] NOT IN (SELECT [room_number] FROM [lecturer])";
+            string query = "SELECT [room_number] FROM room WHERE [room_type] = 'Lecturer' AND [room_number] LIKE 'A1-%' AND [Deleted] = 0 AND [room_number] NOT IN (SELECT [room_number] FROM [lecturer] WHERE [lecturer_id] != @Id)";
 
-            List<string> roomsToPickFrom = ExecuteRoomValidationQuery(lecturer, query);
+            List<string> availableRooms = ExecuteRoomValidationQuery(lecturer, query);
 
-            availableRooms = null;
-            bool roomAvailable = false;
-
-            foreach (string room in roomsToPickFrom)
+            if (availableRooms.Contains(lecturer.RoomNumber))
             {
-                if (room == lecturer.RoomNumber)
-                {
-                    roomAvailable = true;
-                } else
-                {
-                    availableRooms = availableRooms + $"{room}; ";
-                }
+                return;
             }
-
-            return roomAvailable;
+            else
+            {
+                throw new Exception("Room not Available, available rooms: " + string.Join(", ", availableRooms) + ".");
+            }
         }
 
         //ADD a lecturer to the database
@@ -141,24 +134,19 @@ namespace Someren.Repositories
             string query = $"INSERT INTO lecturer ([lecturer_id], [room_number], [first_name], [last_name], [telephone_number], [age], [bar_duty])" +
                                         $"VALUES (@Id, @RoomNumber, @Firstname, @LastName, @PhoneNumber, @Age, @BarDuty);"; ;
 
-            string availableRooms;
-
             //Check if the last name already exists in the database
             string? checkLecturer = CheckIfAlreadyExists(lecturer);
-            bool roomFree = CheckIfRoomAvailable(lecturer, out availableRooms);
+
+            CheckIfRoomAvailable(lecturer);
 
             if (checkLecturer != null)
             {
                 throw new Exception(checkLecturer);
             } 
             //If the lecturer is new and the room is available, create a new lecturer in the database
-            else if (roomFree == true)
-            {
-                ExecuteModificationQuery(lecturer, query);
-            }
             else 
             {
-                throw new Exception($"Available rooms: {availableRooms}");    
+                ExecuteModificationQuery(lecturer, query);
             }
         }
 
@@ -166,6 +154,8 @@ namespace Someren.Repositories
         public void Update(Lecturer lecturer)
         {
             string query = $"UPDATE lecturer SET [lecturer_id] = @Id, [room_number] = @RoomNumber, [first_name] = @Firstname, [last_name] = @LastName, [telephone_number] = @PhoneNumber, [age] = @Age, [bar_duty] = @BarDuty WHERE lecturer.[lecturer_id] = @Id;";
+
+            CheckIfRoomAvailable(lecturer);
 
             ExecuteModificationQuery(lecturer, query);
         }
@@ -298,25 +288,25 @@ namespace Someren.Repositories
 
         private List<string> ExecuteRoomValidationQuery(Lecturer lecturer, string query)
         {
-            List<string> lecturers = new List<string>();
+            List<string> rooms = new List<string>();
 
             using (SqlConnection connection = new SqlConnection(_connectionString))         //this sets up the ground rules for the connection
             {
 
                 SqlCommand command = new SqlCommand(query, connection);
 
+                command.Parameters.AddWithValue("@Id", lecturer.LecturerId);
+
                 command.Connection.Open();                                                  //connects to the database
                 SqlDataReader reader = command.ExecuteReader();
 
-                string roomNumber;
-
                 while (reader.Read())
                 {
-                    lecturers.Add(roomNumber = (string)reader["room_number"]);
+                    rooms.Add((string)reader["room_number"]);
                 }
                 reader.Close();
 
-                return lecturers;
+                return rooms;
             }
         }
 
