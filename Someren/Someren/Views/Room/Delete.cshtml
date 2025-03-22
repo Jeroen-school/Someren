@@ -7,7 +7,7 @@
 <div class="container py-5">
     <h4 class="display-4 mb-4">Delete Room</h4>
     <form action="/Room/Delete" method="POST">
-        <input type="hidden" name="RoomNumber" value="@Model?.RoomNumber" />
+        <input type="hidden" name="RoomId" value="@Model?.RoomId" />
         <div class="form-group w-50 mb-3">
             <label for="RoomNumber">Room number:</label>
             <input type="text" class="form-control" id="RoomNumber" name="RoomNumber" placeholder="A1-02" disabled value="@Model?.RoomNumber">

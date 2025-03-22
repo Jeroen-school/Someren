@@ -13,9 +13,13 @@ namespace Someren.Controllers
         }
 
         //Home
-        public IActionResult Index()
+        public IActionResult Index(int? size)
         {
-            List<Models.Room> rooms = _roomRepository.GetAll();
+            List<Room> rooms = _roomRepository.GetAll(size);
+
+            // Pass available sizes to the dropdown
+            ViewBag.Sizes = _roomRepository.GetAll(size).Select(r => r.Size).Distinct().ToList();
+            ViewBag.SelectedSize = size;
             return View(rooms);
         }
 
@@ -41,16 +45,17 @@ namespace Someren.Controllers
         }
 
         // Edit
-        [HttpGet("Room/Edit/{roomNumber}")]
-        public IActionResult Edit(string roomNumber)
+        [HttpGet("Room/Edit/{RoomId}")]
+        public IActionResult Edit(int roomId)
         {
-            Room? room = _roomRepository.GetById(roomNumber);
+            Room? room = _roomRepository.GetById(roomId);
             return View(room);
         }
 
-        [HttpPost("Room/Edit")]
+        [HttpPost("Room/Edit/{RoomId}")]
         public IActionResult Edit(Room room)
         {
+            Console.WriteLine($"{room.RoomId}");
             string errorMessage;
             bool success = _roomRepository.Update(room, out errorMessage);
 
@@ -64,17 +69,17 @@ namespace Someren.Controllers
         }
 
         //Delete
-        [HttpGet("Room/Delete/{roomNumber}")]
-        public IActionResult Delete(string roomNumber)
+        [HttpGet("Room/Delete/{roomId}")]
+        public IActionResult Delete(int roomId)
         {
-            Room? room = _roomRepository.GetById(roomNumber);
+            Room? room = _roomRepository.GetById(roomId);
             return View(room);
         }
 
         [HttpPost("Room/Delete")]
         public IActionResult Delete(Room room)
         {
-            _roomRepository.Delete(room.RoomNumber);
+            _roomRepository.Delete(room.RoomId);
             return RedirectToAction("Index");
         }
     }

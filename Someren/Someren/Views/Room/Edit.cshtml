@@ -6,19 +6,19 @@
 
 <div class="container py-5">
     <h4 class="display-4 mb-4">Edit Room</h4>
-    <form action="/Room/Edit" method="POST">
-        <input type="hidden" name="RoomNumber" value="@Model?.RoomNumber" />
+    <form action="/Room/Edit/@Model?.RoomId" method="POST">
+        <input type="hidden" name="RoomId" value="@Model?.RoomId" />
         <div class="form-group w-50 mb-3">
             <label for="RoomNumber">Room number:</label>
-            <input type="text" class="form-control" id="RoomNumber" name="RoomNumber" placeholder="A1-02" disabled value="@Model?.RoomNumber">
+            <input type="text" class="form-control" id="RoomNumber" name="RoomNumber" placeholder="A1-02" required value="@Model?.RoomNumber">
             @if (!string.IsNullOrEmpty(ViewBag.ErrorMessage))
             {
                 <div class="alert alert-danger mt-3">@ViewBag.ErrorMessage</div>
             }
         </div>
-       <div class="form-group w-50 mb-3">
+        <div class="form-group w-50 mb-3">
             <label for="Size">Room Size:</label>
-            <select class="form-control" id="Size" name="Size" required>
+            <select class="form-control" id="Size" name="Size" onchange="updateRoomType()">
                 <option value="1" selected="@(Model?.Size == 1)">1</option>
                 <option value="8" selected="@(Model?.Size == 8)">8</option>
             </select>
@@ -26,7 +26,7 @@
 
         <div class="form-group w-50 mb-3">
             <label for="Type">Room Type:</label>
-            <select class="form-control" id="Type" name="Type" required>
+            <select class="form-control" id="Type" name="Type" onchange="updateRoomSize()">
                 <option value="Lecturer" selected="@(Model?.Type == "Lecturer")">Lecturer</option>
                 <option value="Student" selected="@(Model?.Type == "Student")">Student</option>
             </select>
@@ -37,3 +37,30 @@
     </form>
 </div>
 
+<script>
+    // Function to update the room size based on room type selection
+    function updateRoomSize() {
+        var roomType = document.getElementById("Type").value;
+        var sizeDropdown = document.getElementById("Size");
+
+        if (roomType === "Lecturer") {
+            sizeDropdown.value = "1"; // Set to size 1 for Lecturer
+        } else if (roomType === "Student") {
+            sizeDropdown.value = "8"; // Set to size 8 for Student
+        }
+    }
+
+    function updateRoomType() {
+        var roomSize = document.getElementById("Size").value;
+        var typeDropdown = document.getElementById("Type");
+
+        if (roomSize === "1") {
+            typeDropdown.value = "Lecturer";
+        } else if (roomSize === "8") {
+            typeDropdown.value = "Student";
+        }
+    }
+
+    // Call the function to set the default size when the page loads
+    window.onload = updateRoomSize;
+</script>
