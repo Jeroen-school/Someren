@@ -101,7 +101,7 @@ namespace Someren.Repositories
                 }
             }
 
-            if (idExists != null && lastNameExists != null)
+            if (idExists != null || lastNameExists != null)
             {
                 return $"{idExists}" + $"{lastNameExists}";
             } else
@@ -109,7 +109,6 @@ namespace Someren.Repositories
                 return null;
             }
         }
-
 
         private void CheckIfRoomAvailable(Lecturer lecturer)
         {

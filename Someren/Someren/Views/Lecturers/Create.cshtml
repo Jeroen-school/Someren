@@ -35,32 +35,32 @@
         <form action="/Lecturers/Create" method="Post">
             <div class="mb-3">
                 <label for="LecturerId" class="form-label">Lecturer ID</label>
-                <input type="text" id="LecturerId" name="LecturerId" class="form-control" required value="@Model?.LecturerId" />
+                <input type="number" id="LecturerId" name="LecturerId" class="form-control" required placeholder="12345" value="@Model?.LecturerId" />
             </div>
 
             <div class="mb-3">
                 <label for="FirstName" class="form-label">First Name</label>
-                <input type="text" id="FirstName" name="FirstName" class="form-control" required value="@Model?.FirstName" />
+                <input type="text" id="FirstName" name="FirstName" class="form-control" required placeholder="John" value="@Model?.FirstName" />
             </div>
 
             <div class="mb-3">
                 <label for="LastName" class="form-label">Last Name</label>
-                <input type="text" id="LastName" name="LastName" class="form-control" required value="@Model?.LastName" />
+                <input type="text" id="LastName" name="LastName" class="form-control" required placeholder="Doe" value="@Model?.LastName" />
             </div>
 
             <div class="mb-3">
                 <label for="RoomNumber" class="form-label">Room Number</label>
-                <input type="text" id="RoomNumber" name="RoomNumber" class="form-control" required value="@Model?.RoomNumber" />
+                <input type="text" id="RoomNumber" name="RoomNumber" class="form-control" required placeholder="A1-01" value="@Model?.RoomNumber" />
             </div>
 
             <div class="mb-3">
                 <label for="PhoneNumber" class="form-label">Telephone Number</label>
-                <input type="tel" id="PhoneNumber" name="PhoneNumber" class="form-control" required value="@Model?.PhoneNumber" />
+                <input type="tel" id="PhoneNumber" name="PhoneNumber" class="form-control" required placeholder="0612345678" value="@Model?.PhoneNumber" />
             </div>
 
             <div class="mb-3">
                 <label for="Age" class="form-label">Age</label>
-                <input type="number" min="18" max="100" id="Age" name="Age" class="form-control" required value="@Model?.Age" />
+                <input type="number" min="18" max="120" id="Age" name="Age" class="form-control" required placeholder="32" value="@Model?.Age" />
             </div>
 
             <p>Does this lecturer have bar duty?</p>

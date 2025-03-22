@@ -9,6 +9,9 @@
             <a href="/Lecturers/Create" class="btn btn-primary shadow-button">
                 <i class="fas fa-plus me-2"></i> Add New Lecturer
             </a>
+            <a href="/Lecturers/ListDeleted" class="btn btn-secondary shadow-button">
+                <i class="fas fa-archive me-2"></i> View Deleted Lecturers
+            </a>
         </div>
     </div>
     <div class="card-body p-0">
@@ -45,14 +48,14 @@
                 <div class="stat-content">
                     <h3 class="stat-value">Bar Duty</h3>
                     @{
-                        var barDutyLecturers = Model.Where(l => l.BarDuty == true).ToList();
-                        var barDutyCount = barDutyLecturers.Count;
+                        List<Lecturer> barDutyLecturers = Model.Where(l => l.BarDuty == true).ToList();
+                        int barDutyCount = barDutyLecturers.Count;
                     }
 
                     @if (barDutyCount > 0)
                     {
                         <div class="bar-duty-list">
-                            @foreach (var lecturer in barDutyLecturers.Take(2))
+                            @foreach (Lecturer lecturer in barDutyLecturers.Take(2))
                             {
                                 <span class="badge bg-warning text-dark bar-duty-badge">
                                     <i class="fas fa-user-tie me-1"></i> @lecturer.FirstName @lecturer.LastName
@@ -87,7 +90,7 @@
                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
-                                @foreach (var lecturer in barDutyLecturers)
+                                @foreach (Lecturer lecturer in barDutyLecturers)
                                 {
                                     <div class="lecturer-item">
                                         <div><strong>@lecturer.FirstName @lecturer.LastName</strong></div>
@@ -153,7 +156,7 @@
                 <tbody>
                     @if (Model.Count > 0)
                     {
-                        foreach (var lecturer in Model)
+                        foreach (Lecturer lecturer in Model)
                         {
                             <tr>
                                 <td>@lecturer.LecturerId</td>
