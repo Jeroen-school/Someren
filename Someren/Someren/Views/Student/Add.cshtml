@@ -46,7 +46,7 @@
                             {
                                 <option value="" disabled>Select a room</option>
                             }
-                            @if (rooms != null)
+                            @if (rooms != null && rooms.Any())
                             {
                                 @foreach (var room in rooms)
                                 {
@@ -62,8 +62,7 @@
                             }
                             else
                             {
-                                <option value="A1-01">A1-01</option>
-                                <option value="B1-01">B1-01</option>
+                                <option value="" disabled selected>No rooms available</option>
                             }
                         </select>
                     </div>

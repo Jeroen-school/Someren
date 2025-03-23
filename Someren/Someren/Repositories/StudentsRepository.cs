@@ -26,10 +26,10 @@ namespace Someren.Repositories
     {
         // Static readonly fields for SQL fragments to reduce string allocations
         // These are computed once at class load time, not per-instance
-        private static readonly string s_baseColumns = "[student_number], [room_number], [first_name], [last_name], [telephone_number], [class]";
-        private static readonly string s_notDeletedClause = "(Deleted = 0 OR Deleted IS NULL)";
-        private static readonly string s_baseSelectQuery = $"SELECT {s_baseColumns} FROM student WHERE";
-        private static readonly string s_deletedClause = "Deleted = 1";
+        private static readonly string s_baseColumns = "S.[student_number], R.[room_number], S.[first_name], S.[last_name], S.[telephone_number], S.[class]";
+        private static readonly string s_notDeletedClause = "(S.Deleted = 0 OR S.Deleted IS NULL)";
+        private static readonly string s_baseSelectQuery = $"SELECT {s_baseColumns} FROM student AS S JOIN room AS R ON S.room_id = R.room_id WHERE";
+        private static readonly string s_deletedClause = "S.Deleted = 1";
 
         // Cache parameter names to avoid string allocations in methods
         // 's_' prefix indicates static field 
@@ -70,7 +70,7 @@ namespace Someren.Repositories
             using var connection = new SqlConnection(_connectionString);
             using var cmd = connection.CreateCommand();
 
-            cmd.CommandText = $"{s_baseSelectQuery} {s_notDeletedClause} ORDER BY last_name";
+            cmd.CommandText = $"{s_baseSelectQuery} {s_notDeletedClause} ORDER BY S.last_name";
             cmd.CommandType = CommandType.Text;
 
             connection.Open();
@@ -92,7 +92,7 @@ namespace Someren.Repositories
             using var connection = new SqlConnection(_connectionString);
             using var cmd = connection.CreateCommand();
 
-            cmd.CommandText = $"{s_baseSelectQuery} [last_name] LIKE {s_paramLastName} AND {s_notDeletedClause} ORDER BY [last_name]";
+            cmd.CommandText = $"{s_baseSelectQuery} S.[last_name] LIKE {s_paramLastName} AND {s_notDeletedClause} ORDER BY S.[last_name]";
             cmd.CommandType = CommandType.Text;
 
             // Sanitize input by removing any SQL wildcards before adding our own
@@ -117,7 +117,7 @@ namespace Someren.Repositories
             using var connection = new SqlConnection(_connectionString);
             using var cmd = connection.CreateCommand();
 
-            cmd.CommandText = $"{s_baseSelectQuery} {s_deletedClause} ORDER BY last_name";
+            cmd.CommandText = $"{s_baseSelectQuery} {s_deletedClause} ORDER BY S.last_name";
             cmd.CommandType = CommandType.Text;
 
             connection.Open();
@@ -138,7 +138,7 @@ namespace Someren.Repositories
             using var connection = new SqlConnection(_connectionString);
             using var cmd = connection.CreateCommand();
 
-            cmd.CommandText = $"{s_baseSelectQuery} last_name LIKE {s_paramLastName} AND {s_deletedClause} ORDER BY last_name";
+            cmd.CommandText = $"{s_baseSelectQuery} S.last_name LIKE {s_paramLastName} AND {s_deletedClause} ORDER BY S.last_name";
             cmd.CommandType = CommandType.Text;
 
             // Sanitize input by removing any SQL wildcards before adding our own
@@ -162,7 +162,7 @@ namespace Someren.Repositories
             using var connection = new SqlConnection(_connectionString);
             using var cmd = connection.CreateCommand();
 
-            cmd.CommandText = $"{s_baseSelectQuery} student_number = {s_paramStudentNum} AND {s_notDeletedClause}";
+            cmd.CommandText = $"{s_baseSelectQuery} S.student_number = {s_paramStudentNum} AND {s_notDeletedClause}";
             cmd.CommandType = CommandType.Text;
 
             // Create parameter directly with proper type specification
@@ -182,7 +182,7 @@ namespace Someren.Repositories
             using var connection = new SqlConnection(_connectionString);
             using var cmd = connection.CreateCommand();
 
-            cmd.CommandText = $"{s_baseSelectQuery} student_number = {s_paramStudentNum} AND {s_deletedClause}";
+            cmd.CommandText = $"{s_baseSelectQuery} S.student_number = {s_paramStudentNum} AND {s_deletedClause}";
             cmd.CommandType = CommandType.Text;
 
             var param = new SqlParameter(s_paramStudentNum, SqlDbType.Int) { Value = studentNum };
@@ -208,8 +208,8 @@ namespace Someren.Repositories
             using var cmd = connection.CreateCommand();
 
             // String interpolation with static fields for better readability
-            cmd.CommandText = $"INSERT INTO student (student_number, room_number, first_name, last_name, telephone_number, class) " +
-                             $"VALUES ({s_paramStudentNum}, {s_paramRoomNum}, {s_paramFirstName}, {s_paramLastName}, {s_paramTelNum}, {s_paramClass})";
+            cmd.CommandText = $"INSERT INTO student (student_number, room_id, first_name, last_name, telephone_number, class) " +
+                             $"VALUES ({s_paramStudentNum}, (SELECT room_id FROM room WHERE room_number = {s_paramRoomNum}), {s_paramFirstName}, {s_paramLastName}, {s_paramTelNum}, {s_paramClass})";
             cmd.CommandType = CommandType.Text;
 
             // Use helper method to add all parameters with proper types
@@ -253,7 +253,7 @@ namespace Someren.Repositories
 
             // Formatted for better readability while still using static fields
             cmd.CommandText = $"UPDATE student SET " +
-                             $"room_number = {s_paramRoomNum}, " +
+                             $"room_id = (SELECT room_id FROM room WHERE room_number = {s_paramRoomNum}), " +
                              $"first_name = {s_paramFirstName}, " +
                              $"last_name = {s_paramLastName}, " +
                              $"telephone_number = {s_paramTelNum}, " +
@@ -289,7 +289,8 @@ namespace Someren.Repositories
             using (var checkConnection = new SqlConnection(_connectionString))
             {
                 using var checkCmd = checkConnection.CreateCommand();
-                checkCmd.CommandText = $"SELECT COUNT(1) FROM student WHERE student_number = {s_paramStudentNum} AND {s_notDeletedClause}";
+                // Fix: Use proper table alias here
+                checkCmd.CommandText = $"SELECT COUNT(1) FROM student AS S WHERE S.student_number = {s_paramStudentNum} AND {s_notDeletedClause}";
                 checkCmd.CommandType = CommandType.Text;
                 checkCmd.Parameters.Add(new SqlParameter(s_paramStudentNum, SqlDbType.Int) { Value = student.StudentNum });
 
@@ -306,7 +307,7 @@ namespace Someren.Repositories
             using var connection = new SqlConnection(_connectionString);
             using var cmd = connection.CreateCommand();
 
-            cmd.CommandText = $"UPDATE student SET Deleted = 1 WHERE student_number = {s_paramStudentNum} AND {s_notDeletedClause}";
+            cmd.CommandText = $"UPDATE student SET Deleted = 1 WHERE student_number = {s_paramStudentNum}";
             cmd.CommandType = CommandType.Text;
 
             // Only need one parameter for deletion
@@ -330,13 +331,13 @@ namespace Someren.Repositories
         // Permanently delete a student record
         public void PermaDel(int studentNum)
         {
-            if (studentNum <= 0)
+            if (studentNum < 0)
                 throw new ArgumentException("Student number must be positive", nameof(studentNum));
 
             using var connection = new SqlConnection(_connectionString);
             using var cmd = connection.CreateCommand();
 
-            cmd.CommandText = $"DELETE FROM student WHERE student_number = {s_paramStudentNum} AND {s_deletedClause}";
+            cmd.CommandText = $"DELETE FROM student WHERE student_number = {s_paramStudentNum} AND Deleted = 1";
             cmd.CommandType = CommandType.Text;
 
             cmd.Parameters.Add(new SqlParameter(s_paramStudentNum, SqlDbType.Int) { Value = studentNum });
@@ -359,13 +360,13 @@ namespace Someren.Repositories
         // Restore a soft-deleted student
         public void Restore(int studentNum)
         {
-            if (studentNum <= 0)
+            if (studentNum < 0)
                 throw new ArgumentException("Invalid student number", nameof(studentNum));
 
             using var connection = new SqlConnection(_connectionString);
             using var cmd = connection.CreateCommand();
 
-            cmd.CommandText = $"UPDATE student SET Deleted = 0 WHERE student_number = {s_paramStudentNum} AND {s_deletedClause}";
+            cmd.CommandText = $"UPDATE student SET Deleted = 0 WHERE student_number = {s_paramStudentNum} AND Deleted = 1";
             cmd.CommandType = CommandType.Text;
 
             cmd.Parameters.Add(new SqlParameter(s_paramStudentNum, SqlDbType.Int) { Value = studentNum });
