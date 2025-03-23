@@ -71,21 +71,20 @@ namespace Someren.Repositories
 
         private void CheckIfAlreadyExists(Lecturer lecturer)
         {
-            const string query =    "SELECT L.[lecturer_id], R.[room_number], L.[first_name], L.[Last_name], L.[telephone_number], L.[age], L.[bar_duty], L.[deleted] " +
+            const string query =    "SELECT L.[Last_name]" +
                                     "FROM lecturer AS L " +
-                                    "JOIN room AS R ON L.room_id = R.room_id " +
                                     "WHERE L.[last_name] = @LastName AND L.[lecturer_id] != @Id";
 
-            List<Lecturer> lecturers = ExecuteNameValidationQuery(lecturer, query);
+            List<string> lecturers = ExecuteNameValidationQuery(lecturer, query);
 
-            foreach (Lecturer l in lecturers)
+            if (lecturers.Contains(lecturer.LastName))
             {
-                if(l.LastName == lecturer.LastName) 
-                { 
-                    throw new Exception($"Last name already exists, please pick a different last name.");
-                }
+                throw new Exception($"Last name already exists, please pick a different last name.");
             }
-            return;
+            else
+            {
+                return;
+            }
         }
 
 
@@ -96,7 +95,7 @@ namespace Someren.Repositories
             const string query =    "SELECT [room_number] " +
                                     "FROM room " +
                                     "WHERE [room_type] = 'Lecturer' AND [room_number] LIKE 'A1-%' AND [Deleted] = 0 " +
-                                    "AND [room_id] NOT IN (SELECT [room_id] FROM [lecturer] WHERE [lecturer_id] != @Id)";
+                                    "AND [room_id] NOT IN (SELECT [room_id] FROM [lecturer] WHERE [lecturer_id] != @Id);";
 
             List<string> availableRooms = ExecuteRoomValidationQuery(lecturer, query);
 
@@ -201,7 +200,7 @@ namespace Someren.Repositories
             return new Lecturer(lecturerId, roomNumber, firstName, lastName, phoneNumber, age, barDuty, deleted);
         }
 
-        //This is used for ALL methods that READ from the database (GetAll, GetAllDeleted, GetFiltered, GetFilteredDeleted, GetById, GetByLastName
+        //This is used for ALL methods that READ from the database (GetAll, GetFiltered, GetById
         private List<Lecturer> ExecuteReadQuery(string query, bool? deleted, string? parameterName, string? parameterValue)
         {
             List<Lecturer> lecturers = new List<Lecturer>();
@@ -236,7 +235,7 @@ namespace Someren.Repositories
 
         }
 
-        //To execute the Create, Update, and Delete methods, uses a Data Reader because I want to add the error codes **later**
+        //To execute the Create, Update, and Delete methods, uses a Data Reader so it also reads it when something goes wrong unexpectedly (it shouldn't)
         private void ExecuteModificationQuery(Lecturer lecturer, string query)
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
@@ -253,9 +252,9 @@ namespace Someren.Repositories
             }
         }
 
-        private List<Lecturer> ExecuteNameValidationQuery(Lecturer lecturer, string query)
+        private List<string> ExecuteNameValidationQuery(Lecturer lecturer, string query)
         {
-            List<Lecturer> lecturers = new List<Lecturer>();
+            List<string> lecturers = new List<string>();
 
             using (SqlConnection connection = new SqlConnection(_connectionString))         //this sets up the ground rules for the connection
             {
@@ -270,7 +269,7 @@ namespace Someren.Repositories
 
                 while (reader.Read())
                 {
-                    lecturers.Add(ReadLecturer(reader));
+                    lecturers.Add((string)reader["last_name"]);
                 }
                 reader.Close();
 
