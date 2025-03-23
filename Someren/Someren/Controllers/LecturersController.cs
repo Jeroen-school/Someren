@@ -19,7 +19,7 @@ namespace Someren.Controllers
         [HttpGet]
         public IActionResult Index()
         {
-            List<Lecturer> lecturers = _lecturersRepository.GetAll(false); //The false is here so it retrieves the not deleted records
+            List<Lecturer> lecturers = _lecturersRepository.GetAll(false); //The parameter false is here so it retrieves the not deleted records
 
             return View(lecturers);
         }
@@ -27,7 +27,7 @@ namespace Someren.Controllers
         [HttpPost]
         public IActionResult Index(string lastName)
         {
-                List<Lecturer> lecturers = _lecturersRepository.GetFiltered(lastName, false); //The false is here so it retrieves the not deleted records
+                List<Lecturer> lecturers = _lecturersRepository.GetFiltered(lastName, false); //The parameter false is here so it retrieves the not deleted records
 
             return View(lecturers);
         }

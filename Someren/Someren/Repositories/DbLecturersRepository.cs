@@ -6,7 +6,7 @@ using System.Data;
 
 namespace Someren.Repositories
 {
-    //One of the criteria in the grading rubric was: "Methods are no longer than 10 lines of code, so I removed *some* redundancy and try my best to adhere to that requirement, EVERYTHING IS UNDER 15 LINES"
+    //One of the criteria in the grading rubric was: "Methods are no longer than 10 lines of code, so I removed *some* redundancy and try my best to adhere to that requirement, EVERY METHOD IS UNDER 15 LINES"
     public class DbLecturersRepository : ILecturersRepository
     {
         //fields and properties
@@ -147,7 +147,7 @@ namespace Someren.Repositories
                                     $"SET Deleted = 1 " +
                                     $"WHERE lecturer_id = @Id;";
 
-            ExecuteModificationQuery(lecturer , query);
+            ExecuteDeleteAndRestoreQuery(lecturer , query);
         }
 
         //Restore a deleted lecturer from the database
@@ -157,7 +157,7 @@ namespace Someren.Repositories
                                     $"SET Deleted = 0 " +
                                     $"WHERE lecturer_id = @Id;";
 
-            ExecuteModificationQuery(lecturer, query);
+            ExecuteDeleteAndRestoreQuery(lecturer, query);
         }
 
         //HARD DELETE a lecturer from the database
@@ -166,7 +166,7 @@ namespace Someren.Repositories
             const string query =    $"DELETE FROM lecturer " +
                                     $"WHERE lecturer_id = @Id;";
 
-            ExecuteModificationQuery(lecturer, query);
+            ExecuteDeleteAndRestoreQuery(lecturer, query);
         }
 
 
@@ -200,7 +200,7 @@ namespace Someren.Repositories
             return new Lecturer(lecturerId, roomNumber, firstName, lastName, phoneNumber, age, barDuty, deleted);
         }
 
-        //This is used for ALL methods that READ from the database (GetAll, GetFiltered, GetById
+        //This is used for ALL methods that READ from the database (GetAll, GetFiltered, GetById)
         private List<Lecturer> ExecuteReadQuery(string query, bool? deleted, string? parameterName, string? parameterValue)
         {
             List<Lecturer> lecturers = new List<Lecturer>();
@@ -235,7 +235,7 @@ namespace Someren.Repositories
 
         }
 
-        //To execute the Create, Update, and Delete methods, uses a Data Reader so it also reads it when something goes wrong unexpectedly (it shouldn't)
+        //To execute the Create and Update methods. Uses a Data Reader so it also reads it when something goes wrong unexpectedly (it shouldn't)
         private void ExecuteModificationQuery(Lecturer lecturer, string query)
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
@@ -252,6 +252,25 @@ namespace Someren.Repositories
             }
         }
 
+        //To execute the Delete, Restore, and Erase methods. Uses a Data Reader for error codes
+        private void ExecuteDeleteAndRestoreQuery(Lecturer lecturer, string query)
+        {
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+
+                SqlCommand command = new SqlCommand(query, connection);
+
+                command.Parameters.AddWithValue("@Id", lecturer.LecturerId);
+
+                command.Connection.Open();
+                SqlDataReader reader = command.ExecuteReader();
+
+                reader.Close();
+            }
+        }
+
+
+        //These are the two validaiton methods used. This is being called by CheckIfAlreadyExists()
         private List<string> ExecuteNameValidationQuery(Lecturer lecturer, string query)
         {
             List<string> lecturers = new List<string>();
@@ -277,6 +296,7 @@ namespace Someren.Repositories
             }
         }
 
+        //These are the two validaiton methods used. This is being called by CheckRoomExists()
         private List<string> ExecuteRoomValidationQuery(Lecturer lecturer, string query)
         {
             List<string> rooms = new List<string>();
