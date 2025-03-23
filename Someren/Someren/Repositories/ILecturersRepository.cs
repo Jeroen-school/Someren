@@ -16,8 +16,6 @@ namespace Someren.Repositories
         Lecturer? GetById(int userId);
 
 
-
-
         void Add(Lecturer lecturer);
 
         void Update(Lecturer lecturer);
