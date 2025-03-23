@@ -58,7 +58,7 @@ namespace Someren.Controllers
             return RedirectToAction(nameof(Index));
         }
         [HttpGet]
-        public IActionResult Update(string id)
+        public IActionResult Edit(string id)
         {
             Activity activity = _activityRepository.GetActivityByType(id);
             if (activity == null)
@@ -71,7 +71,7 @@ namespace Someren.Controllers
         }
 
         [HttpPost]
-        public IActionResult Update(Activity activity, string originalType)
+        public IActionResult Edit(Activity activity, string originalType)
         {
 
             if (activity.Activitytype != originalType &&

@@ -32,12 +32,12 @@
             </div>
         }
 
-        <form action="/Room/Edit" method="POST">
-            <input type="hidden" name="RoomNumber" value="@Model?.RoomNumber" />
+        <form action="/Room/Edit/@Model?.RoomId" method="POST">
+            <input type="hidden" name="RoomId" value="@Model?.RoomId" />
 
             <div class="mb-3">
                 <label for="RoomNumber" class="form-label">Room Number</label>
-                <input type="text" class="form-control" id="RoomNumber" name="RoomNumber" disabled value="@Model?.RoomNumber" />
+                <input type="text" class="form-control" id="RoomNumber" name="RoomNumber" readonly value="@Model?.RoomNumber" />
             </div>
 
             <div class="mb-3">

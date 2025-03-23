@@ -16,6 +16,16 @@
             Size = 0;
             Deleted = false;
         }
+
+        public Room(int roomId, string roomNumber, string type, int size)
+        {
+            RoomId = roomId;
+            RoomNumber = roomNumber;
+            Type = type;
+            Size = size;
+            Deleted = false;
+        }
+
         public Room(int roomId, string roomNumber, string type, int size, bool deleted)
         {
             RoomId = roomId;
