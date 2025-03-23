@@ -18,6 +18,12 @@ namespace Someren.Repositories
             string pattern = @"(?i)^[AB]\d-\d{2}$"; // Regex pattern
             return Regex.IsMatch(roomNumber, pattern);
         }
+
+        public bool IsRoomNumberForLecturers(string roomNumber)
+        {
+            string pattern = @"(?i)^A1-\d{2}$"; // Regex pattern
+            return Regex.IsMatch(roomNumber, pattern);
+        }
         public bool RoomExists(string roomNumber)
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
@@ -130,6 +136,20 @@ namespace Someren.Repositories
             if (RoomExists(room.RoomNumber))
             {
                 errorMessage = "Room already exists.";
+                return false;
+            }
+
+            // Return error message if room number should be for lecturers
+            if (room.Type == "Student" && IsRoomNumberForLecturers(room.RoomNumber))
+            {
+                errorMessage = "Students can not sleep in building A ground floor (A1).";
+                return false;
+            }
+
+            // Return error message if room number should be for students
+            if (room.Type == "Lecturer" && !IsRoomNumberForLecturers(room.RoomNumber))
+            {
+                errorMessage = "Lecturers can only sleep in building A ground floor (A1).";
                 return false;
             }
 
