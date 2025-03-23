@@ -8,6 +8,8 @@
             void AddActivity(Models.Activity activity);
             void UpdateActivity(Models.Activity activity, string originalType);
             void DeleteActivity(string activityType);
+            bool ActivityExists(string activityType);
+            List<Models.Activity> FilterActivitiesByName(string searchstring);
 
 
 
