@@ -2,6 +2,7 @@
 {
     public class Room
     {
+        public int RoomId { get; set; }
         public string RoomNumber { get; set; }
         public string Type { get; set; }
         public int Size { get; set; }
@@ -15,8 +16,9 @@
             Size = 0;
             Deleted = false;
         }
-        public Room(string roomNumber, string type, int size, bool deleted)
+        public Room(int roomId, string roomNumber, string type, int size, bool deleted)
         {
+            RoomId = roomId;
             RoomNumber = roomNumber;
             Type = type;
             Size = size;
