@@ -9,15 +9,18 @@ $(document).ready(function () {
         $(this).find('.modal-content').addClass('fade-in');
     });
 
+    // Modal cleanup when hidden - fixes backdrop issue
+    $('.modal').on('hidden.bs.modal', function () {
+        document.body.classList.remove('modal-open');
+        $('.modal-backdrop').remove();
+    });
+
     // Initialize tooltips
     var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
     var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
         return new bootstrap.Tooltip(tooltipTriggerEl);
     });
-});
 
-
-$(document).ready(function () {
     // Add validation styling
     $('form').on('submit', function () {
         $(this).find('select, input').each(function () {
@@ -37,27 +40,29 @@ $(document).ready(function () {
     });
 });
 
-// Initialize tooltips
-var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-    return new bootstrap.Tooltip(tooltipTriggerEl);
-});
-
 // Filter functionality
-document.getElementById('showBarDutyBtn').addEventListener('click', function () {
-    const rows = document.querySelectorAll('tbody tr');
-    rows.forEach(row => {
-        if (row.classList.contains('bar-duty-row')) {
-            row.style.display = '';
-        } else {
-            row.style.display = 'none';
-        }
-    });
-});
+document.addEventListener('DOMContentLoaded', function () {
+    const showBarDutyBtn = document.getElementById('showBarDutyBtn');
+    if (showBarDutyBtn) {
+        showBarDutyBtn.addEventListener('click', function () {
+            const rows = document.querySelectorAll('tbody tr');
+            rows.forEach(row => {
+                if (row.classList.contains('bar-duty-row')) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+    }
 
-document.getElementById('showAllBtn').addEventListener('click', function () {
-    const rows = document.querySelectorAll('tbody tr');
-    rows.forEach(row => {
-        row.style.display = '';
-    });
+    const showAllBtn = document.getElementById('showAllBtn');
+    if (showAllBtn) {
+        showAllBtn.addEventListener('click', function () {
+            const rows = document.querySelectorAll('tbody tr');
+            rows.forEach(row => {
+                row.style.display = '';
+            });
+        });
+    }
 });

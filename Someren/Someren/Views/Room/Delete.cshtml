@@ -18,9 +18,9 @@
             </div>
         }
 
-        <div class="alert alert-warning">
-            <i class="fas fa-exclamation-triangle me-2"></i>
-            <strong>Warning:</strong> Are you sure you want to delete this room? This action cannot be undone.
+        <div class="alert alert-danger">
+            <i class="fas fa-exclamation-circle me-2 fa-lg"></i>
+            <strong>SEVERE WARNING:</strong> This action is irreversible and will permanently erase all data.
         </div>
 
         <div class="card mb-4 border">
@@ -76,18 +76,18 @@
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header bg-danger text-white">
-                <h5 class="modal-title">
-                    <i class="fas fa-exclamation-triangle me-2"></i>Confirm Deletion
+                <h5 class="modal-title text-white">
+                    <i class="fas fa-exclamation-triangle me-2"></i>Permanent Deletion
                 </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <div class="alert alert-warning">
-                    <i class="fas fa-exclamation-circle modal-warning-icon"></i>
-                    <strong>Warning:</strong> This action cannot be undone.
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-circle me-2 fa-lg"></i>
+                    <strong>SEVERE WARNING:</strong> This action is irreversible and will permanently erase all data.
                 </div>
-                <p>Are you absolutely sure you want to delete room <span class="fw-bold">@Model?.RoomNumber</span>?</p>
-                <p>This will permanently remove this room from the system.</p>
+                <p>Are you absolutely sure you want to <span class="permanent-delete-warning">permanently delete</span> room <span class="fw-bold">@Model?.RoomNumber</span>?</p>
+                <p>Once deleted, this data <strong>cannot be recovered</strong> by any means. This operation removes all record of this room from the database.</p>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>

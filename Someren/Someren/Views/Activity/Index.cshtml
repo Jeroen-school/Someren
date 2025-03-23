@@ -1,56 +1,113 @@
 ﻿@model List<Someren.Models.Activity>
 @{
-    ViewData["Title"] = "Activity";
-}
-<h2>List of Activities</h2>
+    ViewData["Title"] = "Activity Management";
 
-<div class="row mb-3">
-    <div class="col-md-6">
-        <form asp-action="Index" method="get">
-            <div class="input-group">
-                <input type="text" class="form-control" name="searchString"
-                       placeholder="Search by activity name" value="@ViewData["CurrentFilter"]">
-                <button type="submit" class="btn btn-primary">Search</button>
-                <a asp-action="Index" class="btn btn-secondary">Clear</a>
+    // Find the next upcoming activity
+    var today = DateTime.Today;
+    var upcomingActivity = Model
+        .Where(a => a.Date >= today)
+        .OrderBy(a => a.Date)
+        .ThenBy(a => a.Time)
+        .FirstOrDefault();
+}
+<div class="card mb-4 fade-in">
+    <div class="card-header">
+        <h1 class="card-title">Activity Management</h1>
+        <div class="d-flex">
+            <a asp-action="Create" class="btn btn-primary shadow-button">
+                <i class="fas fa-plus me-2"></i> Add New Activity
+            </a>
+        </div>
+    </div>
+    <div class="card-body p-0">
+        <div class="dashboard-stats px-4 py-3">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-calendar-alt"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 class="stat-value">@Model.Count</h3>
+                    <p class="stat-label">Total Activities</p>
+                </div>
             </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-hourglass-start"></i>
+                </div>
+                <div class="stat-content">
+                    @if (upcomingActivity != null)
+                    {
+                        <h3 class="stat-value">Next: @upcomingActivity.Activitytype</h3>
+                        <p class="stat-label">@upcomingActivity.Date.ToShortDateString() at @upcomingActivity.Time</p>
+                    }
+                    else
+                    {
+                        <h3 class="stat-value">None</h3>
+                        <p class="stat-label">No upcoming activities</p>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <form asp-action="Index" method="get" class="search-form">
+            <label for="searchString" class="search-form-label">
+                <i class="fas fa-search"></i> Search activities:
+            </label>
+            <div class="search-form-group">
+                <i class="fas fa-calendar-week search-icon"></i>
+                <input type="text" id="searchString" name="searchString" class="form-control search-form-control"
+                       placeholder="Enter activity name..." value="@ViewData["CurrentFilter"]" />
+                <button type="submit" class="search-btn">
+                    <i class="fas fa-search"></i> Search
+                </button>
+            </div>
+            <a asp-action="Index" class="reset-search">
+                <i class="fas fa-undo"></i> Reset
+            </a>
         </form>
+
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>Activity Name</th>
+                        <th>Date</th>
+                        <th>Time</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Count > 0)
+                    {
+                        @foreach (var activity in Model)
+                        {
+                            <tr>
+                                <td>@activity.Activitytype</td>
+                                <td>@activity.Date.ToShortDateString()</td>
+                                <td>@activity.Time</td>
+                                <td class="action-buttons">
+                                    <a asp-action="Edit" asp-route-id="@activity.Activitytype" class="btn btn-primary shadow-button">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <a asp-action="Delete" asp-route-id="@activity.Activitytype" class="btn btn-danger shadow-button">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="4" class="text-center py-4">
+                                <div class="alert alert-info mb-0">
+                                    <i class="fas fa-info-circle me-2"></i> No activities found.
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
-
-<p>
-    <a asp-action="Create" class="btn btn-primary">Create New Activity</a>
-</p>
-
-<table class="table table-striped table-hover" style="width:100%; text-align:left;">
-    <thead>
-        <tr>
-            <th>Activity Name</th>
-            <th>Date</th>
-            <th>Time</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        @if (Model != null && Model.Count > 0)
-        {
-            @foreach (var activity in Model)
-            {
-                <tr>
-                    <td>@activity.Activitytype</td>
-                    <td>@activity.Date.ToShortDateString()</td>
-                    <td>@activity.Time</td>
-                    <td>
-                        <a asp-action="Edit" asp-route-id="@activity.Activitytype" class="btn btn-sm btn-warning">Edit</a>
-                        <a asp-action="Delete" asp-route-id="@activity.Activitytype" class="btn btn-sm btn-danger">Delete</a>
-                    </td>
-                </tr>
-            }
-        }
-        else
-        {
-            <tr>
-                <td colspan="4" style="text-align:center;">No activities found.</td>
-            </tr>
-        }
-    </tbody>
-</table>

@@ -13,7 +13,7 @@
         </div>
 
         <div class="dashboard-stats">
-            <div class="stat-card">
+            <div class="stat-card" style="cursor: pointer;" onclick="window.location.href='/Student/Index'">
                 <div class="stat-icon">
                     <i class="fas fa-user-graduate"></i>
                 </div>
@@ -23,7 +23,7 @@
                 </div>
             </div>
 
-            <div class="stat-card">
+            <div class="stat-card" style="cursor: pointer;" onclick="window.location.href='/Lecturers/Index'">
                 <div class="stat-icon">
                     <i class="fas fa-chalkboard-teacher"></i>
                 </div>
@@ -75,7 +75,7 @@
     </div>
 
     <div class="col-md-4 mb-4">
-        <div class="card h-100">
+        <div class="card h-100" style="cursor: pointer;" onclick="window.location.href='/Room/Index'">
             <div class="card-body">
                 <h3 class="card-title">Accommodations</h3>
                 <ul class="list-group list-group-flush">
@@ -97,7 +97,7 @@
     </div>
 
     <div class="col-md-4 mb-4">
-        <div class="card h-100">
+        <div class="card h-100" style="cursor: pointer;" onclick="window.location.href='/Activity/Index'">
             <div class="card-body">
                 <h3 class="card-title">Activities</h3>
                 <ul class="list-group list-group-flush">
@@ -166,3 +166,14 @@
         </div>
     </div>
 </div>
+
+<style>
+    .card[onclick] {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+        .card[onclick]:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+</style>
