@@ -27,44 +27,82 @@
 
     <a href="/Lecturers/Index">Go back to lecturers</a>
 
-    <form action="/Lecturers/ListDeleted" method="Post">
-        <label for="LastName">Search for last name:</label>
-        <input type="text" id="LastName" name="LastName" class="form-control" />
-
-        <button type="submit" class="btn">Search</button>
-
+    <form action="/Lecturers/ListDeleted" method="post" class="search-form">
+        <label for="LastName" class="search-form-label">
+            <i class="fas fa-search"></i> Search lecturers:
+        </label>
+        <div class="search-form-group">
+            <i class="fas fa-user-tie search-icon"></i>
+            <input type="text" id="LastName" name="LastName" class="form-control search-form-control"
+                   placeholder="Enter last name..."/>
+            <button type="submit" class="search-btn">
+                <i class="fas fa-search"></i> Search
+            </button>
+        </div>
+        <a href="/Lecturers/ListDeleted" class="reset-search">
+            <i class="fas fa-undo"></i> Reset
+        </a>
     </form>
-    <a href="/Lecturers/ListDeleted">Back to overview</a>
 
-
-    <table class="table">
-        <thead>
-            <tr>
-                <th></th>
-                <th>First name:</th>
-                <th>Last name:</th>
-                <th>Room Number:</th>
-                <th>Telephone number</th>
-                <th>Age</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            @{
-                foreach (Lecturer lecturer in Model)
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Room</th>
+                    <th>Phone Number</th>
+                    <th>Age</th>
+                    <th>Bar Duty</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Count > 0)
+                {
+                    foreach (Lecturer lecturer in Model)
+                    {
+                        <tr>
+                            <td>@lecturer.LecturerId</td>
+                            <td>@lecturer.FirstName</td>
+                            <td>@lecturer.LastName</td>
+                            <td>@lecturer.RoomNumber</td>
+                            <td>@lecturer.PhoneNumber</td>
+                            <td>@lecturer.Age</td>
+                            <td>
+                                @if (lecturer.BarDuty == true)
+                                {
+                                    <span class="badge bg-success">Assigned</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">Not Assigned</span>
+                                }
+                            </td>
+                            <td>
+                                <a href="/Lecturers/Restore/@lecturer.LecturerId" class="btn btn-primary shadow-button">
+                                    <i class="fas fa-undo"></i>Restore
+                                </a>
+                                <a href="/Lecturers/Erase/@lecturer.LecturerId" class="btn btn-danger shadow-button">
+                                    <i class="fas fa-trash"></i>Permanently Delete
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
                 {
                     <tr>
-                        <td>@lecturer.LecturerId</td>
-                        <td>@lecturer.FirstName</td>
-                        <td>@lecturer.LastName</td>
-                        <td>@lecturer.RoomNumber</td>
-                        <td>@lecturer.PhoneNumber</td>
-                        <td>@lecturer.Age</td>
-                        <td><a href="/Lecturers/Restore/@lecturer.LecturerId">Restore</a> <a href="/Lecturers/Erase/@lecturer.LecturerId">Permanently delete</a></td>
+                        <td colspan="8" class="text-center py-4">
+                            <div class="alert alert-info mb-0">
+                                <i class="fas fa-info-circle me-2"></i> No lecturers found.
+                            </div>
+                        </td>
                     </tr>
                 }
-
-            }
-        </tbody>
-    </table>
+            </tbody>
+        </table>
+    </div>
+</div>
 </div>

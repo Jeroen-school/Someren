@@ -9,17 +9,11 @@ namespace Someren.Repositories
         //constructors
 
         //methods
-        List<Lecturer> GetAll();
+        List<Lecturer> GetAll(bool deleted);
 
-        List<Lecturer> GetAllDeleted();
-
-        List<Lecturer> GetFiltered(string lastName);
-
-        List<Lecturer> GetFilteredDeleted(string lastName);
+        List<Lecturer> GetFiltered(string lastName, bool deleted);
 
         Lecturer? GetById(int userId);
-
-
 
 
         void Add(Lecturer lecturer);

@@ -19,7 +19,7 @@ namespace Someren.Controllers
         [HttpGet]
         public IActionResult Index()
         {
-            List<Lecturer> lecturers = _lecturersRepository.GetAll();
+            List<Lecturer> lecturers = _lecturersRepository.GetAll(false); //The parameter false is here so it retrieves the not deleted records
 
             return View(lecturers);
         }
@@ -27,9 +27,9 @@ namespace Someren.Controllers
         [HttpPost]
         public IActionResult Index(string lastName)
         {
-                List<Lecturer> lecturers = _lecturersRepository.GetFiltered(lastName);
-                
-                return View(lecturers);
+                List<Lecturer> lecturers = _lecturersRepository.GetFiltered(lastName, false); //The parameter false is here so it retrieves the not deleted records
+
+            return View(lecturers);
         }
 
         //When opening up the create lecturer page
@@ -61,16 +61,23 @@ namespace Someren.Controllers
         [HttpGet]
         public IActionResult Update(int? id)
         {
-            if (id == null)
+            try 
             {
-                TempData["ErrorMessage"] = $"Lecturer not found, please try again.";
-                return RedirectToAction("Index");
+                if (id == null)
+                {
+                    throw new Exception ($"No lecturer found, please try again.");
+                }
 
+                Lecturer? lecturer = _lecturersRepository.GetById((int)id);
+
+                return View(lecturer);
             }
-            
-            Lecturer? lecturer = _lecturersRepository.GetById((int)id);
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = $"Error: {ex.Message}";
 
-            return View(lecturer);
+                return RedirectToAction("Index");
+            }
         }
 
         //Once you have filled in the form to make changes
@@ -95,15 +102,23 @@ namespace Someren.Controllers
         [HttpGet]
         public IActionResult Delete(int? id)
         {
-            if (id == null)
+            try
             {
-                TempData["ErrorMessage"] = $"Lecturer not found, please try again.";
+                if (id == null)
+                {
+                    throw new Exception($"No lecturer found, please try again.");
+                }
+
+                Lecturer? lecturer = _lecturersRepository.GetById((int)id);
+
+                return View(lecturer);
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = $"Error: {ex.Message}";
+
                 return RedirectToAction("Index");
             }
-
-            Lecturer? lecturer = _lecturersRepository.GetById((int)id);
-
-            return View(lecturer);
         }
 
         //Once you have confirmed your action
@@ -128,7 +143,7 @@ namespace Someren.Controllers
         [HttpGet]
         public IActionResult ListDeleted()
         {
-            List<Lecturer> lecturers = _lecturersRepository.GetAllDeleted();
+            List<Lecturer> lecturers = _lecturersRepository.GetAll(true);
 
             return View(lecturers);
         }
@@ -136,7 +151,7 @@ namespace Someren.Controllers
         [HttpPost]
         public IActionResult ListDeleted(string lastName)
         {
-                List<Lecturer> lecturers = _lecturersRepository.GetFilteredDeleted(lastName);
+                List<Lecturer> lecturers = _lecturersRepository.GetFiltered(lastName, true);
 
             return View(lecturers);
         }
@@ -145,15 +160,23 @@ namespace Someren.Controllers
         [HttpGet]
         public IActionResult Restore(int? id)
         {
-            if (id == null)
+            try
             {
-                TempData["ErrorMessage"] = $"Lecturer not found, please try again.";
+                if (id == null)
+                {
+                    throw new Exception("No lecturer found, please try again.");
+                }
+
+                Lecturer? lecturer = _lecturersRepository.GetById((int)id);
+
+                return View(lecturer);
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = $"Error: {ex.Message}";
+
                 return RedirectToAction("ListDeleted");
             }
-
-            Lecturer? lecturer = _lecturersRepository.GetById((int)id);
-
-            return View(lecturer);
         }
 
         //Once you have confirmed your action to restore a lecturer
