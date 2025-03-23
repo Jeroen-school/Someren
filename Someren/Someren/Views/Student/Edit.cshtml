@@ -74,17 +74,7 @@
                     }
                     else
                     {
-                        @foreach (var room in new List<string> { "A1-01", "B1-01" })
-                        {
-                            if (Model?.RoomNum == room)
-                            {
-                                <option value="@room" selected>@room</option>
-                            }
-                            else
-                            {
-                                <option value="@room">@room</option>
-                            }
-                        }
+                        <option value="" disabled selected>No rooms available</option>
                     }
                 </select>
             </div>
