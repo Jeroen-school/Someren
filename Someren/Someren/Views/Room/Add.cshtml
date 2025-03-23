@@ -31,18 +31,13 @@
                 <i class="fas fa-exclamation-circle me-2"></i> @ViewBag.ErrorMessage
             </div>
         }
-
         <form action="/Room/Add" method="POST">
             <div class="mb-3">
                 <label for="RoomNumber" class="form-label">Room Number</label>
                 <input type="text" class="form-control" id="RoomNumber" name="RoomNumber" placeholder="A1-01" required value="@Model?.RoomNumber" />
                 <div class="form-text">
-                    <i class="fas fa-info-circle me-1"/> Use format 'Building-Floor-Number' (Example: A1-01 for Building A, Floor 1, Room 01)
+                    <i class="fas fa-info-circle me-1"></i> Use format 'Building-Floor-Number' (Example: A1-01 for Building A, Floor 1, Room 01)
                 </div>
-                @if (!string.IsNullOrEmpty(ViewBag.ErrorMessage))
-                {
-                    <div class="alert alert-danger mt-3">@ViewBag.ErrorMessage</div>
-                }
             </div>
 
             <div class="mb-3">
@@ -65,7 +60,7 @@
 
             <div class="d-flex justify-content-center mt-4">
                 <button type="submit" class="btn btn-primary shadow-button">
-                    <i class="fas fa-plus-circle me-2"/> Add Room
+                    <i class="fas fa-plus-circle me-2"></i> Add Room
                 </button>
             </div>
         </form>

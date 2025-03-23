@@ -5,27 +5,10 @@
 <div class="card mb-4 fade-in">
     <div class="card-header">
         <h1 class="card-title">Room Management</h1>
-        <div class="d-flex justify-content-between align-items-center">
+        <div class="d-flex">
             <a href="/Room/Add" class="btn btn-primary shadow-button">
                 <i class="fas fa-plus me-2"></i> Add Room
             </a>
-            <form method="get" action="/Room/Index" class="d-flex w-50">
-                <label for="Size">Filter by Size:</label>
-                <select id="Size" name="Size" class="form-select me-2"
-                        onchange="this.form.submit()"
-                @(ViewBag.SelectedSize != null ? "disabled" : "")>
-                    <option value="">All</option>
-                    @foreach (var size in ViewBag.Sizes)
-                    {
-                        <option value="@size" selected="@(ViewBag.SelectedSize == size ? "selected" : null)">@size</option>
-                    }
-                </select>
-
-                @if (ViewBag.SelectedSize != null)
-                {
-                    <a href="/Room/Index" class="btn btn-secondary">Clear Filter</a>
-                }
-            </form>
         </div>
     </div>
     <div class="card-body p-0">
@@ -78,6 +61,30 @@
                 </div>
             </div>
         </div>
+        <div class="card-body pb-0">
+            <form method="get" action="/Room/Index" class="d-flex align-items-center gap-3 mb-3">
+                <label for="Size" class="fw-semibold">Filter by Size:</label>
+                <div class="w-auto">
+                    <select id="Size" name="Size"
+                            class="form-select form-select-lg shadow-sm px-3 py-2 fs-5"
+                            style="min-width: 120px;"
+                            onchange="this.form.submit()">
+                        <option value="">All</option>
+                        @foreach (var size in ViewBag.Sizes)
+                        {
+                            <option value="@size" selected="@(ViewBag.SelectedSize == size ? "selected" : null)">@size</option>
+                        }
+                    </select>
+                </div>
+
+                @if (ViewBag.SelectedSize != null)
+                {
+                    <a href="/Room/Index" class="btn btn-outline-secondary btn-lg">Clear Filter</a>
+                }
+            </form>
+
+
+        </div>
         <div class="table-responsive">
             <table class="table table-hover mb-0">
                 <thead>
@@ -109,10 +116,10 @@
                             </td>
                             <td>@room.Size</td>
                             <td class="action-buttons">
-                                <a href="/Room/Edit/@room.RoomNumber" class="btn btn-primary shadow-button">
+                                <a href="/Room/Edit/@room.RoomId" class="btn btn-primary shadow-button">
                                     <i class="fas fa-edit"></i>
                                 </a>
-                                <a href="/Room/Delete/@room.RoomNumber" class="btn btn-danger shadow-button">
+                                <a href="/Room/Delete/@room.RoomId" class="btn btn-danger shadow-button">
                                     <i class="fas fa-trash"></i>
                                 </a>
                             </td>

@@ -33,15 +33,11 @@
         }
 
         <form action="/Room/Edit" method="POST">
-            <input type="hidden" name="RoomNumber" value="@Model?.RoomNumber" />
+            <input type="hidden" name="RoomId" value="@Model?.RoomId" />
 
             <div class="mb-3">
                 <label for="RoomNumber" class="form-label">Room Number</label>
                 <input type="text" class="form-control" id="RoomNumber" name="RoomNumber" required value="@Model?.RoomNumber" />
-                @if (!string.IsNullOrEmpty(ViewBag.ErrorMessage))
-                {
-                    <div class="alert alert-danger mt-3">@ViewBag.ErrorMessage</div>
-                }
             </div>
 
             <div class="mb-3">

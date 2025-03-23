@@ -13,18 +13,18 @@ namespace Someren.Repositories
         }
 
         //validation for room number
-        public bool IsValidRoomNumber(string roomNumber)
+        private bool IsValidRoomNumber(string roomNumber)
         {
             string pattern = @"(?i)^[AB]\d-\d{2}$"; // Regex pattern
             return Regex.IsMatch(roomNumber, pattern);
         }
 
-        public bool IsRoomNumberForLecturers(string roomNumber)
+        private bool IsRoomNumberForLecturers(string roomNumber)
         {
             string pattern = @"(?i)^A1-\d{2}$"; // Regex pattern
             return Regex.IsMatch(roomNumber, pattern);
         }
-        public bool RoomExists(string roomNumber)
+        private bool RoomExists(string roomNumber)
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
@@ -64,30 +64,36 @@ namespace Someren.Repositories
             return new Room(roomId, roomNumber, type, size, deleted);
         }
 
-        public List<Room> GetAll(int? size)
+        public List<Room> GetBySize(int size)
         {
             List<Room> rooms = new List<Room>();
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
-                string query = "SELECT * FROM room WHERE Deleted = @deleted";
-
-                // If a size is provided, filter by it
-                if (size.HasValue)
+                string query = "SELECT * FROM room WHERE room_size = @roomSize AND Deleted = @deleted ORDER BY room_number";
+                SqlCommand command = new SqlCommand(query, connection);
+                command.Parameters.AddWithValue("@roomSize", size);
+                command.Parameters.AddWithValue("@deleted", false);
+                command.Connection.Open();
+                SqlDataReader reader = command.ExecuteReader();
+                while (reader.Read())
                 {
-                    query += " AND room_size = @roomSize";
+                    Room room = ReadRoom(reader);
+                    rooms.Add(room);
                 }
-
-                query += " ORDER BY room_number";
+                reader.Close();
+            }
+            return rooms;
+        }
+        public List<Room> GetAll()
+        {
+            List<Room> rooms = new List<Room>();
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                string query = "SELECT * FROM room WHERE Deleted = @deleted ORDER BY room_number";
 
                 SqlCommand command = new SqlCommand(query, connection);
 
                 command.Parameters.AddWithValue("@deleted", false);
-
-                if (size.HasValue)
-                {
-                    command.Parameters.AddWithValue("@roomSize", size.Value);
-                }
-
                 command.Connection.Open();
                 SqlDataReader reader = command.ExecuteReader();
                 while (reader.Read())
@@ -198,14 +204,26 @@ namespace Someren.Repositories
                 return false;
             }
 
+            // Return error message if room number should be for lecturers
+            if (room.Type == "Student" && IsRoomNumberForLecturers(room.RoomNumber))
+            {
+                errorMessage = "Students can not sleep in building A ground floor (A1).";
+                return false;
+            }
+
+            // Return error message if room number should be for students
+            if (room.Type == "Lecturer" && !IsRoomNumberForLecturers(room.RoomNumber))
+            {
+                errorMessage = "Lecturers can only sleep in building A ground floor (A1).";
+                return false;
+            }
+
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
-
-
                 string query = "UPDATE room SET room_number = @roomNumber, room_size = @roomSize, room_type = @roomType WHERE room_id = @roomId AND Deleted = @deleted";
                 SqlCommand command = new SqlCommand(query, connection);
 
-                command.Parameters.AddWithValue("@roomNumber", room.RoomNumber);
+                command.Parameters.AddWithValue("@roomNumber", room.RoomNumber.ToUpper());
                 command.Parameters.AddWithValue("@roomId", room.RoomId);
                 command.Parameters.AddWithValue("@roomSize", room.Size);
                 command.Parameters.AddWithValue("@roomType", room.Type);
