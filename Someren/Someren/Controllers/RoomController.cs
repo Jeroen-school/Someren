@@ -15,10 +15,15 @@ namespace Someren.Controllers
         //Home
         public IActionResult Index(int? size)
         {
-            List<Room> rooms = _roomRepository.GetAll(size);
+            List<Room> rooms = _roomRepository.GetAll();
+
+            if(size.HasValue)
+            {
+                rooms = _roomRepository.GetBySize(size.Value);
+            }
 
             // Pass available sizes to the dropdown
-            ViewBag.Sizes = _roomRepository.GetAll(size).Select(r => r.Size).Distinct().ToList();
+            ViewBag.Sizes = _roomRepository.GetAll().Select(r => r.Size).Distinct().ToList();
             ViewBag.SelectedSize = size;
             return View(rooms);
         }
@@ -52,7 +57,7 @@ namespace Someren.Controllers
             return View(room);
         }
 
-        [HttpPost("Room/Edit/{RoomId}")]
+        [HttpPost("Room/Edit")]
         public IActionResult Edit(Room room)
         {
             Console.WriteLine($"{room.RoomId}");

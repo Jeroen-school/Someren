@@ -91,7 +91,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <form action="/Room/Delete" method="post">
+                <form action="/Room/Delete" method="POST">
                     <input type="hidden" name="RoomId" value="@Model?.RoomId" />
                     <button type="submit" class="btn btn-danger">
                         <i class="fas fa-trash me-2"></i>Delete Permanently
