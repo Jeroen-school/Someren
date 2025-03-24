@@ -33,7 +33,7 @@ namespace Someren.Controllers
         public IActionResult Add()
         {
             // Get all available rooms
-            ViewBag.Rooms = _roomRepository.GetAll();
+            ViewBag.Rooms = _roomRepository.GetBySize(8);
 
             return View();
         }
@@ -56,7 +56,7 @@ namespace Someren.Controllers
                 ModelState.AddModelError("StudentNum", ex.Message);
                  
                 // Get rooms again for the view
-                ViewBag.Rooms = _roomRepository.GetAll();
+                ViewBag.Rooms = _roomRepository.GetBySize(8);
 
                 // Return to the form with the student data
                 return View(student);
@@ -79,7 +79,7 @@ namespace Someren.Controllers
             }
 
             // Get all available rooms
-            ViewBag.Rooms = _roomRepository.GetAll();
+            ViewBag.Rooms = _roomRepository.GetBySize(8);
 
             return View(student);
         }
@@ -99,7 +99,7 @@ namespace Someren.Controllers
                 TempData["ErrorMessage"] = $"Error updating student: {ex.Message}";
 
                 // Get rooms again for the view
-                ViewBag.Rooms = _roomRepository.GetAll();
+                ViewBag.Rooms = _roomRepository.GetBySize(8);
 
                 return View(student);
             }
