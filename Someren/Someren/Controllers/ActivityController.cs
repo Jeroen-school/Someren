@@ -7,10 +7,14 @@ namespace Someren.Controllers
     public class ActivityController : Controller
     {
         private IDbActivityRepository _activityRepository;
+        private IActivityParticipantRepository _activityParticipantRepository;
+        private IStudentsRepository _studentRepository;
 
-        public ActivityController(IDbActivityRepository activityRepository)
+        public ActivityController(IDbActivityRepository activityRepository, IActivityParticipantRepository activityParticipantRepository, IStudentsRepository studentRepository)
         {
             _activityRepository = activityRepository;
+            _activityParticipantRepository = activityParticipantRepository;
+            _studentRepository = studentRepository;
         }
 
         public IActionResult Index(string searchString)
@@ -102,5 +106,57 @@ namespace Someren.Controllers
             return RedirectToAction(nameof(Index));
         }
         
+
+        [HttpGet]
+        public IActionResult Participants(string id)
+        {
+            Activity activity = _activityRepository.GetActivityByType(id);
+            if (activity == null)
+            {
+                return NotFound();
+            }
+
+            // Get participants and non-participants
+            List<Student> participants = _activityParticipantRepository.GetParticipants(id);
+            List<Student> nonParticipants = _activityParticipantRepository.GetNonParticipants(id);
+
+            // Store data in ViewBag
+            ViewBag.Activity = activity;
+            ViewBag.Participants = participants;
+            ViewBag.NonParticipants = nonParticipants;
+
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult AddParticipant(string activityType, int studentNum)
+        {
+            try
+            {
+                _activityParticipantRepository.AddParticipant(activityType, studentNum);
+                TempData["SuccessMessage"] = "Student was successfully added to the activity.";
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = $"Error adding student to activity: {ex.Message}";
+            }
+            return RedirectToAction("Participants", new { id = activityType });
+        }
+
+        [HttpPost]
+        public IActionResult RemoveParticipant(string activityType, int studentNum)
+        {
+            try
+            {
+                _activityParticipantRepository.RemoveParticipant(activityType, studentNum);
+                TempData["SuccessMessage"] = "Student was successfully removed from the activity.";
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = $"Error removing student from activity: {ex.Message}";
+            }
+            return RedirectToAction("Participants", new { id = activityType });
+        }
+
     }
 }
