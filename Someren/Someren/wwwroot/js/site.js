@@ -38,6 +38,9 @@ $(document).ready(function () {
             $(this).removeClass('is-invalid');
         }
     });
+
+    // Drink Order specific functionality
+    initDrinkOrderFunctionality();
 });
 
 // Filter functionality
@@ -66,3 +69,105 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 });
+
+// Drink Order functions
+function initDrinkOrderFunctionality() {
+    // Handle drink table row clicks
+    $('#drinks-table').on('click', '.clickable-row', function () {
+        const drinkId = $(this).data('drink-id');
+        selectDrink(drinkId);
+    });
+
+    // Update price preview when inputs change
+    $('#DrinkId, #Quantity').on('change keyup', function () {
+        updatePricePreview();
+    });
+
+    // Initialize price preview on page load
+    updatePricePreview();
+}
+
+function updatePricePreview() {
+    const drinkSelect = document.getElementById('DrinkId');
+    const quantityInput = document.getElementById('Quantity');
+    const unitPriceElement = document.getElementById('unit-price');
+    const quantityPreviewElement = document.getElementById('quantity-preview');
+    const totalPriceElement = document.getElementById('total-price');
+
+    if (!drinkSelect || !quantityInput || !unitPriceElement || !quantityPreviewElement || !totalPriceElement) {
+        return; // Not on the drink order page
+    }
+
+    let unitPrice = 0;
+    if (drinkSelect.selectedIndex > 0) {
+        const selectedOption = drinkSelect.options[drinkSelect.selectedIndex];
+        unitPrice = parseFloat(selectedOption.dataset.price);
+    }
+
+    const quantity = parseInt(quantityInput.value) || 1;
+    const totalPrice = unitPrice * quantity;
+
+    unitPriceElement.textContent = `€${unitPrice.toFixed(2)}`;
+    quantityPreviewElement.textContent = quantity;
+    totalPriceElement.textContent = `€${totalPrice.toFixed(2)}`;
+}
+
+function selectDrink(drinkId) {
+    const drinkSelect = document.getElementById('DrinkId');
+    if (!drinkSelect) return;
+
+    for (let i = 0; i < drinkSelect.options.length; i++) {
+        if (drinkSelect.options[i].value === drinkId) {
+            drinkSelect.selectedIndex = i;
+            break;
+        }
+    }
+    updatePricePreview();
+    scrollToElement('#Quantity');
+}
+
+function scrollToElement(selector) {
+    const element = document.querySelector(selector);
+    if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        setTimeout(() => {
+            element.focus();
+        }, 500);
+    }
+}
+
+// Drink Order functions
+function initDrinkOrderFunctionality() {
+    // Handle drink table row clicks
+    $('#drinks-table').on('click', '.clickable-row', function () {
+        const drinkId = $(this).data('drink-id');
+        selectDrink(drinkId);
+    });
+
+    // Update price preview when inputs change
+    $('#DrinkId, #Quantity').on('change keyup', function () {
+        updatePricePreview();
+    });
+
+    // Initialize price preview on page load
+    updatePricePreview();
+}
+
+function selectDrink(drinkId) {
+    // Get the dropdown element
+    const drinkSelect = document.getElementById('DrinkId');
+    if (!drinkSelect) return;
+
+    // Set the value directly
+    drinkSelect.value = drinkId;
+
+    // Trigger the change event manually to update any listeners
+    const event = new Event('change');
+    drinkSelect.dispatchEvent(event);
+
+    // Highlight the dropdown to show it changed
+    $('#DrinkId').addClass('border-primary');
+    setTimeout(function () {
+        $('#DrinkId').removeClass('border-primary');
+    }, 1000);
+}

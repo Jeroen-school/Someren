@@ -820,3 +820,161 @@ select.search-form-control {
         box-shadow: 0 0 0 0.25rem rgba(94, 23, 235, 0.25);
         border-color: var(--primary);
     }
+
+/* Drink Order Specific Styles */
+.avatar-placeholder {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.drink-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+}
+
+    .drink-icon.alcoholic {
+        background-color: rgba(255, 171, 0, 0.1);
+        color: var(--warning);
+    }
+
+    .drink-icon.non-alcoholic {
+        background-color: rgba(0, 214, 143, 0.1);
+        color: var(--success);
+    }
+
+.order-summary {
+    background-color: #f8f9fa;
+    border-radius: 0.5rem;
+    padding: 1rem;
+}
+
+.clickable-row {
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+    .clickable-row:hover {
+        background-color: rgba(94, 23, 235, 0.05);
+    }
+
+.step-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background-color: var(--primary);
+    color: white;
+    margin-right: 8px;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.order-preview-card {
+    border-left: 4px solid var(--primary);
+    background-color: #f8f9fa;
+}
+
+/* Simplified card styles for drink order */
+.simple-card {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+}
+
+    .simple-card:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+
+/* Compact table styling */
+.compact-table th,
+.compact-table td {
+    padding: 0.6rem 1rem;
+}
+
+/* Compact form controls */
+.compact-form .form-group {
+    margin-bottom: 1.2rem;
+}
+
+.compact-form label {
+    margin-bottom: 0.3rem;
+}
+
+.compact-form small {
+    font-size: 0.75rem;
+}
+
+/* VAT info more compact */
+.vat-info-list .list-group-item {
+    padding: 0.5rem 1rem;
+}
+
+/* Additional styles for Stock page */
+.progress {
+    background-color: #f5f7fa;
+    border-radius: 1rem;
+    overflow: hidden;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.progress-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    transition: width 0.6s ease;
+}
+
+.inventory-card {
+    transition: transform 0.3s ease;
+}
+
+    .inventory-card:hover {
+        transform: translateY(-5px);
+    }
+
+/* Stock level indicators */
+.stock-indicator {
+    width: 60px;
+    height: 6px;
+    border-radius: 3px;
+    background-color: #e9ecef;
+    margin-top: 5px;
+    overflow: hidden;
+}
+
+.stock-indicator-bar {
+    height: 100%;
+    background-color: var(--success);
+}
+
+.stock-low .stock-indicator-bar {
+    background-color: var(--danger);
+}
+
+.stock-medium .stock-indicator-bar {
+    background-color: var(--warning);
+}
+
+/* Tooltip styles */
+.tooltip-inner {
+    max-width: 200px;
+    padding: 0.5rem 0.8rem;
+    color: white;
+    text-align: center;
+    background-color: var(--dark);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+}
