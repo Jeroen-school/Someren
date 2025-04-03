@@ -70,6 +70,7 @@
             <table class="table table-hover mb-0">
                 <thead>
                     <tr>
+                        <th></th>
                         <th>Activity Name</th>
                         <th>Date</th>
                         <th>Time</th>
@@ -82,15 +83,20 @@
                         @foreach (var activity in Model)
                         {
                             <tr>
+                                <td>@activity.ActivityID</td>
                                 <td>@activity.Activitytype</td>
                                 <td>@activity.Date.ToShortDateString()</td>
                                 <td>@activity.Time</td>
-                                <td class="action-buttons">
+                                <td>
                                     <a asp-action="Edit" asp-route-id="@activity.Activitytype" class="btn btn-primary shadow-button">
                                         <i class="fas fa-edit"></i>
                                     </a>
                                     <a asp-action="Delete" asp-route-id="@activity.Activitytype" class="btn btn-danger shadow-button">
                                         <i class="fas fa-trash"></i>
+                                    </a>
+
+                                    <a asp-action="Supervises" asp-route-id="@activity.ActivityID" class="btn btn-primary shadow-button">
+                                        <i class="fas fa-hard-hat"></i> supervisors
                                     </a>
                                 </td>
                             </tr>

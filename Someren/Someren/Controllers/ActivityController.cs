@@ -7,10 +7,12 @@ namespace Someren.Controllers
     public class ActivityController : Controller
     {
         private IDbActivityRepository _activityRepository;
+        private IActivitySupervisersRepository _activitySupervisersRepository;
 
-        public ActivityController(IDbActivityRepository activityRepository)
+        public ActivityController(IDbActivityRepository activityRepository, IActivitySupervisersRepository activitySupervisersRepository)
         {
             _activityRepository = activityRepository;
+            _activitySupervisersRepository = activitySupervisersRepository;
         }
 
         public IActionResult Index(string searchString)
@@ -101,6 +103,30 @@ namespace Someren.Controllers
             _activityRepository.DeleteActivity(id);
             return RedirectToAction(nameof(Index));
         }
+
+
+        [HttpGet]
+        public IActionResult Supervises(int? id)
+        {
+            try
+            {
+                if (id == null)
+                {
+                    throw new Exception($"No activity found, please try again.");
+                }
+
+                ActivitySupervisorsViewModel viewModel = new ActivitySupervisorsViewModel(_activityRepository.GetById((int)id), _activitySupervisersRepository.GetAllSupervising((int)id), _activitySupervisersRepository.GetAllOther((int)id));
+
+                return View(viewModel);
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = $"Error: {ex.Message}";
+
+                return RedirectToAction("Index");
+            }
+        }
+
         
     }
 }

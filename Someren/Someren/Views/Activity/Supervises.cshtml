@@ -1,0 +1,124 @@
+﻿@model Someren.Models.ActivitySupervisorsViewModel
+
+@{
+    ViewData["Title"] = "Superviser management";
+}
+
+
+<div class="card text-center">
+
+    <div class="card-header">
+        <h1 class="card-title"> Supervisor managament for @Model.Activity.Activitytype</h1>
+        <a asp-controller="Activity" asp-action="Index" class="btn btn-primary shadow-button">
+            <i class="fas fa-arrow-left me-2"></i> Back to Activities
+        </a>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success mx-4 mt-3">
+            <i class="fas fa-check-circle me-2"></i> @TempData["SuccessMessage"]
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger mx-4 mt-3">
+            <i class="fas fa-exclamation-circle me-2"></i> @TempData["ErrorMessage"]
+        </div>
+    }
+
+
+    
+    <div class="d-flex">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>First Name</th>
+                        <th>Last Name</th>
+                        <th>Phone Number</th>
+                        <th>Age</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.SupervisingLecturers.Count > 0)
+                    {
+                        foreach (Lecturer lecturer in Model.SupervisingLecturers)
+                        {
+                            <tr>
+                                <td>@lecturer.LecturerId</td>
+                                <td>@lecturer.FirstName</td>
+                                <td>@lecturer.LastName</td>
+                                <td>@lecturer.PhoneNumber</td>
+                                <td>@lecturer.Age</td>
+                                <td>
+                                    <a href="/Lecturers/Erase/@lecturer.LecturerId" class="btn btn-danger shadow-button">
+                                        <i class="fas fa-trash"></i>Permanently Delete
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="8" class="text-center py-4">
+                                <div class="alert alert-info mb-0">
+                                    <i class="fas fa-info-circle me-2"></i> No supervisors found.
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>First Name</th>
+                        <th>Last Name</th>
+                        <th>Phone Number</th>
+                        <th>Age</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.SupervisingLecturers.Count > 0)
+                    {
+                        foreach (Lecturer lecturer in Model.SupervisingLecturers)
+                        {
+                            <tr>
+                                <td>@lecturer.LecturerId</td>
+                                <td>@lecturer.FirstName</td>
+                                <td>@lecturer.LastName</td>
+                                <td>@lecturer.PhoneNumber</td>
+                                <td>@lecturer.Age</td>
+                                <td>
+                                    <a href="/Lecturers/Erase/@lecturer.LecturerId" class="btn btn-danger shadow-button">
+                                        <i class="fas fa-trash"></i>Permanently Delete
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="8" class="text-center py-4">
+                                <div class="alert alert-info mb-0">
+                                    <i class="fas fa-info-circle me-2"></i> No supervisors found.
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

@@ -1,5 +1,7 @@
 ﻿using Microsoft.Data.SqlClient;
+using Someren.Models;
 using System.Diagnostics;
+using System.Reflection.PortableExecutable;
 
 namespace Someren.Repositories;
 public class DbActivityRepository : IDbActivityRepository
@@ -19,6 +21,15 @@ public class DbActivityRepository : IDbActivityRepository
         return new Models.Activity(activitytype, date, time);
     }
 
+    private Someren.Models.Activity ReadActivityWithID(SqlDataReader reader)
+    {
+        int activityID = (int)reader["activity_id"];
+        string activitytype = (string)reader["activity_type"];
+        DateTime date = (DateTime)reader["date"];
+        TimeSpan time = (TimeSpan)reader["time"];
+        return new Models.Activity(activityID, activitytype, date, time);
+    }
+
     public List<Someren.Models.Activity> ViewAllActivities()
     {
         var activities = new List<Someren.Models.Activity>();
@@ -26,13 +37,13 @@ public class DbActivityRepository : IDbActivityRepository
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
-                string query = "SELECT activity_type, date, time FROM Activity WHERE Deleted = 0 ORDER BY date, time";
+                string query = "SELECT activity_id, activity_type, date, time FROM Activity WHERE Deleted = 0 ORDER BY date, time";
                 SqlCommand command = new SqlCommand(query, connection);
                 command.Connection.Open();
                 SqlDataReader reader = command.ExecuteReader();
                 while (reader.Read())
                 {
-                    Someren.Models.Activity activity = ReadActivity(reader);
+                    Someren.Models.Activity activity = ReadActivityWithID(reader);
                     activities.Add(activity);
                 }
                 reader.Close();
@@ -71,6 +82,33 @@ public class DbActivityRepository : IDbActivityRepository
             throw;
         }
         return activity;
+    }
+
+    public Models.Activity GetById(int id)
+    {
+        const string query = "SELECT [activity_id], [activity_type], [date], [time] FROM activity WHERE [activity_id] = @Id;";
+
+        Models.Activity activity = new Models.Activity();
+
+        using (SqlConnection connection = new SqlConnection(_connectionString))
+        {
+            SqlCommand command = new SqlCommand(query, connection);
+
+            command.Parameters.AddWithValue("@Id", id);
+
+            command.Connection.Open();
+
+            SqlDataReader read = command.ExecuteReader();
+
+            if (read.Read())
+            {
+                activity = ReadActivityWithID(read);
+            }
+            read.Close();
+            
+            return activity;
+        }
+        
     }
 
     public void AddActivity(Someren.Models.Activity activity)
