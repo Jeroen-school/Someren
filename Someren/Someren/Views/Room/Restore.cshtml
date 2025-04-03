@@ -1,12 +1,12 @@
 ﻿@model Someren.Models.Room
 @{
-    ViewData["Title"] = "Delete Room";
+    ViewData["Title"] = "Restore Room";
 }
 
 <div class="card mb-4 fade-in">
     <div class="card-header">
-        <h1 class="card-title">Delete Room</h1>
-        <a href="/Room" class="btn btn-primary shadow-button">
+        <h1 class="card-title">Restore Room</h1>
+        <a href="/Room/ListDeleted" class="btn btn-primary shadow-button">
             <i class="fas fa-arrow-left me-2"></i> Back to List
         </a>
     </div>
@@ -59,32 +59,36 @@
         </div>
 
         <div class="d-flex justify-content-center">
-            <button type="button" class="btn btn-danger shadow-button" data-bs-toggle="modal" data-bs-target="#deleteConfirmModal">
-                <i class="fas fa-trash me-2"></i> Delete Room
+            <button type="button" class="btn btn-success shadow-button" data-bs-toggle="modal" data-bs-target="#restoreConfirmModal">
+                <i class="fas fa-undo me-2"></i> Restore Room
             </button>
         </div>
     </div>
 </div>
 
-<!-- Delete Confirmation Modal -->
-<div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-hidden="true">
+<!-- Restore Confirmation Modal -->
+<div class="modal fade" id="restoreConfirmModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-            <div class="modal-header bg-danger text-white">
+            <div class="modal-header bg-success text-white">
                 <h5 class="modal-title text-white">
-                    <i class="fas fa-exclamation-triangle me-2"></i>Deletion
+                    <i class="fas fa-undo me-2"></i> Restore Room
                 </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <p>Are you sure you want to <span class="permanent-delete-warning">delete</span> room <span class="fw-bold">@Model?.RoomNumber</span>?</p>
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-circle me-2 fa-lg"></i>
+                    <strong>WARNING:</strong> Restoring this room will bring it back to the active list.
+                </div>
+                <p>Are you sure you want to restore room <span class="fw-bold" id="modalRoomNumber">@Model?.RoomNumber</span>?</p>
+                <p>This action will make the room available again and it can be assigned to users.</p>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <form action="/Room/Delete" method="POST">
-                    <input type="hidden" name="RoomId" value="@Model?.RoomId" />
-                    <button type="submit" class="btn btn-danger">
-                        <i class="fas fa-trash me-2"></i>Delete
+                <form id="restoreForm" method="post" action="/Room/Restore/@Model?.RoomId">
+                    <button type="submit" class="btn btn-success shadow-button">
+                        <i class="fas fa-undo"></i> Restore Room
                     </button>
                 </form>
             </div>

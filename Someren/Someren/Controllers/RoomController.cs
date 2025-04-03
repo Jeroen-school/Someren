@@ -15,7 +15,7 @@ namespace Someren.Controllers
         //Home
         public IActionResult Index(int? size)
         {
-            List<Room> rooms = _roomRepository.GetAll();
+            List<Room> rooms = _roomRepository.GetAll(false);
 
             if(size.HasValue)
             {
@@ -23,7 +23,7 @@ namespace Someren.Controllers
             }
 
             // Pass available sizes to the dropdown
-            ViewBag.Sizes = _roomRepository.GetAll().Select(r => r.Size).Distinct().ToList();
+            ViewBag.Sizes = _roomRepository.GetAll(false).Select(r => r.Size).Distinct().ToList();
             ViewBag.SelectedSize = size;
             return View(rooms);
         }
@@ -36,7 +36,7 @@ namespace Someren.Controllers
             {
                 StudentsInRoom = _roomRepository.GetStudentInRoomByRoomId(roomId),
                 StudentsNotInRoom = _roomRepository.GetStudentNotInRoomByRoomId(roomId),
-                Room = _roomRepository.GetById(roomId)
+                Room = _roomRepository.GetById(roomId, false)
             };
 
             return View(viewModel);
@@ -80,7 +80,7 @@ namespace Someren.Controllers
         [HttpGet("Room/Edit/{RoomId}")]
         public IActionResult Edit(int roomId)
         {
-            Room? room = _roomRepository.GetById(roomId);
+            Room? room = _roomRepository.GetById(roomId, false);
             return View(room);
         }
 
@@ -100,19 +100,56 @@ namespace Someren.Controllers
             return RedirectToAction("Index");
         }
 
-        //Delete
+        //Soft Delete
         [HttpGet("Room/Delete/{roomId}")]
         public IActionResult Delete(int roomId)
         {
-            Room? room = _roomRepository.GetById(roomId);
+            Room? room = _roomRepository.GetById(roomId, false);
             return View(room);
         }
 
         [HttpPost("Room/Delete")]
         public IActionResult Delete(Room room)
         {
-            _roomRepository.Delete(room.RoomId);
+            _roomRepository.SoftDelete(room.RoomId);
             return RedirectToAction("Index");
+        }
+
+        //Hard Delete
+        [HttpGet]
+        public IActionResult ListDeleted()
+        {
+            List<Room> rooms = _roomRepository.GetAll(true);
+
+            return View(rooms);
+        }
+
+        [HttpGet("Room/Restore/{roomId}")]
+        public IActionResult Restore(int roomId)
+        {
+            Room? room = _roomRepository.GetById(roomId, true);
+            return View(room);
+        }
+
+        [HttpPost("Room/Restore/{roomId}")]
+        public IActionResult RestoreRoom(int roomId)
+        {
+            _roomRepository.Restore(roomId);
+            return RedirectToAction("ListDeleted");
+        }
+
+        [HttpGet("Room/Erase/{roomId}")]
+        public IActionResult Erase(int roomId)
+        {
+            Room? room = _roomRepository.GetById(roomId, true);
+            return View(room);
+        }
+
+        [HttpPost("Room/Erase/{roomId}")]
+        public IActionResult EraseRoom(int roomId)
+        {
+            _roomRepository.Erase(roomId);
+            return RedirectToAction("ListDeleted");
         }
     }
 }

@@ -6,8 +6,11 @@
     <div class="card-header">
         <h1 class="card-title">Room Management</h1>
         <div class="d-flex">
-            <a href="/Room/Add" class="btn btn-primary shadow-button">
+            <a href="/Room/Add" class="btn btn-primary shadow-button mx-1">
                 <i class="fas fa-plus me-2"></i> Add Room
+            </a>
+            <a href="/Room/ListDeleted" class="btn btn-secondary shadow-button mx-1">
+                <i class="fas fa-archive me-2"></i> View Deleted Rooms
             </a>
         </div>
     </div>
@@ -61,31 +64,39 @@
                 </div>
             </div>
         </div>
-        <div class="card-body pb-0">
-            <form method="get" action="/Room/Index" class="d-flex align-items-center gap-3 mb-3">
-                <label for="Size" class="fw-semibold">Filter by Size:</label>
-                <div class="w-auto">
-                    <select id="Size" name="Size"
-                    class="form-select form-select-lg shadow-sm px-3 py-2 fs-5"
-                    style="min-width: 120px;"
-                    onchange="this.form.submit()">
-                        <option value="">All</option>
-                        @foreach (var size in ViewBag.Sizes)
-                        {
-                            <option value="@size" selected="@(ViewBag.SelectedSize == size ? "selected" : null)">@size</option>
-                        }
-                    </select>
-                </div>
+         @if (!Model.Any())
+        {
+            <div class="alert alert-warning mx-4 mt-3">
+                <i class="fas fa-exclamation-circle me-2"></i> No rooms available to display.
+            </div>
+        }
+        else
+        {   
+            <div class="card-body pb-0">
+                <form method="get" action="/Room/Index" class="d-flex align-items-center gap-3 mb-3">
+                    <label for="Size" class="fw-semibold">Filter by Size:</label>
+                    <div class="w-auto">
+                        <select id="Size" name="Size"
+                        class="form-select form-select-lg shadow-sm px-3 py-2 fs-5"
+                        style="min-width: 120px;"
+                        onchange="this.form.submit()">
+                            <option value="">All</option>
+                            @foreach (var size in ViewBag.Sizes)
+                            {
+                                <option value="@size" selected="@(ViewBag.SelectedSize == size ? "selected" : null)">@size</option>
+                            }
+                        </select>
+                    </div>
 
-                @if (ViewBag.SelectedSize != null)
-                {
-                    <a href="/Room/Index" class="btn btn-outline-secondary btn-lg">Clear Filter</a>
-                }
-            </form>
+                    @if (ViewBag.SelectedSize != null)
+                    {
+                        <a href="/Room/Index" class="btn btn-outline-secondary btn-lg">Clear Filter</a>
+                    }
+                </form>
 
 
-        </div>
-        <div class="table-responsive">
+            </div>
+            <div class="table-responsive">
             <table class="table table-hover mb-0">
                 <thead>
                     <tr>
@@ -134,5 +145,6 @@
                 </tbody>
             </table>
         </div>
+        }
     </div>
 </div>

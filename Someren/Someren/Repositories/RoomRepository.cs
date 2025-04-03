@@ -95,7 +95,7 @@ namespace Someren.Repositories
             }
             return rooms;
         }
-        public List<Room> GetAll()
+        public List<Room> GetAll(bool deleted)
         {
             List<Room> rooms = new List<Room>();
             using (SqlConnection connection = new SqlConnection(_connectionString))
@@ -104,7 +104,7 @@ namespace Someren.Repositories
 
                 SqlCommand command = new SqlCommand(query, connection);
 
-                command.Parameters.AddWithValue("@deleted", false);
+                command.Parameters.AddWithValue("@deleted", deleted);
                 command.Connection.Open();
                 SqlDataReader reader = command.ExecuteReader();
                 while (reader.Read())
@@ -118,7 +118,7 @@ namespace Someren.Repositories
         }
 
 
-        public Room? GetById(int roomId)
+        public Room? GetById(int roomId, bool deleted)
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
@@ -126,7 +126,7 @@ namespace Someren.Repositories
                 SqlCommand command = new SqlCommand(query, connection);
 
                 command.Parameters.AddWithValue("@roomId", roomId);
-                command.Parameters.AddWithValue("@deleted", false);
+                command.Parameters.AddWithValue("@deleted", deleted);
                 command.Connection.Open();
                 SqlDataReader reader = command.ExecuteReader();
                 while (reader.Read())
@@ -273,7 +273,7 @@ namespace Someren.Repositories
                 return false;
             }
 
-            Room? savedRoom = GetById(room.RoomId);
+            Room? savedRoom = GetById(room.RoomId, false);
 
             // Check if Room Already Exists
             if (savedRoom != null && savedRoom.RoomNumber != room.RoomNumber && RoomExists(room.RoomNumber))
@@ -312,7 +312,7 @@ namespace Someren.Repositories
             return true;
         }
 
-        public void Delete(int roomId)
+        public void SoftDelete(int roomId)
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
@@ -321,6 +321,33 @@ namespace Someren.Repositories
 
                 command.Parameters.AddWithValue("@roomId", roomId);
                 command.Parameters.AddWithValue("@deleted", true);
+                command.Connection.Open();
+                command.ExecuteNonQuery();
+            }
+        }
+
+        public void Restore(int roomId)
+        {
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                string query = "UPDATE room SET Deleted = @deleted WHERE room_id = @roomId";
+                SqlCommand command = new SqlCommand(query, connection);
+
+                command.Parameters.AddWithValue("@roomId", roomId);
+                command.Parameters.AddWithValue("@deleted", false);
+                command.Connection.Open();
+                command.ExecuteNonQuery();
+            }
+        }
+
+        public void Erase(int roomId)
+        {
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                string query = "DELETE FROM room WHERE room_id = @roomId";
+                SqlCommand command = new SqlCommand(query, connection);
+
+                command.Parameters.AddWithValue("@roomId", roomId);
                 command.Connection.Open();
                 command.ExecuteNonQuery();
             }
