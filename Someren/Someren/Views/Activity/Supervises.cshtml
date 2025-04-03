@@ -30,14 +30,14 @@
 
 
     
-    <div class="d-flex">
-        <div class="table-responsive">
+    <div class="card-body">
+        <div class="table-responsive mb-2">
+            <h3 class="card-subtitle">Lecturers supervising this activity</h3>
             <table class="table table-hover mb-0">
                 <thead>
                     <tr>
                         <th></th>
-                        <th>First Name</th>
-                        <th>Last Name</th>
+                        <th>Full Name</th>
                         <th>Phone Number</th>
                         <th>Age</th>
                         <th>Actions</th>
@@ -50,13 +50,12 @@
                         {
                             <tr>
                                 <td>@lecturer.LecturerId</td>
-                                <td>@lecturer.FirstName</td>
-                                <td>@lecturer.LastName</td>
+                                <td>@lecturer.FirstName @lecturer.LastName</td>
                                 <td>@lecturer.PhoneNumber</td>
                                 <td>@lecturer.Age</td>
                                 <td>
-                                    <a href="/Lecturers/Erase/@lecturer.LecturerId" class="btn btn-danger shadow-button">
-                                        <i class="fas fa-trash"></i>Permanently Delete
+                                    <a href="/Activity/RemoveSupervisors?lecturerID=@lecturer.LecturerId&activityID=@Model.Activity.ActivityID" class="btn btn-danger shadow-button">
+                                        <i class="fas fa-minus"></i> Remove
                                     </a>
                                 </td>
                             </tr>
@@ -76,32 +75,31 @@
             </table>
         </div>
 
-        <div class="table-responsive">
+        <div class="table-responsive mb-2">
+            <h3 class="card-subtitle">Lecturers not supervising this activity</h3>
             <table class="table table-hover mb-0">
                 <thead>
                     <tr>
                         <th></th>
-                        <th>First Name</th>
-                        <th>Last Name</th>
+                        <th>Full Name</th>
                         <th>Phone Number</th>
                         <th>Age</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @if (Model.SupervisingLecturers.Count > 0)
+                    @if (Model.OtherLecturers.Count > 0)
                     {
-                        foreach (Lecturer lecturer in Model.SupervisingLecturers)
+                        foreach (Lecturer lecturer in Model.OtherLecturers)
                         {
                             <tr>
                                 <td>@lecturer.LecturerId</td>
-                                <td>@lecturer.FirstName</td>
-                                <td>@lecturer.LastName</td>
+                                <td>@lecturer.FirstName @lecturer.LastName</td>
                                 <td>@lecturer.PhoneNumber</td>
                                 <td>@lecturer.Age</td>
                                 <td>
-                                    <a href="/Lecturers/Erase/@lecturer.LecturerId" class="btn btn-danger shadow-button">
-                                        <i class="fas fa-trash"></i>Permanently Delete
+                                    <a href="/Activity/AddSupervisors?lecturerID=@lecturer.LecturerId&activityID=@Model.Activity.ActivityID" class="btn btn-success shadow-button">
+                                        <i class="fas fa-plus"></i> Add
                                     </a>
                                 </td>
                             </tr>

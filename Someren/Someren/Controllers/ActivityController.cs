@@ -127,6 +127,52 @@ namespace Someren.Controllers
             }
         }
 
+        [HttpGet]
+        public IActionResult AddSupervisors(int? lecturerID, int? activityID)
+        {
+            try
+            {
+                if (lecturerID == null || activityID == null)
+                {
+                    throw new Exception($"No activity or lecturer found, please try again.");
+                }
+
+                _activitySupervisersRepository.AddSupervising((int)lecturerID, (int)activityID);
+                TempData["SuccessMessage"] = "Supervisor added!";
+
+                return RedirectToAction("Supervises", new { id = activityID });
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = $"Error: {ex.Message}";
+
+                return RedirectToAction("Index");
+            }
+        }
+
+        [HttpGet]
+        public IActionResult RemoveSupervisors(int? lecturerID, int? activityID)
+        {
+            try
+            {
+                if (lecturerID == null || activityID == null)
+                {
+                    throw new Exception($"No activity or lecturer found, please try again.");
+                }
+
+                _activitySupervisersRepository.RemoveSupervising((int)lecturerID, (int)activityID);
+                TempData["SuccessMessage"] = "Supervisor removed!";
+
+                return RedirectToAction("Supervises", new { id = activityID });
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = $"Error: {ex.Message}";
+
+                return RedirectToAction("Index");
+            }
+        }
+
         
     }
 }

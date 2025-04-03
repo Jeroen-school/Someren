@@ -44,6 +44,23 @@ namespace Someren.Repositories
             return lecturers;
         }
 
+        public void AddSupervising(int lecturerID, int activityID)
+        {
+            const string query =    $"INSERT INTO supervises " +
+                                    $"VALUES (@lecturerID, @activityID);";
+
+            ExecuteAddAndRemoveQuery(query, lecturerID, activityID);
+        }
+
+        public void RemoveSupervising(int lecturerID, int activityID)
+        {
+            const string query =    $"DELETE FROM supervises " +
+                                    $"WHERE lecturer_id = @lecturerID AND activity_id = @activityID;";
+
+            ExecuteAddAndRemoveQuery(query, lecturerID, activityID);
+        }
+
+        //These methods exist to make the codebase less cluttered
         private List<Lecturer> ExecuteGetAllLecturers(string query, int activityID)
         {
             List<Lecturer> lecturers = new();
@@ -65,6 +82,22 @@ namespace Someren.Repositories
                 read.Close();
 
                 return lecturers;
+            }
+        }
+
+        private void ExecuteAddAndRemoveQuery(string query, int lecturerID, int activityID)
+        {
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                SqlCommand command = new SqlCommand(query, connection);
+
+                command.Parameters.AddWithValue("@lecturerID", lecturerID);
+                command.Parameters.AddWithValue("@activityID", activityID);
+
+                command.Connection.Open();
+                SqlDataReader reader = command.ExecuteReader();
+
+                reader.Close();
             }
         }
 

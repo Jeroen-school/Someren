@@ -12,5 +12,9 @@ namespace Someren.Repositories
         List<Lecturer> GetAllSupervising(int activityID);
 
         List<Lecturer> GetAllOther(int activityID);
+
+        void AddSupervising(int lecturerID, int activityID);
+
+        void RemoveSupervising(int lecturerID, int activityID);
     }
 }
