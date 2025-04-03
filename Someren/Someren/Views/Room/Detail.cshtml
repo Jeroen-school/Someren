@@ -1,0 +1,158 @@
+﻿@model Someren.Models.RoomDetail
+@{
+    ViewData["Title"] = "Room Detail";
+}
+
+<div class="card-header">
+    <h1 class="card-title">Room Detail - Room @Model.Room.RoomNumber</h1>
+    <a href="/Room" class="btn btn-primary shadow-button">
+        <i class="fas fa-arrow-left me-2"></i> Back to List
+    </a>
+</div>
+
+<!-- Students in the Room -->
+<div class="card mb-4 fade-in">
+    <div class="card-header">
+        <h2 class="card-title">Students in this Room</h2>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-hover mb-4">
+            <thead>
+                <tr>
+                    <th>Student #</th>
+                    <th>Full Name</th>
+                    <th>Class</th>
+                    <th>Telephone</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.StudentsInRoom.Any())
+                {
+                    @foreach (var student in Model.StudentsInRoom)
+                    {
+                        <tr>
+                            <td>@student.StudentNum</td>
+                            <td>@student.FirstName @student.LastName</td>
+                            <td>@student.StudentClass</td>
+                            <td>@student.TelNum</td>
+                            <td class="action-buttons">
+                                <button type="button" class="btn btn-danger shadow-button" data-bs-toggle="modal" data-bs-target="#removeStudentModal-@student.StudentNum">
+                                    <i class="fas fa-minus"></i>
+                                </button>
+                            </td>
+                        </tr>
+
+                        <!-- Remove Student Confirmation Modal -->
+                        <div class="modal fade" id="removeStudentModal-@student.StudentNum" tabindex="-1" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+                                    <div class="modal-header bg-danger text-white">
+                                        <h5 class="modal-title">
+                                            <i class="fas fa-exclamation-triangle me-2"></i> Remove Student
+                                        </h5>
+                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p>Are you sure you want to remove <span class="fw-bold">@student.FirstName @student.LastName</span> from Room <span class="fw-bold">@Model.Room.RoomNumber</span>?</p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                        <form method="post" action="/Room/RemoveStudent">
+                                            <input type="hidden" name="studentId" value="@student.StudentNum" />
+                                            <input type="hidden" name="roomId" value="@Model.Room.RoomId" />
+                                            <button type="submit" class="btn btn-danger">
+                                                <i class="fas fa-trash me-2"></i> Remove
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="6" class="text-center">No students assigned to this room.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Students NOT in the Room -->
+<div class="card mb-4 fade-in">
+    <div class="card-header">
+        <h2 class="card-title">Students Not in this Room</h2>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-hover mb-4">
+            <thead>
+                <tr>
+                    <th>Student #</th>
+                    <th>Full Name</th>
+                    <th>Class</th>
+                    <th>Telephone</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.StudentsNotInRoom.Any())
+                {
+                    @foreach (var student in Model.StudentsNotInRoom)
+                    {
+                        <tr>
+                            <td>@student.StudentNum</td>
+                            <td>@student.FirstName @student.LastName</td>
+                            <td>@student.StudentClass</td>
+                            <td>@student.TelNum</td>
+                            @if (Model.StudentsInRoom.Count < 8)
+                            {
+                                <td class="action-buttons">
+                                    <button type="button" class="btn btn-success shadow-button" data-bs-toggle="modal" data-bs-target="#assignStudentModal-@student.StudentNum">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </td>
+                            }
+                        </tr>
+
+                        <!-- Assign Student Confirmation Modal -->
+                        <div class="modal fade" id="assignStudentModal-@student.StudentNum" tabindex="-1" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+                                    <div class="modal-header bg-success text-white">
+                                        <h5 class="modal-title">
+                                            <i class="fas fa-user-plus me-2"></i> Assign Student
+                                        </h5>
+                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p>Are you sure you want to assign <span class="fw-bold">@student.FirstName @student.LastName</span> to Room <span class="fw-bold">@Model.Room.RoomNumber</span>?</p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                        <form method="post" action="/Room/AssignStudent">
+                                            <input type="hidden" name="studentId" value="@student.StudentNum" />
+                                            <input type="hidden" name="roomId" value="@Model.Room.RoomId" />
+                                            <button type="submit" class="btn btn-success">
+                                                <i class="fas fa-check me-2"></i> Assign
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="5" class="text-center">All students have been assigned to a room.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

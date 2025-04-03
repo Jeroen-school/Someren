@@ -28,6 +28,33 @@ namespace Someren.Controllers
             return View(rooms);
         }
 
+        // Details
+        [HttpGet("Room/Detail/{roomId}")]
+        public IActionResult Detail(int roomId)
+        {
+            var viewModel = new RoomDetail
+            {
+                StudentsInRoom = _roomRepository.GetStudentInRoomByRoomId(roomId),
+                StudentsNotInRoom = _roomRepository.GetStudentNotInRoomByRoomId(roomId),
+                Room = _roomRepository.GetById(roomId)
+            };
+
+            return View(viewModel);
+        }
+
+        [HttpPost("Room/AssignStudent")]
+        public IActionResult AssignStudent(int studentId, int roomId)
+        {
+            _roomRepository.AssignStudentToRoom(studentId, roomId);
+            return RedirectToAction("Detail", new { roomId });
+        }
+        [HttpPost("Room/RemoveStudent")]
+        public IActionResult RemoveStudent(int studentId, int roomId)
+        {
+            _roomRepository.RemoveStudentToRoom(studentId, roomId);
+            return RedirectToAction("Detail", new { roomId });
+        }
+
         // Add
         [HttpGet]
         public IActionResult Add()

@@ -64,6 +64,17 @@ namespace Someren.Repositories
             return new Room(roomId, roomNumber, type, size, deleted);
         }
 
+        private Student ReadStudent(SqlDataReader reader)
+        {
+            int studentNum = (int)reader["student_number"];
+            string roomNum = reader["room_id"].ToString();
+            string firstName = (string)reader["first_name"];
+            string lastName = (string)reader["last_name"];
+            string telNum = (string)reader["telephone_number"];
+            string studentClass = (string)reader["class"];
+            return new Student(studentNum, roomNum, firstName, lastName, telNum, studentClass);
+        }
+
         public List<Room> GetBySize(int size)
         {
             List<Room> rooms = new List<Room>();
@@ -184,6 +195,73 @@ namespace Someren.Repositories
             }
             return true;
         }
+
+        public List<Student> GetStudentInRoomByRoomId(int roomId)
+        {
+            List<Student> students = new List<Student>();
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                string query = "SELECT * FROM student WHERE room_id = @roomId AND Deleted = @deleted ORDER BY last_name";
+                SqlCommand command = new SqlCommand(query, connection);
+                command.Parameters.AddWithValue("@roomId", roomId);
+                command.Parameters.AddWithValue("@deleted", false);
+                command.Connection.Open();
+                SqlDataReader reader = command.ExecuteReader();
+                while (reader.Read())
+                {
+                    Student student = ReadStudent(reader);
+                    students.Add(student);
+                }
+                reader.Close();
+            }
+            return students;
+        }
+
+        public void AssignStudentToRoom(int studentNum, int roomId)
+        {
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                string query = "UPDATE student SET room_id = @roomId WHERE student_number = @studentNum";
+                SqlCommand command = new SqlCommand(query, connection);
+                command.Parameters.AddWithValue("@roomId", roomId);
+                command.Parameters.AddWithValue("@studentNum", studentNum);
+                command.Connection.Open();
+                command.ExecuteNonQuery();
+            }
+        }
+        public void RemoveStudentToRoom(int studentNum, int roomId)
+        {
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                string query = "UPDATE student SET room_id = NULL WHERE student_number = @studentNum";
+                SqlCommand command = new SqlCommand(query, connection);
+                command.Parameters.AddWithValue("@studentNum", studentNum);
+                command.Connection.Open();
+                command.ExecuteNonQuery();
+            }
+        }
+
+        public List<Student> GetStudentNotInRoomByRoomId(int roomId)
+        {
+            List<Student> students = new List<Student>();
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                string query = "SELECT * FROM student WHERE (room_id IS NULL OR room_id != @roomId) AND Deleted = @deleted ORDER BY last_name";
+                SqlCommand command = new SqlCommand(query, connection);
+                command.Parameters.AddWithValue("@roomId", roomId);
+                command.Parameters.AddWithValue("@deleted", false);
+                command.Connection.Open();
+                SqlDataReader reader = command.ExecuteReader();
+                while (reader.Read())
+                {
+                    Student student = ReadStudent(reader);
+                    students.Add(student);
+                }
+                reader.Close();
+            }
+            return students;
+        }
+
         public bool Update(Room room, out string errorMessage)
         {
             errorMessage = "";

@@ -66,9 +66,9 @@
                 <label for="Size" class="fw-semibold">Filter by Size:</label>
                 <div class="w-auto">
                     <select id="Size" name="Size"
-                            class="form-select form-select-lg shadow-sm px-3 py-2 fs-5"
-                            style="min-width: 120px;"
-                            onchange="this.form.submit()">
+                    class="form-select form-select-lg shadow-sm px-3 py-2 fs-5"
+                    style="min-width: 120px;"
+                    onchange="this.form.submit()">
                         <option value="">All</option>
                         @foreach (var size in ViewBag.Sizes)
                         {
@@ -122,6 +122,12 @@
                                 <a href="/Room/Delete/@room.RoomId" class="btn btn-danger shadow-button">
                                     <i class="fas fa-trash"></i>
                                 </a>
+                                @if (room.Type?.ToLower() == "student")
+                                {
+                                    <a href="/Room/Detail/@room.RoomId" class="btn btn-secondary shadow-button">
+                                        <i class="fas fa-gear"></i>
+                                    </a>
+                                }
                             </td>
                         </tr>
                     }
