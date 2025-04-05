@@ -137,8 +137,10 @@ namespace Someren.Controllers
                     throw new Exception($"No activity or lecturer found, please try again.");
                 }
 
-                _activitySupervisersRepository.AddSupervising((int)lecturerID, (int)activityID);
-                TempData["SuccessMessage"] = "Supervisor added!";
+                string fullname = _activitySupervisersRepository.AddSupervising((int)lecturerID, (int)activityID);
+                
+                
+                TempData["SuccessMessage"] = $"Lecturer {fullname} added as supervisor!";
 
                 return RedirectToAction("Supervises", new { id = activityID });
             }
@@ -146,7 +148,7 @@ namespace Someren.Controllers
             {
                 TempData["ErrorMessage"] = $"Error: {ex.Message}";
 
-                return RedirectToAction("Index");
+                return RedirectToAction("Supervises", new { id = activityID });
             }
         }
 
@@ -160,8 +162,10 @@ namespace Someren.Controllers
                     throw new Exception($"No activity or lecturer found, please try again.");
                 }
 
-                _activitySupervisersRepository.RemoveSupervising((int)lecturerID, (int)activityID);
-                TempData["SuccessMessage"] = "Supervisor removed!";
+                string fullname = _activitySupervisersRepository.RemoveSupervising((int)lecturerID, (int)activityID);
+                
+                
+                TempData["SuccessMessage"] = $"Lecturer {fullname} removed from supervisors!";
 
                 return RedirectToAction("Supervises", new { id = activityID });
             }
@@ -169,7 +173,7 @@ namespace Someren.Controllers
             {
                 TempData["ErrorMessage"] = $"Error: {ex.Message}";
 
-                return RedirectToAction("Index");
+                return RedirectToAction("Supervises", new { id = activityID});
             }
         }
 

@@ -44,20 +44,30 @@ namespace Someren.Repositories
             return lecturers;
         }
 
-        public void AddSupervising(int lecturerID, int activityID)
+        public string AddSupervising(int lecturerID, int activityID)
         {
             const string query =    $"INSERT INTO supervises " +
-                                    $"VALUES (@lecturerID, @activityID);";
+                                    $"VALUES (@lecturerID, @activityID); " +
+                                    $"SELECT [first_name] + ' ' + [last_name] AS [full_name]" +
+                                    $"FROM lecturer " +
+                                    $"WHERE [lecturer_id] = @lecturerID;";
 
-            ExecuteAddAndRemoveQuery(query, lecturerID, activityID);
+            string fullName = ExecuteAddAndRemoveQuery(query, lecturerID, activityID);
+
+            return fullName;
         }
 
-        public void RemoveSupervising(int lecturerID, int activityID)
+        public string RemoveSupervising(int lecturerID, int activityID)
         {
             const string query =    $"DELETE FROM supervises " +
-                                    $"WHERE lecturer_id = @lecturerID AND activity_id = @activityID;";
+                                    $"WHERE lecturer_id = @lecturerID AND activity_id = @activityID; " +
+                                    $"SELECT [first_name] + ' ' + [last_name] AS [full_name]" +
+                                    $"FROM lecturer " +
+                                    $"WHERE [lecturer_id] = @lecturerID;";
 
-            ExecuteAddAndRemoveQuery(query, lecturerID, activityID);
+            string fullName = ExecuteAddAndRemoveQuery(query, lecturerID, activityID);
+
+            return fullName;
         }
 
         //These methods exist to make the codebase less cluttered
@@ -85,7 +95,7 @@ namespace Someren.Repositories
             }
         }
 
-        private void ExecuteAddAndRemoveQuery(string query, int lecturerID, int activityID)
+        private string ExecuteAddAndRemoveQuery(string query, int lecturerID, int activityID)
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
@@ -95,9 +105,9 @@ namespace Someren.Repositories
                 command.Parameters.AddWithValue("@activityID", activityID);
 
                 command.Connection.Open();
-                SqlDataReader reader = command.ExecuteReader();
+                string fullName = (string)command.ExecuteScalar();
 
-                reader.Close();
+                return fullName;
             }
         }
 
