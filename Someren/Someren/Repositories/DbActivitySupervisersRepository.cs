@@ -20,10 +20,11 @@ namespace Someren.Repositories
 
         public List<Lecturer> GetAllSupervising(int activityID)
         {
-            const string query = $"SELECT L.[lecturer_id], L.[first_name], L.[Last_name], L.[telephone_number], L.[age] " +
+            const string query = $"SELECT L.[lecturer_id], L.[first_name], L.[last_name], L.[telephone_number], L.[age] " +
                                     $"FROM supervises AS S " +
                                     $"JOIN lecturer AS L ON L.lecturer_id = S.lecturer_id " +
-                                    $"WHERE S.activity_id = @Id AND L.deleted != 1;";
+                                    $"WHERE S.activity_id = @Id AND L.deleted != 1 " +
+                                    $"ORDER BY L.[last_name];";
 
             List<Lecturer> lecturers = ExecuteGetAllLecturers(query, activityID);
 
@@ -32,12 +33,13 @@ namespace Someren.Repositories
 
         public List<Lecturer> GetAllOther(int activityID)
         {
-            const string query = $"SELECT L.[lecturer_id], L.[first_name], L.[Last_name], L.[telephone_number], L.[age] " +
+            const string query = $"SELECT L.[lecturer_id], L.[first_name], L.[last_name], L.[telephone_number], L.[age] " +
                                     $"FROM lecturer AS L " +
                                     $"WHERE L.deleted != 1 AND " +
                                     $"L.lecturer_id NOT IN  (SELECT [lecturer_id] " +
                                                             $"FROM supervises " +
-                                                            $"WHERE [activity_id] = @Id);";
+                                                            $"WHERE [activity_id] = @Id)" +
+                                    $"ORDER BY L.[last_name];";
 
             List<Lecturer> lecturers = ExecuteGetAllLecturers(query, activityID);
 
@@ -106,6 +108,7 @@ namespace Someren.Repositories
 
                 command.Connection.Open();
                 string fullName = (string)command.ExecuteScalar();
+
 
                 return fullName;
             }
