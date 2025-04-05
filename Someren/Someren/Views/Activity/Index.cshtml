@@ -92,7 +92,11 @@
                                     <a asp-action="Delete" asp-route-id="@activity.Activitytype" class="btn btn-danger shadow-button">
                                         <i class="fas fa-trash"></i>
                                     </a>
+                                    <a asp-action="Participants" asp-route-id="@activity.Activitytype" class="btn btn-info shadow-button">
+                                        <i class="fas fa-users"></i>
+                                    </a>
                                 </td>
+                                
                             </tr>
                         }
                     }

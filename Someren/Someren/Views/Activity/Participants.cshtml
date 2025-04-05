@@ -1,0 +1,179 @@
+﻿@{
+    ViewData["Title"] = "Manage Activity Participants";
+    var activity = ViewBag.Activity as Someren.Models.Activity;
+    var participants = ViewBag.Participants as List<Someren.Models.Student>;
+    var nonParticipants = ViewBag.NonParticipants as List<Someren.Models.Student>;
+}
+
+<div class="card mb-4 fade-in">
+    <div class="card-header">
+        <h1 class="card-title">Manage Participants for @activity.Activitytype</h1>
+        <a asp-action="Index" class="btn btn-primary shadow-button">
+            <i class="fas fa-arrow-left me-2"></i> Back to Activities
+        </a>
+    </div>
+    <div class="card-body">
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success mx-0 mb-4">
+                <i class="fas fa-check-circle me-2"></i> @TempData["SuccessMessage"]
+            </div>
+        }
+
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger mx-0 mb-4">
+                <i class="fas fa-exclamation-circle me-2"></i> @TempData["ErrorMessage"]
+            </div>
+        }
+
+        <div class="row activity-details mb-4">
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Activity Details</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <strong><i class="fas fa-tag me-2"></i>Name:</strong> @activity.Activitytype
+                        </div>
+                        <div class="mb-3">
+                            <strong><i class="fas fa-calendar me-2"></i>Date:</strong> @activity.Date.ToShortDateString()
+                        </div>
+                        <div>
+                            <strong><i class="fas fa-clock me-2"></i>Time:</strong> @activity.Time
+                        </div>
+                    </div>
+                    <div class="card-footer bg-light">
+                        <strong><i class="fas fa-users me-2"></i>Total Participants:</strong> @(participants?.Count ?? 0)
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-8">
+                <div class="dashboard-stats">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-user-check"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 class="stat-value">@(participants?.Count ?? 0)</h3>
+                            <p class="stat-label">Current Participants</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-user-times"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 class="stat-value">@(nonParticipants?.Count ?? 0)</h3>
+                            <p class="stat-label">Available Students</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0"><i class="fas fa-user-check me-2"></i>Current Participants</h5>
+                    </div>
+                    <div class="card-body p-0">
+                        @if (participants == null || participants.Count == 0)
+                        {
+                            <div class="alert alert-info m-3">
+                                <i class="fas fa-info-circle me-2"></i> No participants yet.
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="table-responsive">
+                                <table class="table table-hover mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th>Student #</th>
+                                            <th>Name</th>
+                                            <th>Class</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var student in participants)
+                                        {
+                                            <tr>
+                                                <td>@student.StudentNum</td>
+                                                <td>@student.FirstName @student.LastName</td>
+                                                <td>@student.StudentClass</td>
+                                                <td>
+                                                    <form asp-action="RemoveParticipant" method="post">
+                                                        <input type="hidden" name="activityType" value="@activity.Activitytype" />
+                                                        <input type="hidden" name="studentNum" value="@student.StudentNum" />
+                                                        <button type="submit" class="btn btn-danger btn-sm">
+                                                            <i class="fas fa-user-minus"></i> Remove
+                                                        </button>
+                                                    </form>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0"><i class="fas fa-user-plus me-2"></i>Available Students</h5>
+                    </div>
+                    <div class="card-body p-0">
+                        @if (nonParticipants == null || nonParticipants.Count == 0)
+                        {
+                            <div class="alert alert-info m-3">
+                                <i class="fas fa-info-circle me-2"></i> All students are already participating.
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="table-responsive">
+                                <table class="table table-hover mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th>Student #</th>
+                                            <th>Name</th>
+                                            <th>Class</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var student in nonParticipants)
+                                        {
+                                            <tr>
+                                                <td>@student.StudentNum</td>
+                                                <td>@student.FirstName @student.LastName</td>
+                                                <td>@student.StudentClass</td>
+                                                <td>
+                                                    <form asp-action="AddParticipant" method="post">
+                                                        <input type="hidden" name="activityType" value="@activity.Activitytype" />
+                                                        <input type="hidden" name="studentNum" value="@student.StudentNum" />
+                                                        <button type="submit" class="btn btn-success btn-sm">
+                                                            <i class="fas fa-user-plus"></i> Add
+                                                        </button>
+                                                    </form>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -13,6 +13,7 @@ namespace Someren
             builder.Services.AddSingleton<IStudentsRepository, StudentsRepository>(); // Dependency injection for student repo
             builder.Services.AddSingleton<IRoomRepository, RoomRepository>();
             builder.Services.AddSingleton<ILecturersRepository, DbLecturersRepository>();
+            builder.Services.AddSingleton<IActivityParticipantRepository, ActivityParticipantRepository>();
 
 
             var app = builder.Build();
