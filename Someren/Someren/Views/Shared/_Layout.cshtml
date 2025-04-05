@@ -45,6 +45,10 @@
                                asp-area="" asp-controller="Activity" asp-action="Index">Activity</a>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Activity" ? "active" : "")" 
+                                asp-area="" asp-controller="DrinkOrder" asp-action="Index">Bar</a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Home" && ViewContext.RouteData.Values["action"]?.ToString() == "Privacy" ? "active" : "")"
                                asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </li>

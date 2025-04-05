@@ -1,160 +1,167 @@
+/* CSS color variables and theme settings */
 :root {
-    --primary: #5e17eb;
-    --primary-dark: #4711c0;
-    --secondary: #ff2975;
-    --accent: #00e5ff;
-    --light: #f8f9fa;
-    --dark: #212529;
-    --success: #00d68f;
-    --warning: #ffab00;
-    --danger: #ff4848;
-    --gray-100: #f8f9fa;
-    --gray-200: #e9ecef;
-    --gray-300: #dee2e6;
-    --gray-800: #343a40;
+    --primary: #5e17eb; /* Main brand purple color */
+    --primary-dark: #4711c0; /* Darker version of primary purple for hover states */
+    --secondary: #ff2975; /* Secondary pink/magenta color */
+    --accent: #00e5ff; /* Accent teal/cyan color */
+    --light: #f8f9fa; /* Light background color */
+    --dark: #212529; /* Dark text color */
+    --success: #00d68f; /* Green for success messages */
+    --warning: #ffab00; /* Amber for warnings */
+    --danger: #ff4848; /* Red for errors/danger */
+    --gray-100: #f8f9fa; /* Lightest gray */
+    --gray-200: #e9ecef; /* Light gray */
+    --gray-300: #dee2e6; /* Medium light gray */
+    --gray-800: #343a40; /* Dark gray */
     /* Dynamic properties */
-    --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-    --shadow: 0 4px 6px rgba(0, 0, 0, 0.12);
-    --shadow-lg: 0 10px 25px -5px rgba(0, 0, 0, 0.2);
-    --border-radius: 0.75rem;
-    --gradient-primary: linear-gradient(135deg, var(--primary) 0%, #9446ff 100%);
-    --gradient-secondary: linear-gradient(135deg, var(--secondary) 0%, #ff7e51 100%);
+    --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); /* Smooth transition for hover effects */
+    --shadow: 0 4px 6px rgba(0, 0, 0, 0.12); /* Standard shadow for cards */
+    --shadow-lg: 0 10px 25px -5px rgba(0, 0, 0, 0.2); /* Larger shadow for elevated elements */
+    --border-radius: 0.75rem; /* Rounded corners for elements */
+    --gradient-primary: linear-gradient(135deg, var(--primary) 0%, #9446ff 100%); /* Purple gradient */
+    --gradient-secondary: linear-gradient(135deg, var(--secondary) 0%, #ff7e51 100%); /* Pink-to-orange gradient */
 }
 
-/* Base Styles */
+/* Base body styling and background */
 body {
-    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    line-height: 1.6;
-    color: var(--dark);
-    background-color: #f5f7fa;
+    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; /* Modern font stack */
+    line-height: 1.6; /* Line spacing */
+    color: var(--dark); /* Text color */
+    background-color: #f5f7fa; /* Light gray background */
     margin: 0;
     padding: 0;
-    padding-bottom: 60px;
-    overflow-x: hidden;
+    padding-bottom: 60px; /* Space for fixed footer */
+    overflow-x: hidden; /* Prevent horizontal scrolling */
+    /* Subtle background with gradient accents */
     background-image: radial-gradient(circle at 10% 20%, rgba(94, 23, 235, 0.03) 0%, transparent 20%), radial-gradient(circle at 90% 80%, rgba(255, 41, 117, 0.03) 0%, transparent 20%);
-    background-attachment: fixed;
-    min-height: 100vh;
-    position: relative;
+    background-attachment: fixed; /* Background doesn't scroll */
+    min-height: 100vh; /* Full viewport height */
+    position: relative; /* For footer positioning */
 }
 
+/* Heading styles */
 h1, h2, h3, h4, h5, h6 {
-    font-weight: 700;
-    margin-bottom: 1rem;
-    color: var(--dark);
-    letter-spacing: -0.02em;
+    font-weight: 700; /* Bold headings */
+    margin-bottom: 1rem; /* Space below headings */
+    color: var(--dark); /* Heading color */
+    letter-spacing: -0.02em; /* Slightly tighter letter spacing for headings */
 }
 
+/* Link styles */
 a {
-    color: var(--primary);
-    text-decoration: none;
-    transition: var(--transition);
+    color: var(--primary); /* Purple link color */
+    text-decoration: none; /* No underline */
+    transition: var(--transition); /* Smooth color transition on hover */
 }
 
     a:hover {
-        color: var(--primary-dark);
-        text-decoration: none;
+        color: var(--primary-dark); /* Darker purple on hover */
+        text-decoration: none; /* Still no underline */
     }
 
-/* Fixed Footer Solution */
+/* Fixed footer at bottom of page */
 .footer {
-    position: fixed;
+    position: fixed; /* Keeps footer at bottom */
     bottom: 0;
     left: 0;
     width: 100%;
-    height: 60px; 
+    height: 60px; /* Fixed height footer */
     background-color: white;
-    border-top: 1px solid #dee2e6;
-    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
-    z-index: 1030; 
+    border-top: 1px solid #dee2e6; /* Top border */
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05); /* Subtle shadow above footer */
+    z-index: 1030; /* Ensures footer is above other content */
 }
 
     .footer .container {
         height: 100%;
         display: flex;
-        align-items: center;
+        align-items: center; /* Vertically center footer content */
     }
 
-
+/* Space for content to not be hidden by footer */
 .form-container {
-    margin-bottom: 80px; 
+    margin-bottom: 80px; /* Extra space at bottom for fixed footer */
 }
-
 
 main {
-    padding-bottom: 80px; 
+    padding-bottom: 80px; /* Space at bottom of main content for footer */
 }
 
-/* Bootstrap Navbar Customization */
+/* Navigation bar styling */
 .navbar {
-    background-color: white !important;
-    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08);
-    padding: 0.75rem 0;
+    background-color: white !important; /* White navbar */
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08); /* Shadow below navbar */
+    padding: 0.75rem 0; /* Vertical padding */
 }
 
 .navbar-brand {
-    font-size: 1.5rem;
-    font-weight: 800;
+    font-size: 1.5rem; /* Larger text for site name */
+    font-weight: 800; /* Extra bold */
     color: var(--primary) !important;
+    /* Gradient text effect */
     background: var(--gradient-primary);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    letter-spacing: -0.03em;
+    letter-spacing: -0.03em; /* Slightly tighter spacing */
 }
 
     .navbar-brand img {
-        height: 36px;
-        margin-right: 10px;
+        height: 36px; /* Logo size */
+        margin-right: 10px; /* Space between logo and text */
     }
 
+/* Navigation links */
 .nav-link {
-    color: var(--gray-800) !important;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    font-size: 0.9rem;
-    padding: 0.5rem 1rem !important;
-    position: relative;
+    color: var(--gray-800) !important; /* Dark gray nav links */
+    font-weight: 600; /* Semi-bold */
+    text-transform: uppercase; /* ALL CAPS */
+    letter-spacing: 0.05em; /* Wider spacing for uppercase */
+    font-size: 0.9rem; /* Slightly smaller */
+    padding: 0.5rem 1rem !important; /* Padding around links */
+    position: relative; /* For underline animation */
     transition: var(--transition);
 }
 
     .nav-link:hover {
-        color: var(--primary) !important;
+        color: var(--primary) !important; /* Purple on hover */
     }
 
+    /* Animated underline for nav links */
     .nav-link::after {
         content: '';
         position: absolute;
-        width: 0;
+        width: 0; /* Initially no width */
         height: 3px;
         bottom: 0;
         left: 0;
-        background: var(--gradient-primary);
+        background: var(--gradient-primary); /* Purple gradient underline */
         transition: var(--transition);
     }
 
     .nav-link:hover::after {
-        width: 100%;
+        width: 100%; /* Expand to full width on hover */
     }
 
     .nav-link.active {
-        color: var(--primary) !important;
+        color: var(--primary) !important; /* Active link is purple */
     }
 
         .nav-link.active::after {
-            width: 100%;
+            width: 100%; /* Active link has full underline */
         }
 
-/* Card Component */
+/* Card component styling */
 .card {
-    border: none !important;
-    border-radius: var(--border-radius) !important;
-    box-shadow: var(--shadow);
-    margin-bottom: 2rem;
-    border-top: 4px solid var(--primary) !important;
+    border: none !important; /* No default border */
+    border-radius: var(--border-radius) !important; /* Rounded corners */
+    box-shadow: var(--shadow); /* Subtle shadow */
+    margin-bottom: 2rem; /* Space below cards */
+    border-top: 4px solid var(--primary) !important; /* Purple accent at top */
     position: relative;
-    overflow: hidden;
+    overflow: hidden; /* For gradient decorative element */
 }
 
+    /* Decorative gradient in top-right corner */
     .card::before {
         content: '';
         position: absolute;
@@ -163,35 +170,36 @@ main {
         width: 150px;
         height: 150px;
         background: linear-gradient(135deg, rgba(94, 23, 235, 0.05) 0%, transparent 60%);
-        border-radius: 0 0 0 100%;
+        border-radius: 0 0 0 100%; /* Curved shape */
         z-index: 0;
     }
 
 .card-header {
-    background-color: transparent !important;
-    border-bottom: 1px solid rgba(0,0,0,0.08) !important;
-    padding: 1.5rem !important;
+    background-color: transparent !important; /* Clear background */
+    border-bottom: 1px solid rgba(0,0,0,0.08) !important; /* Subtle bottom border */
+    padding: 1.5rem !important; /* More padding than default */
     display: flex;
-    justify-content: space-between;
+    justify-content: space-between; /* Header content spacing */
     align-items: center;
     position: relative;
-    z-index: 1;
+    z-index: 1; /* Above the ::before element */
 }
 
 .card-body {
-    padding: 1.5rem !important;
+    padding: 1.5rem !important; /* More padding than default */
     position: relative;
-    z-index: 1;
+    z-index: 1; /* Above the ::before element */
 }
 
 .card-title {
     font-size: 1.5rem;
     margin-bottom: 0;
-    color: var(--primary);
+    color: var(--primary); /* Purple title */
     position: relative;
-    padding-bottom: 0.5rem;
+    padding-bottom: 0.5rem; /* Space for underline */
 }
 
+    /* Underline for card titles */
     .card-title::after {
         content: '';
         position: absolute;
@@ -199,94 +207,100 @@ main {
         left: 0;
         width: 50px;
         height: 3px;
-        background: var(--gradient-primary);
+        background: var(--gradient-primary); /* Purple gradient underline */
         border-radius: 3px;
     }
 
-/* Bootstrap Button Customization */
+/* Button styling */
 .btn {
-    font-weight: 600;
-    padding: 0.65rem 1.25rem;
-    border-radius: var(--border-radius);
-    transition: var(--transition);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
+    font-weight: 600; /* Semi-bold */
+    padding: 0.65rem 1.25rem; /* Padding inside buttons */
+    border-radius: var(--border-radius); /* Rounded corners */
+    transition: var(--transition); /* Smooth hover */
+    text-transform: uppercase; /* ALL CAPS */
+    letter-spacing: 0.05em; /* Letter spacing */
     position: relative;
-    overflow: hidden;
+    overflow: hidden; /* For shine effect */
     z-index: 1;
 }
 
+    /* Button hover shine effect */
     .btn::before {
         content: '';
         position: absolute;
         top: 0;
-        left: -100%;
+        left: -100%; /* Start off-screen */
         width: 100%;
         height: 100%;
-        background: rgba(255, 255, 255, 0.1);
+        background: rgba(255, 255, 255, 0.1); /* White shine */
         transition: var(--transition);
         z-index: -1;
     }
 
     .btn:hover::before {
-        left: 0;
+        left: 0; /* Move across button on hover */
     }
 
+/* Primary button (purple) */
 .btn-primary {
-    background-image: var(--gradient-primary) !important;
+    background-image: var(--gradient-primary) !important; /* Purple gradient */
     border: none !important;
 }
 
     .btn-primary:hover,
     .btn-primary:focus,
     .btn-primary:active {
-        transform: translateY(-3px);
-        box-shadow: 0 7px 14px rgba(94, 23, 235, 0.3) !important;
+        transform: translateY(-3px); /* Lift effect */
+        box-shadow: 0 7px 14px rgba(94, 23, 235, 0.3) !important; /* Larger shadow */
         background-image: var(--gradient-primary) !important;
     }
 
+/* Success button (green) */
 .btn-success {
-    background: linear-gradient(135deg, var(--success) 0%, #05b575 100%) !important;
+    background: linear-gradient(135deg, var(--success) 0%, #05b575 100%) !important; /* Green gradient */
     border: none !important;
 }
 
     .btn-success:hover,
     .btn-success:focus,
     .btn-success:active {
-        transform: translateY(-3px);
-        box-shadow: 0 7px 14px rgba(0, 214, 143, 0.3) !important;
+        transform: translateY(-3px); /* Lift effect */
+        box-shadow: 0 7px 14px rgba(0, 214, 143, 0.3) !important; /* Green shadow */
         background: linear-gradient(135deg, var(--success) 0%, #05b575 100%) !important;
     }
 
+/* Danger/delete button (red) */
 .btn-danger {
-    background: linear-gradient(135deg, var(--danger) 0%, #ff7070 100%) !important;
+    background: linear-gradient(135deg, var(--danger) 0%, #ff7070 100%) !important; /* Red gradient */
     border: none !important;
 }
 
     .btn-danger:hover,
     .btn-danger:focus,
     .btn-danger:active {
-        transform: translateY(-3px);
-        box-shadow: 0 7px 14px rgba(255, 72, 72, 0.3) !important;
+        transform: translateY(-3px); /* Lift effect */
+        box-shadow: 0 7px 14px rgba(255, 72, 72, 0.3) !important; /* Red shadow */
         background: linear-gradient(135deg, var(--danger) 0%, #ff7070 100%) !important;
     }
 
+/* Button with shadow */
 .shadow-button {
     box-shadow: var(--shadow);
 }
 
     .shadow-button:hover {
-        box-shadow: var(--shadow-lg);
+        box-shadow: var(--shadow-lg); /* Larger shadow on hover */
     }
 
-/* Dashboard Stats */
+/* Dashboard statistics display */
 .dashboard-stats {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Responsive grid */
+    gap: 1.5rem; /* Space between stat cards */
     margin: 1rem 0 2rem;
 }
 
+/* Individual stat card */
 .stat-card {
     background: white;
     border-radius: var(--border-radius);
@@ -294,32 +308,34 @@ main {
     display: flex;
     align-items: center;
     box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
-    border-left: 4px solid var(--secondary);
+    border-left: 4px solid var(--secondary); /* Left accent */
     transition: var(--transition);
 }
 
     .stat-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        transform: translateY(-5px); /* Lift on hover */
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1); /* Larger shadow */
     }
 
+    /* Different accent colors for each stat card */
     .stat-card:nth-child(1) {
-        border-left-color: var(--primary);
+        border-left-color: var(--primary); /* Purple for first */
     }
 
     .stat-card:nth-child(2) {
-        border-left-color: var(--secondary);
+        border-left-color: var(--secondary); /* Pink for second */
     }
 
     .stat-card:nth-child(3) {
-        border-left-color: var(--accent);
+        border-left-color: var(--accent); /* Cyan for third */
     }
 
+/* Icon in stat cards */
 .stat-icon {
-    background: rgba(94, 23, 235, 0.1);
+    background: rgba(94, 23, 235, 0.1); /* Light purple bg */
     width: 48px;
     height: 48px;
-    border-radius: 50%;
+    border-radius: 50%; /* Circle */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -328,89 +344,91 @@ main {
     font-size: 1.25rem;
 }
 
+/* Different colored icons for each stat card */
 .stat-card:nth-child(1) .stat-icon {
     background: rgba(94, 23, 235, 0.1);
-    color: var(--primary);
+    color: var(--primary); /* Purple */
 }
 
 .stat-card:nth-child(2) .stat-icon {
     background: rgba(255, 41, 117, 0.1);
-    color: var(--secondary);
+    color: var(--secondary); /* Pink */
 }
 
 .stat-card:nth-child(3) .stat-icon {
     background: rgba(0, 229, 255, 0.1);
-    color: var(--accent);
+    color: var(--accent); /* Cyan */
 }
 
 .stat-content {
-    flex: 1;
+    flex: 1; /* Takes remaining space */
 }
 
 .stat-value {
-    font-size: 1.75rem;
-    font-weight: 700;
+    font-size: 1.75rem; /* Large number */
+    font-weight: 700; /* Bold */
     color: var(--dark);
     margin: 0;
     line-height: 1.2;
 }
 
 .stat-label {
-    font-size: 0.9rem;
+    font-size: 0.9rem; /* Smaller label */
     color: var(--gray-800);
     margin: 0;
     font-weight: 500;
 }
 
-/* Forms Styling */
+/* Form styling */
 .form-title {
-    color: var(--primary);
+    color: var(--primary); /* Purple title */
     font-size: 2rem;
     margin-bottom: 2rem;
     text-align: center;
     position: relative;
-    padding-bottom: 1rem;
+    padding-bottom: 1rem; /* Space for underline */
 }
 
+    /* Underline for form title */
     .form-title::after {
         content: '';
         position: absolute;
         bottom: 0;
         left: 50%;
-        transform: translateX(-50%);
+        transform: translateX(-50%); /* Center the underline */
         width: 80px;
         height: 4px;
-        background: var(--gradient-primary);
+        background: var(--gradient-primary); /* Purple gradient */
         border-radius: 4px;
     }
 
 .student-form {
     max-width: 800px;
-    margin: 0 auto;
+    margin: 0 auto; /* Center the form */
     background: white;
     padding: 2rem;
     border-radius: var(--border-radius);
     box-shadow: var(--shadow);
 }
 
-/* Bootstrap Form Controls Custom Styling */
+/* Form control styling (inputs, selects) */
 .form-control,
 .form-select {
-    padding: 0.75rem 1rem;
+    padding: 0.75rem 1rem; /* More padding than default */
     font-size: 1rem;
     line-height: 1.5;
     color: var(--dark);
-    background-color: #f9fafc;
-    border: 2px solid var(--gray-300);
+    background-color: #f9fafc; /* Very light gray background */
+    border: 2px solid var(--gray-300); /* Thicker border */
     border-radius: var(--border-radius);
     transition: var(--transition);
 }
 
     .form-control:focus,
     .form-select:focus {
-        border-color: var(--primary);
-        background-color: white;
-        box-shadow: 0 0 0 0.25rem rgba(94, 23, 235, 0.25);
+        border-color: var(--primary); /* Purple border on focus */
+        background-color: white; /* White background on focus */
+        box-shadow: 0 0 0 0.25rem rgba(94, 23, 235, 0.25); /* Purple glow */
     }
 
     .form-control:disabled {
@@ -419,57 +437,62 @@ main {
     }
 
 .form-label {
-    font-weight: 600;
+    font-weight: 600; /* Semi-bold labels */
     color: var(--gray-800);
     margin-bottom: 0.5rem;
 }
 
 .form-check-input:checked {
-    background-color: var(--primary);
+    background-color: var(--primary); /* Purple checkbox when checked */
     border-color: var(--primary);
 }
 
-/* Table Styling */
+/* Table styling */
 .table {
     background-color: white;
-    border-radius: var(--border-radius);
-    overflow: hidden;
-    box-shadow: var(--shadow);
+    border-radius: var(--border-radius); /* Rounded corners */
+    overflow: hidden; /* For border radius */
+    box-shadow: var(--shadow); /* Subtle shadow */
     margin-bottom: 2rem;
 }
 
+    /* Table header */
     .table th {
-        background-color: #f5f7fa;
-        color: var(--primary);
-        font-weight: 600;
-        text-transform: uppercase;
-        font-size: 0.85rem;
-        letter-spacing: 0.05em;
-        border-bottom: 2px solid var(--gray-300);
-        padding: 1rem 1.5rem;
+        background-color: #f5f7fa; /* Light gray background */
+        color: var(--primary); /* Purple text */
+        font-weight: 600; /* Semi-bold */
+        text-transform: uppercase; /* ALL CAPS */
+        font-size: 0.85rem; /* Smaller */
+        letter-spacing: 0.05em; /* Wider spacing */
+        border-bottom: 2px solid var(--gray-300); /* Bottom border */
+        padding: 1rem 1.5rem; /* More padding */
     }
 
+    /* Table cells */
     .table td {
-        padding: 1rem 1.5rem;
-        border-bottom: 1px solid var(--gray-300);
-        font-weight: 500;
-        vertical-align: middle;
+        padding: 1rem 1.5rem; /* More padding */
+        border-bottom: 1px solid var(--gray-300); /* Bottom border */
+        font-weight: 500; /* Medium weight */
+        vertical-align: middle; /* Vertically center */
     }
 
+    /* Row hover effect */
     .table tr:hover {
-        background-color: rgba(94, 23, 235, 0.03);
+        background-color: rgba(94, 23, 235, 0.03); /* Very light purple */
     }
 
+    /* Remove border from last row */
     .table tbody tr:last-child td {
         border-bottom: none;
     }
 
-/* Action Buttons in Tables */
+/* Action buttons in tables (edit, delete, etc.) */
 .action-buttons {
     display: flex;
-    gap: 0.5rem;
+    gap: 0.5rem; /* Space between buttons */
 }
 
+    /* Square icon buttons */
     .action-buttons .btn {
         padding: 0.5rem;
         width: 36px;
@@ -480,18 +503,20 @@ main {
         font-size: 0.9rem;
     }
 
-/* Custom confirmation switch styling */
+/* Confirmation switch styling */
 .custom-confirmation-check {
     transition: var(--transition);
-    border-left: 4px solid var(--warning) !important;
+    border-left: 4px solid var(--warning) !important; /* Amber left border */
 }
 
     .custom-confirmation-check:hover {
-        background-color: rgba(255, 171, 0, 0.05) !important;
+        background-color: rgba(255, 171, 0, 0.05) !important; /* Light amber on hover */
     }
 
+/* Toggle switch styling */
 .form-switch .form-check-input {
     cursor: pointer;
+    /* Red circle for off state */
     background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='rgba%28255, 0, 0, 0.5%29'/%3e%3c/svg%3e") !important;
 }
 
@@ -499,17 +524,19 @@ main {
         background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='rgba%28255, 0, 0, 0.5%29'/%3e%3c/svg%3e") !important;
     }
 
+    /* Checked state is red */
     .form-switch .form-check-input:checked {
         background-color: var(--danger);
         border-color: var(--danger);
+        /* White circle for on state */
         background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%23fff'/%3e%3c/svg%3e") !important;
     }
 
-/* Animations */
+/* Animation for page elements */
 @keyframes fadeIn {
     from {
         opacity: 0;
-        transform: translateY(20px);
+        transform: translateY(20px); /* Start below and fade up */
     }
 
     to {
@@ -519,36 +546,36 @@ main {
 }
 
 .fade-in {
-    animation: fadeIn 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);
+    animation: fadeIn 0.6s cubic-bezier(0.25, 0.8, 0.25, 1); /* Apply fade-in animation */
 }
 
-/* Responsive adjustments */
+/* Responsive adjustments for smaller screens */
 @media (max-width: 768px) {
     .card-header {
-        flex-direction: column;
+        flex-direction: column; /* Stack elements */
         align-items: flex-start;
     }
 
         .card-header .btn {
             margin-top: 1rem;
-            width: 100%;
+            width: 100%; /* Full width buttons */
         }
 
     .dashboard-stats {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr; /* Single column */
     }
 
     .action-buttons {
-        flex-direction: column;
+        flex-direction: column; /* Stack buttons */
     }
 
         .action-buttons .btn {
-            width: 100%;
+            width: 100%; /* Full width buttons */
             height: auto;
         }
 }
 
-/* Deleted Students Modal Styling */
+/* Modal styling (popups) */
 .modal-content {
     border: none;
     border-radius: var(--border-radius);
@@ -558,7 +585,7 @@ main {
 
 .modal-header {
     padding: 1rem 1.5rem;
-    border-bottom: none;
+    border-bottom: none; /* No border */
 }
 
 .modal-body {
@@ -567,76 +594,84 @@ main {
 
 .modal-footer {
     padding: 1rem 1.5rem;
-    border-top: 1px solid var(--gray-200);
+    border-top: 1px solid var(--gray-200); /* Light border */
 }
 
+/* Modal animation */
 .modal.fade .modal-dialog {
-    transform: scale(0.95);
+    transform: scale(0.95); /* Start slightly smaller */
     transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
 .modal.show .modal-dialog {
-    transform: scale(1);
+    transform: scale(1); /* Full size when shown */
 }
 
-/* Delete confirmation warning styles */
+/* Colored modal headers */
 .modal-header.bg-danger,
 .modal-header.bg-success {
-    color: white;
+    color: white; /* White text on colored background */
     border-radius: var(--border-radius) var(--border-radius) 0 0;
 }
 
+/* Warning icon in modals */
 .modal-warning-icon {
-    color: var(--warning);
+    color: var(--warning); /* Amber */
     font-size: 1.5rem;
     margin-right: 0.75rem;
 }
 
+/* Warning text */
 .permanent-delete-warning {
     font-weight: 600;
-    color: var(--danger);
+    color: var(--danger); /* Red text */
 }
 
+/* Highlighted name */
 .student-name-highlight {
     font-weight: 700;
     color: var(--dark);
 }
 
+/* Deleted student statistics */
 .deleted-student-stat-card .stat-icon {
-    background: rgba(255, 72, 72, 0.1);
-    color: var(--danger);
+    background: rgba(255, 72, 72, 0.1); /* Light red */
+    color: var(--danger); /* Red */
 }
 
 .deleted-student-stat-card {
-    border-left-color: var(--danger);
+    border-left-color: var(--danger); /* Red left border */
 }
 
 /* Bar duty card styles */
 .bar-duty-card {
-    border-left-color: var(--warning);
+    border-left-color: var(--warning); /* Amber left border */
 }
 
     .bar-duty-card .stat-icon {
-        background: rgba(255, 171, 0, 0.1);
-        color: var(--warning);
+        background: rgba(255, 171, 0, 0.1); /* Light amber */
+        color: var(--warning); /* Amber */
     }
 
+/* Scrollable list for bar duties */
 .bar-duty-list {
     max-height: 200px;
-    overflow-y: auto;
+    overflow-y: auto; /* Vertical scrollbar */
 }
 
+/* Bar duty badge */
 .bar-duty-badge {
     margin-bottom: 0.25rem;
     display: inline-block;
-    white-space: normal;
+    white-space: normal; /* Allow text wrapping */
     text-align: left;
 }
 
+/* View all button */
 .view-all-button {
     background: none;
     border: none;
-    color: var(--primary);
+    color: var(--primary); /* Purple */
     padding: 0;
     font-size: 0.8rem;
     text-decoration: underline;
@@ -644,12 +679,12 @@ main {
 }
 
     .view-all-button:hover {
-        color: var(--primary-dark);
+        color: var(--primary-dark); /* Darker purple */
     }
 
-/* Modal styles */
+/* Bar duty modal styling */
 .bar-duty-modal .modal-header {
-    background-color: var(--warning);
+    background-color: var(--warning); /* Amber header */
     color: var(--dark);
 }
 
@@ -657,31 +692,33 @@ main {
     padding: 1.5rem;
 }
 
+/* Lecturer list items */
 .bar-duty-modal .lecturer-item {
     padding: 0.75rem;
-    border-bottom: 1px solid var(--gray-200);
+    border-bottom: 1px solid var(--gray-200); /* Light border */
 }
 
     .bar-duty-modal .lecturer-item:last-child {
-        border-bottom: none;
+        border-bottom: none; /* No border on last item */
     }
 
-/* Search Form Styling */
+/* Search form styling */
 .search-form {
-    background-color: #f5f7fa;
+    background-color: #f5f7fa; /* Light gray */
     padding: 1.25rem;
     margin: 0rem 1.5rem 1.5rem;
     border-radius: var(--border-radius);
     display: flex;
     align-items: center;
     flex-wrap: wrap;
-    gap: 1rem;
+    gap: 1rem; /* Space between elements */
     transition: var(--transition);
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
     border: 1px solid var(--gray-200);
     position: relative;
 }
 
+    /* Highlight on focus */
     .search-form:focus-within {
         box-shadow: 0 3px 10px rgba(94, 23, 235, 0.1);
         border-color: var(--primary);
@@ -693,26 +730,29 @@ main {
     margin: 0;
     display: flex;
     align-items: center;
-    flex: 0 0 auto;
+    flex: 0 0 auto; /* Don't grow */
 }
 
+    /* Icon in label */
     .search-form-label i {
         margin-right: 0.5rem;
-        color: var(--primary);
+        color: var(--primary); /* Purple icon */
     }
 
 .search-form-group {
     display: flex;
-    flex: 1;
+    flex: 1; /* Take remaining space */
     position: relative;
 }
 
+/* Search input */
 .search-form-control {
     flex: 1;
-    padding: 0.65rem 1rem 0.65rem 2.5rem;
+    padding: 0.65rem 1rem 0.65rem 2.5rem; /* Left padding for icon */
     font-size: 1rem;
     background-color: white;
     border: 2px solid var(--gray-300);
+    /* Rounded left corners only */
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
     border-top-left-radius: var(--border-radius);
@@ -721,10 +761,11 @@ main {
 }
 
     .search-form-control:focus {
-        border-color: var(--primary);
+        border-color: var(--primary); /* Purple border on focus */
         box-shadow: none;
     }
 
+/* Search icon */
 .search-icon {
     position: absolute;
     left: 0.75rem;
@@ -734,14 +775,16 @@ main {
     z-index: 5;
 }
 
+/* Search button */
 .search-btn {
-    background-image: var(--gradient-primary);
+    background-image: var(--gradient-primary); /* Purple gradient */
     color: white;
     border: none;
     padding: 0.65rem 1.5rem;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.05em;
+    /* Rounded right corners only */
     border-top-right-radius: var(--border-radius);
     border-bottom-right-radius: var(--border-radius);
     border-top-left-radius: 0;
@@ -752,18 +795,20 @@ main {
 }
 
     .search-btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(94, 23, 235, 0.3);
+        transform: translateY(-2px); /* Lift effect */
+        box-shadow: 0 4px 8px rgba(94, 23, 235, 0.3); /* Purple shadow */
     }
 
+    /* Icon in button */
     .search-btn i {
         margin-right: 0.5rem;
     }
 
+/* Reset search button/link */
 .reset-search {
     background: none;
     border: none;
-    color: var(--primary);
+    color: var(--primary); /* Purple */
     text-decoration: none;
     font-weight: 600;
     font-size: 0.9rem;
@@ -775,10 +820,11 @@ main {
 }
 
     .reset-search:hover {
-        background-color: rgba(94, 23, 235, 0.05);
+        background-color: rgba(94, 23, 235, 0.05); /* Light purple */
         color: var(--primary-dark);
     }
 
+    /* Icon in reset button */
     .reset-search i {
         margin-right: 0.5rem;
     }
@@ -787,7 +833,7 @@ main {
 @media (max-width: 768px) {
     .search-form {
         flex-direction: column;
-        align-items: stretch;
+        align-items: stretch; /* Full width */
     }
 
     .search-form-label {
@@ -808,15 +854,184 @@ main {
     }
 }
 
+/* Custom dropdown styling for search */
 select.search-form-control {
     background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%235e17eb' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
     background-repeat: no-repeat;
     background-position: right 0.75rem center;
     background-size: 16px 12px;
-    padding-right: 2.5rem;
+    padding-right: 2.5rem; /* Space for dropdown arrow */
 }
 
     select.search-form-control:focus {
-        box-shadow: 0 0 0 0.25rem rgba(94, 23, 235, 0.25);
+        box-shadow: 0 0 0 0.25rem rgba(94, 23, 235, 0.25); /* Purple glow */
         border-color: var(--primary);
     }
+
+/* Drink Order Specific Styles */
+.avatar-placeholder {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%; /* Circle */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+/* Drink icon styling */
+.drink-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%; /* Circle */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+}
+
+    /* Alcoholic drink icon */
+    .drink-icon.alcoholic {
+        background-color: rgba(255, 171, 0, 0.1); /* Light amber */
+        color: var(--warning); /* Amber */
+    }
+
+    /* Non-alcoholic drink icon */
+    .drink-icon.non-alcoholic {
+        background-color: rgba(0, 214, 143, 0.1); /* Light green */
+        color: var(--success); /* Green */
+    }
+
+/* Order summary box */
+.order-summary {
+    background-color: #f8f9fa; /* Light gray */
+    border-radius: 0.5rem;
+    padding: 1rem;
+}
+
+/* Clickable table rows */
+.clickable-row {
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+    .clickable-row:hover {
+        background-color: rgba(94, 23, 235, 0.05); /* Light purple on hover */
+    }
+
+/* Step icon for processes */
+.step-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%; /* Circle */
+    background-color: var(--primary); /* Purple */
+    color: white;
+    margin-right: 8px;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+/* Order preview card */
+.order-preview-card {
+    border-left: 4px solid var(--primary); /* Purple left border */
+    background-color: #f8f9fa; /* Light gray */
+}
+
+/* Simplified card styles for drink order */
+.simple-card {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+}
+
+    .simple-card:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* Larger shadow on hover */
+    }
+
+/* Compact table styling */
+.compact-table th,
+.compact-table td {
+    padding: 0.6rem 1rem; /* Less padding than standard tables */
+}
+
+/* Compact form controls */
+.compact-form .form-group {
+    margin-bottom: 1.2rem; /* Less margin */
+}
+
+.compact-form label {
+    margin-bottom: 0.3rem; /* Less margin */
+}
+
+.compact-form small {
+    font-size: 0.75rem; /* Smaller helper text */
+}
+
+/* VAT info list styling */
+.vat-info-list .list-group-item {
+    padding: 0.5rem 1rem; /* Less padding */
+}
+
+/* Progress bar (for stock levels) */
+.progress {
+    background-color: #f5f7fa; /* Light gray background */
+    border-radius: 1rem;
+    overflow: hidden;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1); /* Inset shadow */
+}
+
+.progress-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600; /* Semi-bold text */
+    transition: width 0.6s ease; /* Animate width changes */
+}
+
+/* Inventory card hover effect */
+.inventory-card {
+    transition: transform 0.3s ease;
+}
+
+    .inventory-card:hover {
+        transform: translateY(-5px); /* Lift on hover */
+    }
+
+/* Stock level indicators */
+.stock-indicator {
+    width: 60px;
+    height: 6px;
+    border-radius: 3px;
+    background-color: #e9ecef; /* Light gray background */
+    margin-top: 5px;
+    overflow: hidden;
+}
+
+.stock-indicator-bar {
+    height: 100%;
+    background-color: var(--success); /* Green for good stock */
+}
+
+/* Red for low stock */
+.stock-low .stock-indicator-bar {
+    background-color: var(--danger);
+}
+
+/* Amber for medium stock */
+.stock-medium .stock-indicator-bar {
+    background-color: var(--warning);
+}
+
+/* Tooltip styling */
+.tooltip-inner {
+    max-width: 200px;
+    padding: 0.5rem 0.8rem;
+    color: white;
+    text-align: center;
+    background-color: var(--dark); /* Dark background */
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+}

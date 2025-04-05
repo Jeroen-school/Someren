@@ -1,0 +1,86 @@
+﻿@model Someren.Models.DrinkOrder
+@{
+    ViewData["Title"] = "Confirm Order";
+    var student = ViewBag.Student;
+    var drink = ViewBag.Drink;
+    var totalPrice = ViewBag.TotalPrice;
+}
+
+<div class="card mb-4 fade-in">
+    <div class="card-header">
+        <h1 class="card-title">Confirm Order</h1>
+    </div>
+    <div class="card-body">
+        <div class="alert alert-warning">
+            <i class="fas fa-exclamation-triangle me-2"></i> Please review and confirm this order.
+        </div>
+
+        <div class="card simple-card mb-4">
+            <div class="card-header">
+                <h4 class="card-title mb-0"><i class="fas fa-receipt me-2"></i>Order Details</h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 mb-3 mb-md-0">
+                        <h5 class="mb-3"><i class="fas fa-user me-2"></i>Student</h5>
+                        <div class="d-flex align-items-center mb-2">
+                            <div class="avatar-placeholder bg-primary text-white me-3">
+                                @student.FirstName[0]@student.LastName[0]
+                            </div>
+                            <div>
+                                <h5 class="mb-0 student-name-highlight">@student.FirstName @student.LastName</h5>
+                                <span class="text-muted small">ID: @student.StudentNum, Room: @student.RoomNum</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <h5 class="mb-3"><i class="fas fa-glass-martini me-2"></i>Drink</h5>
+                        <div class="d-flex align-items-center mb-2">
+                            <div class="drink-icon me-3 @(drink.VatRate == 21 ? "alcoholic" : "non-alcoholic")">
+                                <i class="fas @(drink.VatRate == 21 ? "fa-beer" : "fa-glass-whiskey")"></i>
+                            </div>
+                            <div>
+                                <h5 class="mb-0">@drink.DrinkType</h5>
+                                <span class="@(drink.VatRate == 21 ? "text-warning" : "text-success") small">
+                                    @(drink.VatRate == 21 ? "Alcoholic" : "Non-alcoholic") - @drink.VatRate% VAT
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="my-3">
+
+                <div class="order-summary">
+                    <div class="d-flex justify-content-between py-2 border-bottom">
+                        <span>Price per unit:</span>
+                        <span>€@drink.DrinkPrice.ToString("F2")</span>
+                    </div>
+                    <div class="d-flex justify-content-between py-2 border-bottom">
+                        <span>Quantity:</span>
+                        <span>@Model.Quantity</span>
+                    </div>
+                    <div class="d-flex justify-content-between py-2 fw-bold">
+                        <span>Total Price:</span>
+                        <span class="text-primary">€@totalPrice.ToString("F2")</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <form action="/DrinkOrder/Confirm" method="post">
+            <input type="hidden" name="StudentId" value="@Model.StudentId" />
+            <input type="hidden" name="DrinkId" value="@Model.DrinkId" />
+            <input type="hidden" name="Quantity" value="@Model.Quantity" />
+
+            <div class="d-flex justify-content-between">
+                <a href="/DrinkOrder/Index" class="btn btn-secondary shadow-button">
+                    <i class="fas fa-arrow-left me-2"></i> Back
+                </a>
+                <button type="submit" class="btn btn-success shadow-button">
+                    <i class="fas fa-check me-2"></i> Confirm Order
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

@@ -28,7 +28,7 @@ namespace Someren.Repositories
         // These are computed once at class load time, not per-instance
         private static readonly string s_baseColumns = "S.[student_number], R.[room_number], S.[first_name], S.[last_name], S.[telephone_number], S.[class]";
         private static readonly string s_notDeletedClause = "(S.Deleted = 0 OR S.Deleted IS NULL)";
-        private static readonly string s_baseSelectQuery = $"SELECT {s_baseColumns} FROM student AS S JOIN room AS R ON S.room_id = R.room_id WHERE";
+        private static readonly string s_baseSelectQuery = $"SELECT {s_baseColumns} FROM student AS S LEFT JOIN room AS R ON S.room_id = R.room_id WHERE";
         private static readonly string s_deletedClause = "S.Deleted = 1";
 
         // Cache parameter names to avoid string allocations in methods
@@ -55,7 +55,7 @@ namespace Someren.Repositories
         {
             return new Student(
                 reader.GetInt32(0),            // Direct index access instead of string lookup
-                reader.GetString(1),           // Much faster than reader["column_name"]
+                reader.IsDBNull(1) ? null : reader.GetString(1),         // room_number (can be NULL)
                 reader.GetString(2),
                 reader.GetString(3),
                 reader.GetString(4),
@@ -207,9 +207,18 @@ namespace Someren.Repositories
             using var connection = new SqlConnection(_connectionString);
             using var cmd = connection.CreateCommand();
 
-            // String interpolation with static fields for better readability
-            cmd.CommandText = $"INSERT INTO student (student_number, room_id, first_name, last_name, telephone_number, class) " +
-                             $"VALUES ({s_paramStudentNum}, (SELECT room_id FROM room WHERE room_number = {s_paramRoomNum}), {s_paramFirstName}, {s_paramLastName}, {s_paramTelNum}, {s_paramClass})";
+            if (string.IsNullOrEmpty(student.RoomNum))
+            {
+                // SQL for NULL room_id
+                cmd.CommandText = $"INSERT INTO student (student_number, room_id, first_name, last_name, telephone_number, class) " +
+                                 $"VALUES ({s_paramStudentNum}, NULL, {s_paramFirstName}, {s_paramLastName}, {s_paramTelNum}, {s_paramClass})";
+            }
+            else
+            {
+                // Original SQL with room lookup
+                cmd.CommandText = $"INSERT INTO student (student_number, room_id, first_name, last_name, telephone_number, class) " +
+                                 $"VALUES ({s_paramStudentNum}, (SELECT room_id FROM room WHERE room_number = {s_paramRoomNum}), {s_paramFirstName}, {s_paramLastName}, {s_paramTelNum}, {s_paramClass})";
+            }
             cmd.CommandType = CommandType.Text;
 
             // Use helper method to add all parameters with proper types
@@ -251,14 +260,28 @@ namespace Someren.Repositories
             using var connection = new SqlConnection(_connectionString);
             using var cmd = connection.CreateCommand();
 
-            // Formatted for better readability while still using static fields
-            cmd.CommandText = $"UPDATE student SET " +
-                             $"room_id = (SELECT room_id FROM room WHERE room_number = {s_paramRoomNum}), " +
-                             $"first_name = {s_paramFirstName}, " +
-                             $"last_name = {s_paramLastName}, " +
-                             $"telephone_number = {s_paramTelNum}, " +
-                             $"class = {s_paramClass} " +
-                             $"WHERE student_number = {s_paramStudentNum}";
+            if (string.IsNullOrEmpty(student.RoomNum))
+            {
+                // SQL for NULL room_id
+                cmd.CommandText = $"UPDATE student SET " +
+                                 $"room_id = NULL, " +
+                                 $"first_name = {s_paramFirstName}, " +
+                                 $"last_name = {s_paramLastName}, " +
+                                 $"telephone_number = {s_paramTelNum}, " +
+                                 $"class = {s_paramClass} " +
+                                 $"WHERE student_number = {s_paramStudentNum}";
+            }
+            else
+            {
+                // Original SQL with room lookup
+                cmd.CommandText = $"UPDATE student SET " +
+                                 $"room_id = (SELECT room_id FROM room WHERE room_number = {s_paramRoomNum}), " +
+                                 $"first_name = {s_paramFirstName}, " +
+                                 $"last_name = {s_paramLastName}, " +
+                                 $"telephone_number = {s_paramTelNum}, " +
+                                 $"class = {s_paramClass} " +
+                                 $"WHERE student_number = {s_paramStudentNum}";
+            }
             cmd.CommandType = CommandType.Text;
 
             AddParametersWithValues(cmd, student);
@@ -391,7 +414,17 @@ namespace Someren.Repositories
         {
             // Explicitly specify sizes for string parameters to avoid parameter sniffing issues
             cmd.Parameters.Add(new SqlParameter(s_paramStudentNum, SqlDbType.Int) { Value = student.StudentNum });
-            cmd.Parameters.Add(new SqlParameter(s_paramRoomNum, SqlDbType.NVarChar, 50) { Value = student.RoomNum });
+
+            // Handle NULL RoomNum - check if it's null or empty and use DBNull.Value if so
+            if (string.IsNullOrEmpty(student.RoomNum))
+            {
+                cmd.Parameters.Add(new SqlParameter(s_paramRoomNum, SqlDbType.NVarChar, 50) { Value = DBNull.Value });
+            }
+            else
+            {
+                cmd.Parameters.Add(new SqlParameter(s_paramRoomNum, SqlDbType.NVarChar, 50) { Value = student.RoomNum });
+            }
+
             cmd.Parameters.Add(new SqlParameter(s_paramFirstName, SqlDbType.NVarChar, 50) { Value = student.FirstName });
             cmd.Parameters.Add(new SqlParameter(s_paramLastName, SqlDbType.NVarChar, 50) { Value = student.LastName });
             cmd.Parameters.Add(new SqlParameter(s_paramTelNum, SqlDbType.NVarChar, 20) { Value = student.TelNum });

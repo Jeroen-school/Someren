@@ -37,7 +37,8 @@
                     </div>
                     <div class="mb-3">
                         <label for="RoomNum" class="form-label">Room Number</label>
-                        <select class="form-select" id="RoomNum" name="RoomNum" required>
+                        <select class="form-select" id="RoomNum" name="RoomNum">
+                            <option value="">No room assigned</option>
                             @if (Model == null)
                             {
                                 <option value="" disabled selected>Select a room</option>

@@ -1,0 +1,221 @@
+﻿@model List<Someren.Models.Drink>
+@{
+    ViewData["Title"] = "Drink Inventory";
+}
+
+<div class="card mb-4 fade-in">
+    <div class="card-header">
+        <h1 class="card-title">Inventory Management</h1>
+    </div>
+    <div class="card-body p-0">
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success mx-4 mt-3">
+                <i class="fas fa-check-circle me-2"></i> @TempData["SuccessMessage"]
+            </div>
+        }
+
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger mx-4 mt-3">
+                <i class="fas fa-exclamation-circle me-2"></i> @TempData["ErrorMessage"]
+            </div>
+        }
+
+        <div class="dashboard-stats px-4 py-3">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-boxes"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 class="stat-value">€@ViewBag.TotalInventoryValue.ToString("F2")</h3>
+                    <p class="stat-label">Total Inventory Value</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="background: rgba(255, 171, 0, 0.1); color: var(--warning);">
+                    <i class="fas fa-wine-bottle"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 class="stat-value">@ViewBag.TotalConsumption</h3>
+                    <p class="stat-label">Total Drinks Consumed</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="background: rgba(0, 214, 143, 0.1); color: var(--success);">
+                    <i class="fas fa-warehouse"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 class="stat-value">@Model.Sum(d => d.DrinkStock)</h3>
+                    <p class="stat-label">Total Drinks in Stock</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="px-4 pb-4">
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="card simple-card h-100">
+                        <div class="card-header">
+                            <h4 class="card-title mb-0"><i class="fas fa-chart-pie me-2"></i>Inventory Breakdown</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <h5 class="mb-2">Alcoholic Drinks (21% VAT)</h5>
+                                <div class="progress mb-2" style="height: 20px;">
+                                    @{
+                                        int alcoholicPercentage = Model.Any() ?
+                                        (int)(Model.Where(d => d.VatRate == 21).Sum(d => d.DrinkStock) * 100 / Model.Sum(d => d.DrinkStock)) : 0;
+                                    }
+                                    <div class="progress-bar bg-warning" style="width: @alcoholicPercentage%;">
+                                        @alcoholicPercentage%
+                                    </div>
+                                </div>
+                                <div class="d-flex justify-content-between small text-muted">
+                                    <span>Stock Value: €@ViewBag.TotalAlcoholicValue.ToString("F2")</span>
+                                    <span>Units: @Model.Where(d => d.VatRate == 21).Sum(d => d.DrinkStock)</span>
+                                </div>
+                            </div>
+
+                            <div>
+                                <h5 class="mb-2">Non-Alcoholic Drinks (9% VAT)</h5>
+                                <div class="progress mb-2" style="height: 20px;">
+                                    @{
+                                        int nonAlcoholicPercentage = Model.Any() ?
+                                        (int)(Model.Where(d => d.VatRate == 9).Sum(d => d.DrinkStock) * 100 / Model.Sum(d => d.DrinkStock)) : 0;
+                                    }
+                                    <div class="progress-bar bg-success" style="width: @nonAlcoholicPercentage%;">
+                                        @nonAlcoholicPercentage%
+                                    </div>
+                                </div>
+                                <div class="d-flex justify-content-between small text-muted">
+                                    <span>Stock Value: €@ViewBag.TotalNonAlcoholicValue.ToString("F2")</span>
+                                    <span>Units: @Model.Where(d => d.VatRate == 9).Sum(d => d.DrinkStock)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="card simple-card h-100">
+                        <div class="card-header">
+                            <h4 class="card-title mb-0"><i class="fas fa-glass-cheers me-2"></i>Consumption Stats</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <h5 class="mb-2">Alcoholic vs. Non-Alcoholic</h5>
+                                <div class="progress mb-2" style="height: 20px;">
+                                    @{
+                                        int alcoholicConsumptionPercentage = ViewBag.TotalConsumption > 0 ?
+                                        (int)(ViewBag.AlcoholicConsumption * 100 / ViewBag.TotalConsumption) : 0;
+                                        int nonAlcoholicConsumptionPercentage = 100 - alcoholicConsumptionPercentage;
+                                    }
+                                    <div class="progress-bar bg-warning" style="width: @alcoholicConsumptionPercentage%;">
+                                        @alcoholicConsumptionPercentage%
+                                    </div>
+                                    <div class="progress-bar bg-success" style="width: @nonAlcoholicConsumptionPercentage%;">
+                                        @nonAlcoholicConsumptionPercentage%
+                                    </div>
+                                </div>
+                                <div class="d-flex justify-content-between small text-muted">
+                                    <span><i class="fas fa-beer me-1 text-warning"></i>Alcoholic: @ViewBag.AlcoholicConsumption drinks</span>
+                                    <span><i class="fas fa-glass-whiskey me-1 text-success"></i>Non-Alcoholic: @ViewBag.NonAlcoholicConsumption drinks</span>
+                                </div>
+                            </div>
+
+                            <div>
+                                <h5 class="mb-2">Top Consumed Drinks</h5>
+                                <ul class="list-group list-group-flush">
+                                    @foreach (var drink in Model.OrderByDescending(d => d.DrinkConsumed).Take(3))
+                                    {
+                                        <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                            <span>
+                                                <i class="fas @(drink.VatRate == 21 ? "fa-beer" : "fa-glass-whiskey") me-2 @(drink.VatRate == 21 ? "text-warning" : "text-success")"></i>
+                                                @drink.DrinkType
+                                            </span>
+                                            <span class="badge bg-primary rounded-pill">@drink.DrinkConsumed units</span>
+                                        </li>
+                                    }
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card simple-card">
+                <div class="card-header">
+                    <h4 class="card-title mb-0">
+                        <i class="fas fa-boxes me-2"></i>Detailed Inventory
+                    </h4>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Drink Type</th>
+                                    <th class="text-center">Price</th>
+                                    <th class="text-center">VAT</th>
+                                    <th class="text-center">Stock</th>
+                                    <th class="text-center">Consumed</th>
+                                    <th class="text-center">Total Value</th>
+                                    <th class="text-center">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var drink in Model.OrderBy(d => d.DrinkType))
+                                {
+                                    <tr>
+                                        <td>@drink.DrinkId</td>
+                                        <td>
+                                            <i class="fas @(drink.VatRate == 21 ? "fa-beer" : "fa-glass-whiskey") me-2
+                                              @(drink.VatRate == 21 ? "text-warning" : "text-success")"></i>
+                                            <strong>@drink.DrinkType</strong>
+                                        </td>
+                                        <td class="text-center">€@drink.DrinkPrice.ToString("F2")</td>
+                                        <td class="text-center">
+                                            <span class="badge @(drink.VatRate == 21 ? "bg-warning" : "bg-success")">
+                                                @drink.VatRate%
+                                            </span>
+                                        </td>
+                                        <td class="text-center">@drink.DrinkStock</td>
+                                        <td class="text-center">@drink.DrinkConsumed</td>
+                                        <td class="text-center">€@((drink.DrinkStock * drink.DrinkPrice).ToString("F2"))</td>
+                                        <td class="text-center">
+                                            @if (drink.DrinkStock == 0)
+                                            {
+                                                <span class="badge bg-danger">Out of Stock</span>
+                                            }
+                                            else if (drink.DrinkStock < 5)
+                                            {
+                                                <span class="badge bg-danger">Low Stock</span>
+                                            }
+                                            else if (drink.DrinkStock < 20)
+                                            {
+                                                <span class="badge bg-warning">Medium Stock</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-success">Well Stocked</span>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Add a button to return to drink order page -->
+            <div class="mt-4">
+                <a href="/DrinkOrder/Index" class="btn btn-primary shadow-button">
+                    <i class="fas fa-arrow-left me-2"></i> Back to Drink Orders
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
