@@ -85,7 +85,7 @@
                                 <td>@activity.Activitytype</td>
                                 <td>@activity.Date.ToShortDateString()</td>
                                 <td>@activity.Time</td>
-                                <td class="action-buttons">
+                                <td>
                                     <a asp-action="Edit" asp-route-id="@activity.Activitytype" class="btn btn-primary shadow-button">
                                         <i class="fas fa-edit"></i>
                                     </a>
@@ -94,6 +94,9 @@
                                     </a>
                                     <a asp-action="Participants" asp-route-id="@activity.Activitytype" class="btn btn-info shadow-button">
                                         <i class="fas fa-users"></i>
+                                    </a>
+                                    <a asp-action="Supervises" asp-route-id="@activity.ActivityID" class="btn btn-primary shadow-button">
+                                        <i class="fas fa-hard-hat"></i> supervisors
                                     </a>
                                 </td>
                                 
