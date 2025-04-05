@@ -22,21 +22,40 @@ namespace Someren.Repositories
             if (order == null)
                 throw new ArgumentNullException(nameof(order));
 
-            using var connection = new SqlConnection(_connectionString);
-            using var cmd = connection.CreateCommand();
-
-            cmd.CommandText = "INSERT INTO purchases (student_id, drink_id, number_of_drinks) " +
-                             "VALUES (@StudentId, @DrinkId, @NumberOfDrinks)";
-            cmd.CommandType = CommandType.Text;
-
-            cmd.Parameters.Add(new SqlParameter("@StudentId", SqlDbType.Int) { Value = order.StudentId });
-            cmd.Parameters.Add(new SqlParameter("@DrinkId", SqlDbType.Int) { Value = order.DrinkId });
-            cmd.Parameters.Add(new SqlParameter("@NumberOfDrinks", SqlDbType.Int) { Value = order.Quantity });
-
-            connection.Open();
             try
             {
-                cmd.ExecuteNonQuery();
+                // Get the internal student_id that matches the student_number
+                int internalStudentId;
+                using (var connection = new SqlConnection(_connectionString))
+                {
+                    connection.Open();
+                    using var cmd = connection.CreateCommand();
+                    cmd.CommandText = "SELECT student_id FROM student WHERE student_number = @StudentNumber";
+                    cmd.Parameters.Add(new SqlParameter("@StudentNumber", SqlDbType.Int) { Value = order.StudentId });
+
+                    var result = cmd.ExecuteScalar();
+                    if (result == null || result == DBNull.Value)
+                    {
+                        throw new Exception($"Could not find internal ID for student number {order.StudentId}");
+                    }
+
+                    internalStudentId = Convert.ToInt32(result);
+                }
+
+                // Insert the order using the internal student ID
+                using (var connection = new SqlConnection(_connectionString))
+                {
+                    connection.Open();
+                    using var cmd = connection.CreateCommand();
+                    cmd.CommandText = "INSERT INTO purchases (student_id, drink_id, number_of_drinks) " +
+                                     "VALUES (@StudentId, @DrinkId, @NumberOfDrinks)";
+
+                    cmd.Parameters.Add(new SqlParameter("@StudentId", SqlDbType.Int) { Value = internalStudentId });
+                    cmd.Parameters.Add(new SqlParameter("@DrinkId", SqlDbType.Int) { Value = order.DrinkId });
+                    cmd.Parameters.Add(new SqlParameter("@NumberOfDrinks", SqlDbType.Int) { Value = order.Quantity });
+
+                    cmd.ExecuteNonQuery();
+                }
             }
             catch (SqlException ex)
             {

@@ -2,6 +2,9 @@
 using Someren.Models;
 using Someren.Repositories;
 using System;
+using System.Linq;
+using System.Transactions;
+using System.Collections.Generic;
 
 namespace Someren.Controllers
 {
@@ -24,90 +27,58 @@ namespace Someren.Controllers
             _lecturerRepository = lecturersRepository;
         }
 
-        /// GET: DrinkOrder/Index
+        // GET: DrinkOrder/Index
         public IActionResult Index(string searchName = "")
         {
-            ViewBag.Drinks = _drinkRepository.GetAll();
-            ViewBag.Lecturers = _lecturerRepository.GetAll(false);
-
-            // If search name is provided, use filtered list, otherwise get all students
-            if (!string.IsNullOrEmpty(searchName))
+            try
             {
-                ViewBag.Students = _studentsRepository.GetFiltered(searchName);
-                ViewBag.SearchName = searchName; // Store search term for the form
-            }
-            else
-            {
-                ViewBag.Students = _studentsRepository.GetAll();
-                ViewBag.SearchName = "";
-            }
+                ViewBag.Drinks = _drinkRepository.GetAll();
+                ViewBag.Lecturers = _lecturerRepository.GetAll(false);
 
-            return View();
+                // If search name is provided, use filtered list, otherwise get all students
+                ViewBag.Students = string.IsNullOrEmpty(searchName)
+                    ? _studentsRepository.GetAll()
+                    : _studentsRepository.GetFiltered(searchName);
+
+                ViewBag.SearchName = searchName ?? "";
+                return View();
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = $"Error loading data: {ex.Message}";
+                return View(new DrinkOrder());
+            }
         }
 
         // POST: DrinkOrder/PlaceOrder
         [HttpPost]
         public IActionResult PlaceOrder(DrinkOrder order)
         {
+            if (order == null)
+            {
+                TempData["ErrorMessage"] = "Invalid order data submitted.";
+                return RedirectToAction("Index");
+            }
+
             try
             {
-                // Input validation
-                if (order == null)
-                {
-                    TempData["ErrorMessage"] = "Invalid order data submitted.";
-                    return RedirectToAction("Index");
-                }
+                // Perform all validations in a single method
+                var (isValid, student, drink, errorMessage, errorField) = ValidateOrder(order);
 
-                // Validate student exists
-                var student = _studentsRepository.GetByNum(order.StudentId);
-                if (student == null)
+                if (!isValid)
                 {
-                    ViewBag.StudentIdError = "Selected student not found in the system.";
-                    ViewBag.Students = _studentsRepository.GetAll();
-                    ViewBag.Drinks = _drinkRepository.GetAll();
-                    return View("Index", order);
-                }
+                    // Set appropriate error message
+                    ViewBag[$"{errorField}Error"] = errorMessage;
 
-                // Validate drink exists
-                var drink = _drinkRepository.GetById(order.DrinkId);
-                if (drink == null)
-                {
-                    ViewBag.DrinkIdError = "Selected drink is not available.";
-                    ViewBag.Students = _studentsRepository.GetAll();
-                    ViewBag.Drinks = _drinkRepository.GetAll();
-                    return View("Index", order);
-                }
-
-                // Quantity validation
-                if (order.Quantity <= 0)
-                {
-                    ViewBag.QuantityError = "Quantity must be greater than zero.";
-                    ViewBag.Students = _studentsRepository.GetAll();
-                    ViewBag.Drinks = _drinkRepository.GetAll();
-                    return View("Index", order);
-                }
-
-                if (order.Quantity > 20)
-                {
-                    ViewBag.QuantityError = "Maximum order quantity is 20 units per transaction.";
-                    ViewBag.Students = _studentsRepository.GetAll();
-                    ViewBag.Drinks = _drinkRepository.GetAll();
-                    return View("Index", order);
-                }
-
-                // Stock validation
-                if (drink.DrinkStock < order.Quantity)
-                {
-                    ViewBag.QuantityError = $"Not enough stock available. Current stock: {drink.DrinkStock}";
-                    ViewBag.Students = _studentsRepository.GetAll();
-                    ViewBag.Drinks = _drinkRepository.GetAll();
+                    // Re-populate needed data for the view
+                    PopulateViewBagForOrderForm();
                     return View("Index", order);
                 }
 
                 // Store data for confirmation view
                 ViewBag.Student = student;
                 ViewBag.Drink = drink;
-                ViewBag.TotalPrice = drink.DrinkPrice * order.Quantity;
+                ViewBag.TotalPrice = drink?.DrinkPrice * order.Quantity;
 
                 return View("Confirm", order);
             }
@@ -122,61 +93,40 @@ namespace Someren.Controllers
         [HttpPost]
         public IActionResult Confirm(DrinkOrder order)
         {
+            if (order == null)
+            {
+                TempData["ErrorMessage"] = "Invalid order data submitted.";
+                return RedirectToAction("Index");
+            }
+
             try
             {
-                // Input validation
-                if (order == null)
+                // Re-validate the order before final processing
+                var (isValid, student, drink, errorMessage, _) = ValidateOrder(order);
+
+                if (!isValid)
                 {
-                    TempData["ErrorMessage"] = "Invalid order data submitted.";
+                    TempData["ErrorMessage"] = errorMessage;
                     return RedirectToAction("Index");
                 }
 
-                // Final validation checks
-                var drink = _drinkRepository.GetById(order.DrinkId);
-                if (drink == null)
+                // Process order using transaction scope to ensure consistency
+                using (var scope = new TransactionScope())
                 {
-                    TempData["ErrorMessage"] = "The selected drink is no longer available.";
-                    return RedirectToAction("Index");
-                }
-
-                // Check if student exists
-                var student = _studentsRepository.GetByNum(order.StudentId);
-                if (student == null)
-                {
-                    TempData["ErrorMessage"] = "The selected student no longer exists.";
-                    return RedirectToAction("Index");
-                }
-
-                // Verify stock again (in case it changed between PlaceOrder and Confirm)
-                if (drink.DrinkStock < order.Quantity)
-                {
-                    TempData["ErrorMessage"] = $"Stock level has changed. Only {drink.DrinkStock} units of {drink.DrinkType} remain.";
-                    return RedirectToAction("Index");
-                }
-
-                // Process order
-                try
-                {
+                    // Add order to database
                     _orderRepository.AddOrder(order);
-                }
-                catch (Exception ex)
-                {
-                    TempData["ErrorMessage"] = $"Failed to register the order: {ex.Message}";
-                    return RedirectToAction("Index");
-                }
 
-                // Update drink stock
-                try
-                {
+                    // Update stock level
                     _drinkRepository.UpdateStock(order.DrinkId, order.Quantity);
-                }
-                catch (Exception ex)
-                {
-                    TempData["ErrorMessage"] = $"Order was placed but failed to update inventory: {ex.Message}";
-                    return RedirectToAction("Index");
+
+                    // Complete the transaction
+                    scope.Complete();
                 }
 
-                TempData["SuccessMessage"] = $"Order successfully placed for {student.FirstName} {student.LastName}. {order.Quantity} × {drink.DrinkType} for €{(drink.DrinkPrice * order.Quantity).ToString("F2")}";
+                // Format currency properly
+                string formattedPrice = (drink.DrinkPrice * order.Quantity).ToString("F2");
+                TempData["SuccessMessage"] = $"Order successfully placed for {student?.FirstName} {student?.LastName}. {order.Quantity} × {drink.DrinkType} for €{formattedPrice}";
+
                 return RedirectToAction("Index");
             }
             catch (Exception ex)
@@ -193,35 +143,17 @@ namespace Someren.Controllers
             {
                 var drinks = _drinkRepository.GetAll();
 
-                // Calculate total inventory value
-                decimal totalInventoryValue = 0;
-                decimal totalAlcoholicValue = 0;
-                decimal totalNonAlcoholicValue = 0;
+                // Use LINQ to efficiently calculate totals in a single pass
+                var (totalInventoryValue, totalAlcoholicValue, totalNonAlcoholicValue) = CalculateInventoryValues(drinks);
+                var (totalConsumption, alcoholicConsumption, nonAlcoholicConsumption) = CalculateConsumptionMetrics(drinks);
 
-                foreach (var drink in drinks)
-                {
-                    decimal inventoryValue = drink.DrinkPrice * drink.DrinkStock;
-                    totalInventoryValue += inventoryValue;
-
-                    if (drink.VatRate == 21)
-                    {
-                        totalAlcoholicValue += inventoryValue;
-                    }
-                    else
-                    {
-                        totalNonAlcoholicValue += inventoryValue;
-                    }
-                }
-
+                // Set ViewBag values
                 ViewBag.TotalInventoryValue = totalInventoryValue;
                 ViewBag.TotalAlcoholicValue = totalAlcoholicValue;
                 ViewBag.TotalNonAlcoholicValue = totalNonAlcoholicValue;
-
-                // Calculate consumption metrics
-                int totalConsumption = drinks.Sum(d => d.DrinkConsumed);
                 ViewBag.TotalConsumption = totalConsumption;
-                ViewBag.AlcoholicConsumption = drinks.Where(d => d.VatRate == 21).Sum(d => d.DrinkConsumed);
-                ViewBag.NonAlcoholicConsumption = drinks.Where(d => d.VatRate == 9).Sum(d => d.DrinkConsumed);
+                ViewBag.AlcoholicConsumption = alcoholicConsumption;
+                ViewBag.NonAlcoholicConsumption = nonAlcoholicConsumption;
 
                 return View(drinks);
             }
@@ -230,6 +162,96 @@ namespace Someren.Controllers
                 TempData["ErrorMessage"] = $"Error loading inventory data: {ex.Message}";
                 return RedirectToAction("Index");
             }
+        }
+
+        private (bool isValid, Student? student, Drink? drink, string? errorMessage, string? errorField) ValidateOrder(DrinkOrder order)
+        {
+            // Validate student exists
+            var student = _studentsRepository.GetByNum(order.StudentId);
+            if (student == null)
+            {
+                return (false, null, null, "Selected student not found in the system.", "StudentId");
+            }
+
+            // Validate drink exists
+            var drink = _drinkRepository.GetById(order.DrinkId);
+            if (drink == null)
+            {
+                return (false, student, null, "Selected drink is not available.", "DrinkId");
+            }
+
+            // Quantity validation
+            if (order.Quantity <= 0)
+            {
+                return (false, student, drink, "Quantity must be greater than zero.", "Quantity");
+            }
+
+            if (order.Quantity > 20)
+            {
+                return (false, student, drink, "Maximum order quantity is 20 units per transaction.", "Quantity");
+            }
+
+            // Stock validation
+            if (drink.DrinkStock < order.Quantity)
+            {
+                return (false, student, drink, $"Not enough stock available. Current stock: {drink.DrinkStock}", "Quantity");
+            }
+
+            // All validations passed
+            return (true, student, drink, null, null);
+        }
+
+        private void PopulateViewBagForOrderForm()
+        {
+            ViewBag.Students = _studentsRepository.GetAll();
+            ViewBag.Drinks = _drinkRepository.GetAll();
+        }
+
+        private (decimal total, decimal alcoholic, decimal nonAlcoholic) CalculateInventoryValues(IEnumerable<Drink> drinks)
+        {
+            decimal total = 0;
+            decimal alcoholic = 0;
+            decimal nonAlcoholic = 0;
+
+            foreach (var drink in drinks)
+            {
+                decimal value = drink.DrinkPrice * drink.DrinkStock;
+                total += value;
+
+                if (drink.VatRate == 21)
+                {
+                    alcoholic += value;
+                }
+                else
+                {
+                    nonAlcoholic += value;
+                }
+            }
+
+            return (total, alcoholic, nonAlcoholic);
+        }
+
+        private (int total, int alcoholic, int nonAlcoholic) CalculateConsumptionMetrics(IEnumerable<Drink> drinks)
+        {
+            int total = 0;
+            int alcoholic = 0;
+            int nonAlcoholic = 0;
+
+            foreach (var drink in drinks)
+            {
+                total += drink.DrinkConsumed;
+
+                if (drink.VatRate == 21)
+                {
+                    alcoholic += drink.DrinkConsumed;
+                }
+                else
+                {
+                    nonAlcoholic += drink.DrinkConsumed;
+                }
+            }
+
+            return (total, alcoholic, nonAlcoholic);
         }
     }
 }
