@@ -1,0 +1,79 @@
+﻿@model List<Someren.Models.Room>
+@{
+    ViewData["Title"] = "Deleted Room Management";
+}
+<div class="card mb-4 fade-in">
+    <div class="card-header">
+        <h1 class="card-title">Deleted Room Management</h1>
+        <a href="/Room" class="btn btn-primary shadow-button">
+            <i class="fas fa-arrow-left me-2"></i> Back to List
+        </a>
+    </div>
+    <div class="card-body p-0">
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success mx-4 mt-3">
+                <i class="fas fa-check-circle me-2"></i> @TempData["SuccessMessage"]
+            </div>
+        }
+
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger mx-4 mt-3">
+                <i class="fas fa-exclamation-circle me-2"></i> @TempData["ErrorMessage"]
+            </div>
+        }
+         @if (!Model.Any())
+        {
+            <div class="alert alert-warning mx-4 mt-3">
+                <i class="fas fa-exclamation-circle me-2"></i> No deleted rooms available to display.
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>Room Number</th>
+                        <th>Type</th>
+                        <th>Size</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var room in Model)
+                    {
+                        <tr>
+                            <td>@room.RoomNumber</td>
+                            <td>
+                                @if (room.Type?.ToLower() == "lecturer")
+                                {
+                                    <span><i class="fas fa-user-tie me-2"></i>Lecturer Room</span>
+                                }
+                                else if (room.Type?.ToLower() == "student")
+                                {
+                                    <span><i class="fas fa-user-graduate me-2"></i>Student Room</span>
+                                }
+                                else
+                                {
+                                    @room.Type
+                                }
+                            </td>
+                            <td>@room.Size</td>
+                            <td class="action-buttons">
+                                <a href="/Room/Restore/@room.RoomId" class="btn btn-primary shadow-button">
+                                    <i class="fas fa-undo"></i>
+                                </a>
+                                <a href="/Room/Erase/@room.RoomId" class="btn btn-danger shadow-button">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        }
+    </div>
+</div>
