@@ -10,7 +10,7 @@ namespace Someren.Repositories
         Room? GetById(int roomId, bool deleted);
         bool Add(Room room, out string errorMessage);
         bool Update(Room room, out string errorMessage);
-        void SoftDelete(int roomId);
+        bool SoftDelete(int roomId, out string errorMessage);
         void Restore(int roomId);
         void Erase(int roomId);
         void AssignStudentToRoom(int studentId, int roomId);

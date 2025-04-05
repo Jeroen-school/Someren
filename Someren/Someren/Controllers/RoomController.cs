@@ -87,7 +87,6 @@ namespace Someren.Controllers
         [HttpPost("Room/Edit")]
         public IActionResult Edit(Room room)
         {
-            Console.WriteLine($"{room.RoomId}");
             string errorMessage;
             bool success = _roomRepository.Update(room, out errorMessage);
 
@@ -111,7 +110,14 @@ namespace Someren.Controllers
         [HttpPost("Room/Delete")]
         public IActionResult Delete(Room room)
         {
-            _roomRepository.SoftDelete(room.RoomId);
+            string errorMessage;
+            bool success = _roomRepository.SoftDelete(room.RoomId, out errorMessage);
+            if (!success)
+            {
+                ViewBag.ErrorMessage = errorMessage;
+                Room? deletingRoom = _roomRepository.GetById(room.RoomId, false);
+                return View(deletingRoom);
+            }
             return RedirectToAction("Index");
         }
 
