@@ -90,7 +90,6 @@
                             <table class="table table-hover mb-0">
                                 <thead>
                                     <tr>
-                                        <th></th>
                                         <th>Full name</th>
                                         <th>Phone number</th>
                                         <th>Age</th>
@@ -103,7 +102,6 @@
                                         foreach (Lecturer lecturer in Model.SupervisingLecturers)
                                         {
                                             <tr>
-                                                <td>@lecturer.LecturerId</td>
                                                 <td>@lecturer.FirstName @lecturer.LastName</td>
                                                 <td>@lecturer.PhoneNumber</td>
                                                 <td>@lecturer.Age</td>
@@ -145,7 +143,6 @@
                             <table class="table table-hover mb-0">
                                 <thead>
                                     <tr>
-                                        <th></th>
                                         <th>Full Name</th>
                                         <th>Phone Number</th>
                                         <th>Age</th>
@@ -158,7 +155,6 @@
                                         foreach (Lecturer lecturer in Model.OtherLecturers)
                                         {
                                             <tr>
-                                                <td>@lecturer.LecturerId</td>
                                                 <td>@lecturer.FirstName @lecturer.LastName</td>
                                                 <td>@lecturer.PhoneNumber</td>
                                                 <td>@lecturer.Age</td>
