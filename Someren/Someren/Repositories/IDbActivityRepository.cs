@@ -4,6 +4,8 @@
     {
         
             List<Models.Activity> ViewAllActivities();
+            
+            Models.Activity GetById(int id);
             Models.Activity GetActivityByType(string activityType);
             void AddActivity(Models.Activity activity);
             void UpdateActivity(Models.Activity activity, string originalType);

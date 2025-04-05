@@ -18,6 +18,15 @@
 
         }
 
+        public Lecturer(int lecturerId, string firstName, string lastName, string phoneNumber, int age)
+        {
+            this.LecturerId = lecturerId;
+            this.FirstName = firstName;
+            this.LastName = lastName;
+            this.PhoneNumber = phoneNumber;
+            this.Age = age;
+        }
+
         public Lecturer(string roomNumber, string firstName, string lastName, string phoneNumber, int age, bool barDuty)
         {
             this.RoomNumber = roomNumber;

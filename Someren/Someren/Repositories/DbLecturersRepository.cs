@@ -25,10 +25,11 @@ namespace Someren.Repositories
         public List<Lecturer> GetAll(bool deleted)
         {
             //the sql query to execute
-            const string query =    "SELECT L.[lecturer_id], R.[room_number], L.[first_name], L.[Last_name], L.[telephone_number], L.[age], L.[bar_duty], L.[deleted] " +
+            const string query =    "SELECT L.[lecturer_id], R.[room_number], L.[first_name], L.[last_name], L.[telephone_number], L.[age], L.[bar_duty], L.[deleted] " +
                                     "FROM lecturer AS L " +
                                     "JOIN room AS R ON L.room_id = R.room_id " +
-                                    "WHERE L.[deleted] = @Deleted ORDER BY L.[last_name];";
+                                    "WHERE L.[deleted] = @Deleted " +
+                                    "ORDER BY L.[last_name];";
 
             List<Lecturer> lecturers  = ExecuteReadQuery(query, deleted, null, null);
             
@@ -38,10 +39,11 @@ namespace Someren.Repositories
         //returns a list of all lecturers where the LAST NAME CONTAINS THE SEARCHED STRING
         public List<Lecturer> GetFiltered(string lastName, bool deleted)
         {
-            const string query =    "SELECT L.[lecturer_id], R.[room_number], L.[first_name], L.[Last_name], L.[telephone_number], L.[age], L.[bar_duty], L.[deleted] " +
+            const string query =    "SELECT L.[lecturer_id], R.[room_number], L.[first_name], L.[last_name], L.[telephone_number], L.[age], L.[bar_duty], L.[deleted] " +
                                     "FROM lecturer AS L " +
                                     "JOIN room AS R ON L.room_id = R.room_id " +
-                                    "WHERE L.[last_name] LIKE @LastName AND L.[deleted] = @Deleted ORDER BY L.[last_name];";
+                                    "WHERE L.[last_name] LIKE @LastName AND L.[deleted] = @Deleted " +
+                                    "ORDER BY L.[last_name];";
 
             List<Lecturer> lecturers = ExecuteReadQuery(query, deleted, "@LastName", $"%{lastName}%");
 
@@ -71,7 +73,7 @@ namespace Someren.Repositories
 
         private void CheckIfAlreadyExists(Lecturer lecturer)
         {
-            const string query =    "SELECT L.[Last_name]" +
+            const string query =    "SELECT L.[last_name]" +
                                     "FROM lecturer AS L " +
                                     "WHERE L.[last_name] = @LastName AND L.[lecturer_id] != @Id";
 
@@ -103,7 +105,8 @@ namespace Someren.Repositories
             const string query =    "SELECT [room_number] " +
                                     "FROM room " +
                                     "WHERE [room_type] = 'Lecturer' AND [room_number] LIKE 'A1-%' AND [Deleted] = 0 " +
-                                    "AND [room_id] NOT IN (SELECT [room_id] FROM [lecturer] WHERE [lecturer_id] != @Id);";
+                                    "AND [room_id] NOT IN (SELECT [room_id] FROM [lecturer] WHERE [lecturer_id] != @Id) " +
+                                    "ORDER BY [room_number] ASC";
 
             List<string> availableRooms = ExecuteRoomValidationQuery(lecturer, query);
 
@@ -254,9 +257,9 @@ namespace Someren.Repositories
                 AddParametersWithValues(command, lecturer);
 
                 command.Connection.Open();
-                SqlDataReader reader = command.ExecuteReader();
 
-                reader.Close();
+                command.ExecuteScalar();
+
             }
         }
 
@@ -271,9 +274,9 @@ namespace Someren.Repositories
                 command.Parameters.AddWithValue("@Id", lecturer.LecturerId);
 
                 command.Connection.Open();
-                SqlDataReader reader = command.ExecuteReader();
 
-                reader.Close();
+                command.ExecuteScalar();
+                
             }
         }
 

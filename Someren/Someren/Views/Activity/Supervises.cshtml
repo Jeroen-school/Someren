@@ -1,0 +1,187 @@
+﻿@model Someren.Models.ActivitySupervisorsViewModel
+
+@{
+    ViewData["Title"] = "Supervisor management";
+}
+
+<div class="card text-center">
+    <div class="card-header">
+        <h1 class="card-title">Supervisor management for @Model.Activity.Activitytype</h1>
+        <a asp-controller="Activity" asp-action="Index" class="btn btn-primary shadow-button">
+            <i class="fas fa-arrow-left me-2"></i> Back to Activities
+        </a>
+    </div>
+
+    <div class="card-body">
+
+        <!-- This contains the top overview with the activity overview, current supervisors, and available lecturers-->
+        <div class="row mb-4">
+            <!-- Activity info-->
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Activity Details</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <strong><i class="fas fa-tag me-2"></i>Name:</strong> @Model.Activity.Activitytype
+                        </div>
+                        <div class="mb-3">
+                            <strong><i class="fas fa-calendar me-2"></i>Date:</strong> @Model.Activity.Date.ToShortDateString()
+                        </div>
+                        <div>
+                            <strong><i class="fas fa-clock me-2"></i>Time:</strong> @Model.Activity.Time
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- This contains the current supervisors and available lecturers -->
+            <div class="col-md-6">
+                <!-- Current supervisors-->
+                <div class="stat-card mt-4">
+                    <div class="stat-icon">
+                        <i class="fas fa-user-check"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 class="stat-value">@(Model.SupervisingLecturers.Count)</h3>
+                        <p class="stat-label">Current supervisors</p>
+                    </div>
+                </div>
+                <!-- Available lecturers-->
+                <div class="stat-card mt-4">
+                    <div class="stat-icon">
+                        <i class="fas fa-user-times"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 class="stat-value">@(Model.OtherLecturers.Count)</h3>
+                        <p class="stat-label">Available lecturers</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success mx-0 mb-4">
+                <i class="fas fa-check-circle me-2"></i> @TempData["SuccessMessage"]
+            </div>
+        }
+
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger mx-0 mb-4">
+                <i class="fas fa-exclamation-circle me-2"></i> @TempData["ErrorMessage"]
+            </div>
+        }
+
+        <!-- This contains both the list of supervisors and the list of available lecturers-->
+        <div class="row mb-4">
+            <!-- This contains the lisst of supervisors -->
+            <div class="col-md-6">
+                <div class="card">
+                    <!-- Supervisor title (of the card) -->
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-user-check me-2"></i>Current supervisors</h5>
+                    </div>
+                    <!-- Actual list of supervisors -->
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Full name</th>
+                                        <th>Phone number</th>
+                                        <th>Age</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if (Model.SupervisingLecturers.Count > 0)
+                                    {
+                                        foreach (Lecturer lecturer in Model.SupervisingLecturers)
+                                        {
+                                            <tr>
+                                                <td>@lecturer.FirstName @lecturer.LastName</td>
+                                                <td>@lecturer.PhoneNumber</td>
+                                                <td>@lecturer.Age</td>
+                                                <td>
+                                                    <a href="/Activity/RemoveSupervisors?lecturerID=@lecturer.LecturerId&activityID=@Model.Activity.ActivityID" class="btn btn-danger shadow-button">
+                                                        <i class="fas fa-user-minus"></i> Remove
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <tr>
+                                            <td colspan="5" class="text-center py-4">
+                                                <div class="alert alert-info mb-0">
+                                                    <i class="fas fa-info-circle me-2"></i> No supervisors found.
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- this contains the list of other lecturers-->
+            <div class="col-md-6">
+                <div class="card">
+                    <!-- Other lecturer title (of the card) -->
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-user-plus me-2"></i>Available lecturers to supervise</h5>
+                    </div>
+                    <!-- Actual list of other lecturers -->
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Full Name</th>
+                                        <th>Phone Number</th>
+                                        <th>Age</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if (Model.OtherLecturers.Count > 0)
+                                    {
+                                        foreach (Lecturer lecturer in Model.OtherLecturers)
+                                        {
+                                            <tr>
+                                                <td>@lecturer.FirstName @lecturer.LastName</td>
+                                                <td>@lecturer.PhoneNumber</td>
+                                                <td>@lecturer.Age</td>
+                                                <td>
+                                                    <a href="/Activity/AddSupervisors?lecturerID=@lecturer.LecturerId&activityID=@Model.Activity.ActivityID" class="btn btn-success shadow-button">
+                                                        <i class="fas fa-user-plus"></i> Add
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <tr>
+                                            <td colspan="5" class="text-center py-4">
+                                                <div class="alert alert-info mb-0">
+                                                    <i class="fas fa-info-circle me-2"></i> No remaining lecturers found.
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
