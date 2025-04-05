@@ -127,7 +127,17 @@ function updatePricePreview() {
     let unitPrice = 0;
     if (drinkSelect.selectedIndex > 0) {
         const selectedOption = drinkSelect.options[drinkSelect.selectedIndex];
-        unitPrice = parseFloat(selectedOption.dataset.price);
+
+        // Get the price data and ensure it uses periods as decimal separators
+        let priceStr = selectedOption.dataset.price;
+        priceStr = priceStr.replace(',', '.'); // Replace comma with period if present
+
+        // Parse the price with proper decimal handling
+        unitPrice = parseFloat(priceStr);
+
+        // Debug to check the actual values
+        console.log("Price string:", priceStr);
+        console.log("Parsed price:", unitPrice);
     }
 
     // Calculate the total price based on quantity
