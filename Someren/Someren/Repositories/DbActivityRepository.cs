@@ -299,7 +299,7 @@ public class DbActivityRepository : IDbActivityRepository
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
-                string query = "SELECT COUNT(1) FROM Activity WHERE activity_type = @activityType And Deleted = 0";
+                string query = "SELECT COUNT(1) FROM Activity WHERE activity_type = @activityType";
                 SqlCommand command = new SqlCommand(query, connection);
                 command.Parameters.AddWithValue("@activityType", activityType);
                 command.Connection.Open();
