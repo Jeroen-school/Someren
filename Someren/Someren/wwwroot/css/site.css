@@ -292,6 +292,19 @@ main {
         box-shadow: var(--shadow-lg); /* Larger shadow on hover */
     }
 
+.btn-info {
+    background: linear-gradient(135deg, var(--accent) 0%, #00b2ff 100%) !important; /* Cyan gradient */
+    border: none !important;
+}
+
+    .btn-info:hover,
+    .btn-info:focus,
+    .btn-info:active {
+        transform: translateY(-3px); /* Lift effect */
+        box-shadow: 0 7px 14px rgba(0, 229, 255, 0.3) !important; /* Cyan shadow */
+        background: linear-gradient(135deg, var(--accent) 0%, #00b2ff 100%) !important;
+    }
+
 /* Dashboard statistics display */
 .dashboard-stats {
     display: grid;
