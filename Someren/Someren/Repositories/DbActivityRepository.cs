@@ -29,6 +29,51 @@ public class DbActivityRepository : IDbActivityRepository
         TimeSpan time = (TimeSpan)reader["time"];
         return new Models.Activity(activityID, activitytype, date, time);
     }
+    private int GetActivityIdByType(string activityType, SqlConnection connection)
+    {
+        string query = "SELECT activity_id FROM Activity WHERE activity_type = @activityType";
+        using (SqlCommand command = new SqlCommand(query, connection))
+        {
+            command.Parameters.AddWithValue("@activityType", activityType);
+            object result = command.ExecuteScalar();
+
+            if (result == null || result == DBNull.Value)
+                throw new Exception("Activity not found.");
+
+            return (int)result;
+        }
+    }
+    private void DeleteActivityRelations(int activityId, SqlConnection connection)
+    {
+        string deleteParticipates = "DELETE FROM participates WHERE activity_id = @activityId";
+        using (SqlCommand cmd = new SqlCommand(deleteParticipates, connection))
+        {
+            cmd.Parameters.AddWithValue("@activityId", activityId);
+            cmd.ExecuteNonQuery();
+        }
+
+        string deleteSupervises = "DELETE FROM supervises WHERE activity_id = @activityId";
+        using (SqlCommand cmd = new SqlCommand(deleteSupervises, connection))
+        {
+            cmd.Parameters.AddWithValue("@activityId", activityId);
+            cmd.ExecuteNonQuery();
+        }
+    }
+    private void DeleteActivityRecord(string activityType, SqlConnection connection)
+    {
+        string query = "DELETE FROM Activity WHERE activity_type = @activityType";
+        using (SqlCommand command = new SqlCommand(query, connection))
+        {
+            command.Parameters.AddWithValue("@activityType", activityType);
+            int rows = command.ExecuteNonQuery();
+
+            if (rows == 0)
+                throw new Exception("Activity not found or already deleted.");
+        }
+    }
+
+
+
 
     public List<Someren.Models.Activity> ViewAllActivities()
     {
@@ -57,17 +102,23 @@ public class DbActivityRepository : IDbActivityRepository
         return activities;
     }
 
-    public Someren.Models.Activity GetActivityByType(string activityType)
+    public Models.Activity GetActivityByType(string activityType, bool includeDeleted = false)
     {
-        Someren.Models.Activity activity = null;
+        Models.Activity activity = null;
         try
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
-                string query = "SELECT activity_type, date, time FROM Activity WHERE activity_type = @activityType AND Deleted = 0";
+                string query = "SELECT activity_type, date, time FROM Activity WHERE activity_type = @activityType";
+                if (!includeDeleted)
+                {
+                    query += " AND Deleted = 0";
+                }
+
                 SqlCommand command = new SqlCommand(query, connection);
                 command.Parameters.AddWithValue("@activityType", activityType);
                 command.Connection.Open();
+
                 SqlDataReader reader = command.ExecuteReader();
                 if (reader.Read())
                 {
@@ -83,6 +134,7 @@ public class DbActivityRepository : IDbActivityRepository
         }
         return activity;
     }
+
 
     public Models.Activity GetById(int id)
     {
@@ -176,6 +228,70 @@ public class DbActivityRepository : IDbActivityRepository
             throw;
         }
     }
+    public List<Models.Activity> GetDeletedActivities()
+    {
+        var activities = new List<Someren.Models.Activity>();
+        try
+        {
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                string query = "SELECT activity_id, activity_type, date, time FROM Activity WHERE Deleted = 1 ORDER BY date, time";
+                SqlCommand command = new SqlCommand(query, connection);
+                command.Connection.Open();
+                SqlDataReader reader = command.ExecuteReader();
+                while (reader.Read())
+                {
+                    Someren.Models.Activity activity = ReadActivityWithID(reader);
+                    activities.Add(activity);
+                }
+                reader.Close();
+            }
+        }
+        catch (Exception e)
+        {
+            Debug.WriteLine("Database Error: " + e.Message);
+            throw;
+        }
+        return activities;
+    }
+
+    public void RestoreActivity(string activityType)
+    {
+        try
+        {
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                string query = "UPDATE Activity SET Deleted = 0 WHERE activity_type = @activityType";
+                SqlCommand command = new SqlCommand(query, connection);
+                command.Parameters.AddWithValue("@activityType", activityType);
+                command.Connection.Open();
+                int rowsAffected = command.ExecuteNonQuery();
+
+                if (rowsAffected == 0)
+                {
+                    throw new Exception("Activity not found or could not be restored.");
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            Debug.WriteLine("Database Error: " + e.Message);
+            throw;
+        }
+    }
+
+    public void EraseActivity(string activityType)
+    {
+        using (SqlConnection connection = new SqlConnection(_connectionString))
+        {
+            connection.Open();
+
+            int activityId = GetActivityIdByType(activityType, connection);
+            DeleteActivityRelations(activityId, connection);
+            DeleteActivityRecord(activityType, connection);
+        }
+    }
+
     public bool ActivityExists(string activityType)
     {
         try

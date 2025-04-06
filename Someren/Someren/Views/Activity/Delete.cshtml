@@ -10,9 +10,9 @@
         </a>
     </div>
     <div class="card-body">
-        <div class="alert alert-danger">
-            <i class="fas fa-exclamation-circle me-2 fa-lg"></i>
-            <strong>SEVERE WARNING:</strong> This action is irreversible and will permanently erase all data.
+        <div class="alert alert-warning">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            <strong>Note:</strong> This will move the activity to the deleted items. You can restore it later if needed.
         </div>
         <div class="card mb-4 border">
             <div class="card-header bg-light">
@@ -58,24 +58,20 @@
         <div class="modal-content">
             <div class="modal-header bg-danger text-white">
                 <h5 class="modal-title text-white">
-                    <i class="fas fa-exclamation-triangle me-2"></i>Permanent Deletion
+                    <i class="fas fa-exclamation-triangle me-2"></i>Delete Confirmation
                 </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <div class="alert alert-danger">
-                    <i class="fas fa-exclamation-circle me-2 fa-lg"></i>
-                    <strong>SEVERE WARNING:</strong> This action is irreversible and will permanently erase all data.
-                </div>
-                <p>Are you absolutely sure you want to delete the activity: <span class="fw-bold">@Model.Activitytype</span>?</p>
-                <p>Once deleted, this data <strong>cannot be recovered</strong> by any means. This operation removes all record of this activity from the database.</p>
+                <p>Are you sure you want to delete the activity: <span class="fw-bold">@Model.Activitytype</span>?</p>
+                <p>The activity will be moved to the trash. You can restore it later if needed.</p>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                 <form asp-action="Delete" method="post">
                     <input type="hidden" name="id" value="@Model.Activitytype" />
                     <button type="submit" class="btn btn-danger">
-                        <i class="fas fa-trash me-2"></i>Delete Permanently
+                        <i class="fas fa-trash me-2"></i>Delete
                     </button>
                 </form>
             </div>

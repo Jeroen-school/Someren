@@ -90,6 +90,7 @@ namespace Someren.Controllers
             _activityRepository.UpdateActivity(activity, originalType);
             return RedirectToAction(nameof(Index));
         }
+      
         [HttpGet]
         public IActionResult Delete(string id)
         {
@@ -104,10 +105,78 @@ namespace Someren.Controllers
         [HttpPost, ActionName("Delete")]
         public IActionResult DeleteConfirmed(string id)
         {
-            _activityRepository.DeleteActivity(id);
+            try
+            {
+                _activityRepository.DeleteActivity(id);
+                TempData["SuccessMessage"] = "Activity was successfully moved to trash.";
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = $"Error deleting activity: {ex.Message}";
+            }
             return RedirectToAction(nameof(Index));
         }
-        
+
+        [HttpGet]
+        public IActionResult ListDeleted()
+        {
+            List<Activity> activities = _activityRepository.GetDeletedActivities();
+            return View(activities);
+        }
+
+        [HttpGet]
+        public IActionResult Restore(string id)
+        {
+            var activity = _activityRepository.GetActivityByType(id, includeDeleted: true);
+            if (activity == null)
+            {
+                TempData["ErrorMessage"] = "Activity not found.";
+                return RedirectToAction("ListDeleted");
+            }
+            return View(activity);
+        }
+
+        [HttpPost]
+        public IActionResult Restore(string id, bool confirmed)
+        {
+            try
+            {
+                _activityRepository.RestoreActivity(id);
+                TempData["SuccessMessage"] = "Activity was successfully restored.";
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = $"Error restoring activity: {ex.Message}";
+            }
+            return RedirectToAction("ListDeleted");
+        }
+
+        [HttpGet]
+        public IActionResult Erase(string id)
+        {
+            var activity = _activityRepository.GetActivityByType(id, includeDeleted: true);
+            if (activity == null)
+            {
+                TempData["ErrorMessage"] = "Activity not found.";
+                return RedirectToAction("ListDeleted");
+            }
+            return View(activity);
+        }
+
+        [HttpPost]
+        public IActionResult Erase(string id, bool confirmed)
+        {
+            try
+            {
+                _activityRepository.EraseActivity(id);
+                TempData["SuccessMessage"] = "Activity was permanently deleted.";
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = $"Error permanently deleting activity: {ex.Message}";
+            }
+            return RedirectToAction("ListDeleted");
+        }
 
         [HttpGet]
         public IActionResult Participants(string id)
