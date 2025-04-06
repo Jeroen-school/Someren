@@ -322,8 +322,8 @@ namespace Someren.Repositories
                 UPDATE room
                 SET Deleted = @deleted
                 WHERE room_id = @roomId
-                  AND room_id NOT IN (SELECT room_id FROM student)
-                  AND room_id NOT IN (SELECT room_id FROM lecturer);
+                  AND room_id NOT IN (SELECT room_id FROM student WHERE room_id IS NOT NULL)
+                  AND room_id NOT IN (SELECT room_id FROM lecturer WHERE room_id IS NOT NULL);
                 ";
 
                 SqlCommand command = new SqlCommand(query, connection);
@@ -335,7 +335,7 @@ namespace Someren.Repositories
 
                 if (rowsAffected == 0)
                 {
-                    errorMessage = "Room could not be deleted because it's belongs to a student or lecturer.";
+                    errorMessage = "Room could not be deleted because it belongs to a student or lecturer.";
                     return false;
                 }
             }

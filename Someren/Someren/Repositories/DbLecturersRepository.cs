@@ -90,15 +90,7 @@ namespace Someren.Repositories
         }
 
 
-        /* Checks if the room is available, if it is not, gives an error code.
-        ALL LECTURER ROOMS ARE ON THE GROUND FLOOR OF BUILDING A, THEREFORE IT SPECIFICALLY CHECKS FOR THAT FLOOR
-        IF (soft) DELETE THE ROOM IN THE ROOM TABLE AND THEN EDIT THE LECTURER THAT WAS SLEEPING IN THAT ROOM
-        THIS
-        WILL
-        MARK
-        THOSE ROOMS AS UNAVAILABLE
-        this WILL give you errors when EDITING Lecturers.
-        I have mentioned this and we are awaiting the patch, volvo pls fix. */
+        /* Checks if the room is available, if it is not, gives an error code.*/
         private void CheckIfRoomAvailable(Lecturer lecturer)
         {
             //This gets a list of all available rooms
