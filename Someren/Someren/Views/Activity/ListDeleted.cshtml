@@ -1,0 +1,85 @@
+﻿@model List<Someren.Models.Activity>
+@{
+    ViewData["Title"] = "Deleted Activities";
+}
+<div class="card mb-4 fade-in">
+    <div class="card-header">
+        <h1 class="card-title">Deleted Activities</h1>
+        <a asp-action="Index" class="btn btn-primary shadow-button">
+            <i class="fas fa-arrow-left me-2"></i> Back to List
+        </a>
+    </div>
+    <div class="card-body p-0">
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success mx-4 mt-3">
+                <i class="fas fa-check-circle me-2"></i> @TempData["SuccessMessage"]
+            </div>
+        }
+
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger mx-4 mt-3">
+                <i class="fas fa-exclamation-circle me-2"></i> @TempData["ErrorMessage"]
+            </div>
+        }
+
+        <div class="dashboard-stats px-4 py-3">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-trash-alt"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 class="stat-value">@Model.Count</h3>
+                    <p class="stat-label">Deleted Activities</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>Activity Name</th>
+                        <th>Date</th>
+                        <th>Time</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Count > 0)
+                    {
+                        @foreach (var activity in Model)
+                        {
+                            <tr>
+                                <td>@activity.Activitytype</td>
+                                <td>@activity.Date.ToShortDateString()</td>
+                                <td>@activity.Time</td>
+                                <td>
+                                <td>
+                                    <a href="/Activity/Restore/@activity.Activitytype" class="btn btn-primary shadow-button">
+                                        <i class="fas fa-undo"></i>
+                                    </a>
+                                    <a href="/Activity/Erase/@activity.Activitytype" class="btn btn-danger shadow-button">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+                                </td>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="4" class="text-center py-4">
+                                <div class="alert alert-info mb-0">
+                                    <i class="fas fa-info-circle me-2"></i> No deleted activities found.
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
