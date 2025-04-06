@@ -200,6 +200,9 @@ namespace Someren.Repositories
             if (student == null)
                 throw new ArgumentNullException(nameof(student));
 
+            if (student.StudentNum < 100000 || student.StudentNum > 999999)
+                throw new ArgumentException($"Student number must be exactly 6 digits. Received: {student.StudentNum}", nameof(student));
+
             // Check if the student number already exists
             if (StudentNumExists(student.StudentNum))
                 throw new InvalidOperationException($"Student with number {student.StudentNum} already exists in the system.");
