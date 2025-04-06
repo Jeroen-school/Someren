@@ -247,7 +247,7 @@ namespace Someren.Repositories
             List<Student> students = new List<Student>();
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
-                string query = "SELECT * FROM student WHERE (room_id IS NULL OR room_id != @roomId) AND Deleted = @deleted ORDER BY last_name";
+                string query = "SELECT * FROM student WHERE room_id IS NULL AND Deleted = @deleted ORDER BY last_name";
                 SqlCommand command = new SqlCommand(query, connection);
                 command.Parameters.AddWithValue("@roomId", roomId);
                 command.Parameters.AddWithValue("@deleted", false);
