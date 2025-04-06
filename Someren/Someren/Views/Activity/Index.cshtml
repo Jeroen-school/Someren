@@ -17,9 +17,26 @@
             <a asp-action="Create" class="btn btn-primary shadow-button">
                 <i class="fas fa-plus me-2"></i> Add New Activity
             </a>
+
+            <a asp-action="ListDeleted" class="btn btn-secondary shadow-button">
+                <i class="fas fa-archive me-2"></i> View Deleted Activities
+            </a>
+
         </div>
     </div>
     <div class="card-body p-0">
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success mx-4 mt-3">
+                <i class="fas fa-check-circle me-2"></i> @TempData["SuccessMessage"]
+            </div>
+        }
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger mx-4 mt-3">
+                <i class="fas fa-exclamation-circle me-2"></i> @TempData["ErrorMessage"]
+            </div>
+        }
         <div class="dashboard-stats px-4 py-3">
             <div class="stat-card">
                 <div class="stat-icon">
@@ -90,7 +107,7 @@
                                         <i class="fas fa-edit"></i>
                                     </a>
                                     <a asp-action="Delete" asp-route-id="@activity.Activitytype" class="btn btn-danger shadow-button">
-                                        <i class="fas fa-trash"></i>
+                                            <i class="fas fa-trash"></i>
                                     </a>
                                     <a asp-action="Participants" asp-route-id="@activity.Activitytype" class="btn btn-info shadow-button">
                                         <i class="fas fa-users"></i>
@@ -99,7 +116,6 @@
                                         <i class="fas fa-hard-hat"></i> supervisors
                                     </a>
                                 </td>
-                                
                             </tr>
                         }
                     }
