@@ -95,6 +95,7 @@ namespace Someren.Repositories
             }
             return rooms;
         }
+
         public List<Room> GetAll(bool deleted)
         {
             List<Room> rooms = new List<Room>();
@@ -116,7 +117,6 @@ namespace Someren.Repositories
             }
             return rooms;
         }
-
 
         public Room? GetById(int roomId, bool deleted)
         {
@@ -229,6 +229,7 @@ namespace Someren.Repositories
                 command.ExecuteNonQuery();
             }
         }
+
         public void RemoveStudentToRoom(int studentNum, int roomId)
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
@@ -312,19 +313,36 @@ namespace Someren.Repositories
             return true;
         }
 
-        public void SoftDelete(int roomId)
+        public bool SoftDelete(int roomId, out string errorMessage)
         {
+            errorMessage = "";
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
-                string query = "UPDATE room SET Deleted = @deleted WHERE room_id = @roomId";
-                SqlCommand command = new SqlCommand(query, connection);
+                string query = @"
+                UPDATE room
+                SET Deleted = @deleted
+                WHERE room_id = @roomId
+                  AND room_id NOT IN (SELECT room_id FROM student)
+                  AND room_id NOT IN (SELECT room_id FROM lecturer);
+                ";
 
+                SqlCommand command = new SqlCommand(query, connection);
                 command.Parameters.AddWithValue("@roomId", roomId);
                 command.Parameters.AddWithValue("@deleted", true);
-                command.Connection.Open();
-                command.ExecuteNonQuery();
+
+                connection.Open();
+                int rowsAffected = command.ExecuteNonQuery();
+
+                if (rowsAffected == 0)
+                {
+                    errorMessage = "Room could not be deleted because it's belongs to a student or lecturer.";
+                    return false;
+                }
             }
+            errorMessage = "Room was successfully deleted.";
+            return true;
         }
+
 
         public void Restore(int roomId)
         {
