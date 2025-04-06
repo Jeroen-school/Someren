@@ -9,12 +9,14 @@ namespace Someren.Controllers
         private IDbActivityRepository _activityRepository;
         private IActivityParticipantRepository _activityParticipantRepository;
         private IStudentsRepository _studentRepository;
+        private IActivitySupervisersRepository _activitySupervisersRepository;
 
-        public ActivityController(IDbActivityRepository activityRepository, IActivityParticipantRepository activityParticipantRepository, IStudentsRepository studentRepository)
+        public ActivityController(IDbActivityRepository activityRepository, IActivityParticipantRepository activityParticipantRepository, IStudentsRepository studentRepository, IActivitySupervisersRepository activitySupervisersRepository)
         {
             _activityRepository = activityRepository;
             _activityParticipantRepository = activityParticipantRepository;
             _studentRepository = studentRepository;
+            _activitySupervisersRepository = activitySupervisersRepository;
         }
 
         public IActionResult Index(string searchString)
@@ -156,6 +158,79 @@ namespace Someren.Controllers
                 TempData["ErrorMessage"] = $"Error removing student from activity: {ex.Message}";
             }
             return RedirectToAction("Participants", new { id = activityType });
+        }
+
+
+        [HttpGet]
+        public IActionResult Supervises(int? id)
+        {
+            try
+            {
+                if (id == null)
+                {
+                    throw new Exception($"No activity found, please try again.");
+                }
+
+                ActivitySupervisorsViewModel viewModel = new ActivitySupervisorsViewModel(_activityRepository.GetById((int)id), _activitySupervisersRepository.GetAllSupervising((int)id), _activitySupervisersRepository.GetAllOther((int)id));
+
+                return View(viewModel);
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = $"Error: {ex.Message}";
+
+                return RedirectToAction("Index");
+            }
+        }
+
+        [HttpGet]
+        public IActionResult AddSupervisors(int? lecturerID, int? activityID)
+        {
+            try
+            {
+                if (lecturerID == null || activityID == null)
+                {
+                    throw new Exception($"No activity or lecturer found, please try again.");
+                }
+
+                string fullname = _activitySupervisersRepository.AddSupervising((int)lecturerID, (int)activityID);
+
+
+                TempData["SuccessMessage"] = $"Lecturer {fullname} added as supervisor!";
+
+                return RedirectToAction("Supervises", new { id = activityID });
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = $"Error: {ex.Message}";
+
+                return RedirectToAction("Supervises", new { id = activityID });
+            }
+        }
+
+        [HttpGet]
+        public IActionResult RemoveSupervisors(int? lecturerID, int? activityID)
+        {
+            try
+            {
+                if (lecturerID == null || activityID == null)
+                {
+                    throw new Exception($"No activity or lecturer found, please try again.");
+                }
+
+                string fullname = _activitySupervisersRepository.RemoveSupervising((int)lecturerID, (int)activityID);
+
+
+                TempData["SuccessMessage"] = $"Lecturer {fullname} removed from supervisors!";
+
+                return RedirectToAction("Supervises", new { id = activityID });
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = $"Error: {ex.Message}";
+
+                return RedirectToAction("Supervises", new { id = activityID });
+            }
         }
 
     }
