@@ -308,11 +308,32 @@ namespace Someren.Repositories
             if (student == null)
                 throw new ArgumentNullException(nameof(student));
 
-            // First check if the student exists and is not already deleted
+            // First check if the student has any associated purchases
+            using (var purchaseConnection = new SqlConnection(_connectionString))
+            {
+                using var purchaseCmd = purchaseConnection.CreateCommand();
+
+                purchaseCmd.CommandText = @"
+                                            SELECT COUNT(1)
+                                            FROM purchases p 
+                                            INNER JOIN student s ON p.student_id = s.student_id
+                                            WHERE s.student_number = @StudentNum";
+                purchaseCmd.CommandType = CommandType.Text;
+                purchaseCmd.Parameters.Add(new SqlParameter(s_paramStudentNum, SqlDbType.Int) { Value = student.StudentNum });
+
+                purchaseConnection.Open();
+
+                int purchaseCount = (int)purchaseCmd.ExecuteScalar();
+                if (purchaseCount > 0)
+                {
+                    throw new Exception($"Student {student.FirstName} {student.LastName} has associated purchases and cannot be deleted.");
+                }
+            }
+
+            // Then check if the student exists and is not already deleted
             using (var checkConnection = new SqlConnection(_connectionString))
             {
                 using var checkCmd = checkConnection.CreateCommand();
-                // Fix: Use proper table alias here
                 checkCmd.CommandText = $"SELECT COUNT(1) FROM student AS S WHERE S.student_number = {s_paramStudentNum} AND {s_notDeletedClause}";
                 checkCmd.CommandType = CommandType.Text;
                 checkCmd.Parameters.Add(new SqlParameter(s_paramStudentNum, SqlDbType.Int) { Value = student.StudentNum });
@@ -326,14 +347,13 @@ namespace Someren.Repositories
                 }
             }
 
-            // Proceed with deletion (soft delete by setting Deleted flag)
+            // Proceed with soft deletion (setting Deleted flag to 1)
             using var connection = new SqlConnection(_connectionString);
             using var cmd = connection.CreateCommand();
 
             cmd.CommandText = $"UPDATE student SET Deleted = 1 WHERE student_number = {s_paramStudentNum}";
             cmd.CommandType = CommandType.Text;
 
-            // Only need one parameter for deletion
             cmd.Parameters.Add(new SqlParameter(s_paramStudentNum, SqlDbType.Int) { Value = student.StudentNum });
 
             connection.Open();
