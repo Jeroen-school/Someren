@@ -57,12 +57,13 @@
                                 <td>@activity.Time</td>
                                 <td>
                                 <td>
-                                    <a href="/Activity/Restore/@activity.Activitytype" class="btn btn-primary shadow-button">
+                                    <a asp-action="Restore" asp-route-id="@activity.Activitytype" class="btn btn-primary shadow-button">
                                         <i class="fas fa-undo"></i>
                                     </a>
-                                    <a href="/Activity/Erase/@activity.Activitytype" class="btn btn-danger shadow-button">
+                                    <a asp-action="Erase" asp-route-id="@activity.Activitytype" class="btn btn-danger shadow-button">
                                         <i class="fas fa-trash"></i>
                                     </a>
+
                                 </td>
                                 </td>
                             </tr>

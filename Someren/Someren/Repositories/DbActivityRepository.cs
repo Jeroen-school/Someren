@@ -102,6 +102,7 @@ public class DbActivityRepository : IDbActivityRepository
         return activities;
     }
 
+
     public Models.Activity GetActivityByType(string activityType, bool includeDeleted = false)
     {
         Models.Activity activity = null;

@@ -43,11 +43,18 @@ namespace Someren.Controllers
         }
 
         [HttpPost]
+        [HttpPost]
         public IActionResult Create(Activity activity)
         {
             if (activity.Date < new DateTime(2018, 1, 1) || activity.Date > new DateTime(9999, 12, 31))
             {
                 ModelState.AddModelError("Date", "The date must be between January 1, 2018 and December 31, 9999.");
+            }
+
+            // ❗ New validation: disallow special characters
+            if (!System.Text.RegularExpressions.Regex.IsMatch(activity.Activitytype, @"^[a-zA-Z0-9\s]+$"))
+            {
+                ModelState.AddModelError("Activitytype", "Only letters, numbers, and spaces are allowed in the activity name.");
             }
 
             if (_activityRepository.ActivityExists(activity.Activitytype))
@@ -63,6 +70,7 @@ namespace Someren.Controllers
             _activityRepository.AddActivity(activity);
             return RedirectToAction(nameof(Index));
         }
+
         [HttpGet]
         public IActionResult Edit(string id)
         {
@@ -77,8 +85,16 @@ namespace Someren.Controllers
         }
 
         [HttpPost]
+        [HttpPost]
         public IActionResult Edit(Activity activity, string originalType)
         {
+            // ❗ New validation: disallow special characters
+            if (!System.Text.RegularExpressions.Regex.IsMatch(activity.Activitytype, @"^[a-zA-Z0-9\s]+$"))
+            {
+                ModelState.AddModelError("Activitytype", "Only letters, numbers, and spaces are allowed in the activity name.");
+                ViewBag.OriginalType = originalType;
+                return View(activity);
+            }
 
             if (activity.Activitytype != originalType &&
                 _activityRepository.ActivityExists(activity.Activitytype))
@@ -87,10 +103,12 @@ namespace Someren.Controllers
                 ViewBag.OriginalType = originalType;
                 return View(activity);
             }
+
             _activityRepository.UpdateActivity(activity, originalType);
             return RedirectToAction(nameof(Index));
         }
-      
+
+
         [HttpGet]
         public IActionResult Delete(string id)
         {
